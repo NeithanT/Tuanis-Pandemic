@@ -5,7 +5,7 @@
   <object class="GtkWindow" id="Window">
     <property name="can-focus">False</property>
     <property name="default-width">1080</property>
-    <property name="default-height">1080</property>
+    <property name="default-height">720</property>
     <child>
       <object class="GtkFixed" id="Container">
         <property name="visible">True</property>
@@ -20,8 +20,7 @@
             <property name="receives-default">True</property>
           </object>
           <packing>
-            <property name="x">72</property>
-            <property name="y">50</property>
+            <property name="x">700</property>
           </packing>
         </child>
         <child>
@@ -33,34 +32,301 @@
             <property name="label" translatable="yes">label</property>
           </object>
           <packing>
-            <property name="x">305</property>
+            <property name="x">700</property>
             <property name="y">85</property>
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="ImgOne">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-          </object>
-          <packing>
-            <property name="x">327</property>
-            <property name="y">34</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkImage" id="Argentina">
+          <object class="GtkImage" id="ImgArgentina">
             <property name="name">ImgArgentina</property>
             <property name="width-request">100</property>
             <property name="height-request">80</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="stock">gtk-missing-image</property>
+            <property name="pixbuf">../Images/Argentina.png</property>
           </object>
           <packing>
-            <property name="x">260</property>
-            <property name="y">166</property>
+            <property name="x">433</property>
+            <property name="y">562</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgMexico">
+            <property name="name">ImgMexico</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Mexico.png</property>
+          </object>
+          <packing>
+            <property name="x">10</property>
+            <property name="y">10</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgGuatemala">
+            <property name="name">ImgGuatemala</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Guatemala.png</property>
+          </object>
+          <packing>
+            <property name="x">190</property>
+            <property name="y">138</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgBelice">
+            <property name="name">ImgBelice</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Belice.png</property>
+          </object>
+          <packing>
+            <property name="x">213</property>
+            <property name="y">126</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgElSalvador">
+            <property name="name">ImgElSalvador</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/ElSalvador.png</property>
+          </object>
+          <packing>
+            <property name="x">202</property>
+            <property name="y">157</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgHonduras">
+            <property name="name">ImgHonduras</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Honduras.png</property>
+          </object>
+          <packing>
+            <property name="x">231</property>
+            <property name="y">149</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgNicaragua">
+            <property name="name">ImgNicaragua</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Nicaragua.png</property>
+          </object>
+          <packing>
+            <property name="x">240</property>
+            <property name="y">167</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgCostaRica">
+            <property name="name">ImgCostaRica</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/CostaRica.png</property>
+          </object>
+          <packing>
+            <property name="x">245</property>
+            <property name="y">195</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgPanama">
+            <property name="name">ImgPanama</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Panama.png</property>
+          </object>
+          <packing>
+            <property name="x">287</property>
+            <property name="y">208</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgColombia">
+            <property name="name">ImgColombia</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Colombia.png</property>
+          </object>
+          <packing>
+            <property name="x">290</property>
+            <property name="y">219</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgVenezuela">
+            <property name="name">ImgVenezuela</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Venezuela.png</property>
+          </object>
+          <packing>
+            <property name="x">372</property>
+            <property name="y">238</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgBrasil">
+            <property name="name">ImgBrasil</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Brasil.png</property>
+          </object>
+          <packing>
+            <property name="x">369</property>
+            <property name="y">303</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgEcuador">
+            <property name="name">ImgEcuador</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Ecuador.png</property>
+          </object>
+          <packing>
+            <property name="x">275</property>
+            <property name="y">339</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgPeru">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Peru.png</property>
+          </object>
+          <packing>
+            <property name="x">280</property>
+            <property name="y">364</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgBolivia">
+            <property name="name">ImgBolivia</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Bolivia.png</property>
+          </object>
+          <packing>
+            <property name="x">406</property>
+            <property name="y">446</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgChile">
+            <property name="name">ImgChile</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Chile.png</property>
+          </object>
+          <packing>
+            <property name="x">357</property>
+            <property name="y">517</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgParaguay">
+            <property name="name">ImgParaguay</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Paraguay.png</property>
+          </object>
+          <packing>
+            <property name="x">504</property>
+            <property name="y">545</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgUruguay">
+            <property name="name">ImgUruguay</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Uruguay.png</property>
+          </object>
+          <packing>
+            <property name="x">546</property>
+            <property name="y">645</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgGuyana">
+            <property name="name">ImgGuyana</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Guyana.png</property>
+          </object>
+          <packing>
+            <property name="x">476</property>
+            <property name="y">273</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgSurinam">
+            <property name="name">ImgSurinam</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/Surinam.png</property>
+          </object>
+          <packing>
+            <property name="x">510</property>
+            <property name="y">280</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="ImgGuayanaFrancesa">
+            <property name="name">ImgGuayanaFrancesa</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">../Images/GuayanaFrancesa.png</property>
+          </object>
+          <packing>
+            <property name="x">542</property>
+            <property name="y">280</property>
           </packing>
         </child>
       </object>
