@@ -27,6 +27,9 @@ void startWindow() {
     button = GTK_WIDGET(gtk_builder_get_object(builder, "BtnOne"));
     label = GTK_LABEL(gtk_builder_get_object(builder, "LblOne"));
 
+    GtkWidget *img_argentina = GTK_WIDGET(gtk_builder_get_object(builder, "Argentina"));
+    gtk_image_set_from_file(GTK_IMAGE(img_argentina), "src/Images/Argentina.png");
+
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(button, "clicked", G_CALLBACK(btn_one_clicked), NULL);
 

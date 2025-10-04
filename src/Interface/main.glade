@@ -37,6 +37,32 @@
             <property name="y">85</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkImage" id="ImgOne">
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="x">327</property>
+            <property name="y">34</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="Argentina">
+            <property name="name">ImgArgentina</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="stock">gtk-missing-image</property>
+          </object>
+          <packing>
+            <property name="x">260</property>
+            <property name="y">166</property>
+          </packing>
+        </child>
       </object>
     </child>
   </object>
