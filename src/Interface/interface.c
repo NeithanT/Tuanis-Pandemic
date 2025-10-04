@@ -4,9 +4,9 @@
 GtkLabel *label;
 
 void startWindow() {
-    GtkBuilder *builder;
-    GtkWidget *window;
-    GtkWidget *button;
+    GtkBuilder *builder = NULL;
+    GtkWidget *window = NULL;
+    GtkWidget *button = NULL;
     GError *error = NULL;
 
     gtk_init(0, NULL);
@@ -23,10 +23,17 @@ void startWindow() {
         g_warning("Could not get window from builder");
         return;
     }
+    //set full screen
+    gtk_window_fullscreen(GTK_WINDOW(window));
 
     button = GTK_WIDGET(gtk_builder_get_object(builder, "BtnOne"));
     label = GTK_LABEL(gtk_builder_get_object(builder, "LblOne"));
 
+    GtkWidget *img_argentina = GTK_WIDGET(gtk_builder_get_object(builder, "ImgArgentina"));
+    GtkWidget *img_belice = GTK_WIDGET(builder, "ImgBelice");
+    GtkWidget *img_bolivia = GTK_WIDGET(builder, "ImgBolivia");
+
+    
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(button, "clicked", G_CALLBACK(btn_one_clicked), NULL);
 
