@@ -12,15 +12,19 @@ struct Country{
     float corruption;
 	int poorness;
 	int gangs;
-	NodeCountry *prev;
-	NodeCountry *next;
+	struct Country *prev;
+	struct Country *next;
 };
 
 struct DoubleLinkedList {
-	NodeCountry *start;
+	struct Country *start;
 };
 
 struct Country newCountry (char* name, float corruption) {}
 
 struct DoubleLinkedList newDoubleLinkedList () {}
+
+struct DoubleLinkedList connectDoubleLinkedList (struct DoubleLinkedList* doubleList, struct Country* country ) {}
+
+
 #endif //SRC_STRUCTS_H0

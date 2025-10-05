@@ -4,7 +4,7 @@
 #include "structs.h"
 
 //FUncion para crear un pais
-struct Country newCountry (char* name, float corruption) {
+struct Country* newCountry (char* name, float corruption) {
 
     struct Country *newCountry = calloc(1, sizeof( struct Country));
 
@@ -20,7 +20,7 @@ struct Country newCountry (char* name, float corruption) {
 }
 
 //Funcion para crear una lista
-struct DoubleLinkedList newDoubleLinkedList () {
+struct DoubleLinkedList* newDoubleLinkedList () {
 
     struct DoubleLinkedList* newDoubleLinkedList = calloc(1, sizeof(struct DoubleLinkedList));
     if (newDoubleLinkedList == NULL) { //Revisar si se creo la lista
@@ -30,10 +30,9 @@ struct DoubleLinkedList newDoubleLinkedList () {
 
 }
 
-
 //Funcion para llenar la lista con los paises
 //Entradas: La lista doble y el pais a rellenar
-struct DoubleLinkedList fillDoubleLinkedList (struct DoubleLinkedList* doubleList, struct Country* country ) {
+int connectDoubleLinkedList (struct DoubleLinkedList* doubleList, struct Country* country ) {
 
     //Revisar si la lista doble y el pais se crearon
     if (doubleList == NULL || country == NULL) {
@@ -43,9 +42,10 @@ struct DoubleLinkedList fillDoubleLinkedList (struct DoubleLinkedList* doubleLis
     //Revisar si existen elementos en la lista
     if (doubleList -> start == NULL) {
         doubleList -> start = country;
+        return 0;
     }
 
-    // Crear dos punteror para unir los paises
+    // Crear dos punteros para unir los paises
     struct Country* actual = doubleList -> start;
     struct Country* previous = NULL;
 
@@ -61,4 +61,30 @@ struct DoubleLinkedList fillDoubleLinkedList (struct DoubleLinkedList* doubleLis
 
     return 0;
 
+}
+
+int fillList (struct DoubleLinkedList* list) {
+
+    connectDoubleLinkedList(list, newCountry("Mexico",0.0));
+    connectDoubleLinkedList(list, newCountry("Belice",0.0));
+    connectDoubleLinkedList(list, newCountry("Guatemala",0.0));
+    connectDoubleLinkedList(list, newCountry("El Salvador",0.0));
+    connectDoubleLinkedList(list, newCountry("Honduras",0.0));
+    connectDoubleLinkedList(list, newCountry("Nicaragua",0.0));
+    connectDoubleLinkedList(list, newCountry("Costa Rica",0.0));
+    connectDoubleLinkedList(list, newCountry("Panama",0.0));
+    connectDoubleLinkedList(list, newCountry("Colombia",0.0));
+    connectDoubleLinkedList(list, newCountry("Venezuela",0.0));
+    connectDoubleLinkedList(list, newCountry("Guyana",0.0));
+    connectDoubleLinkedList(list, newCountry("Surinam",0.0));
+    connectDoubleLinkedList(list, newCountry("GuayanaFrancesa",0.0));
+    connectDoubleLinkedList(list, newCountry("Brasil",0.0));
+    connectDoubleLinkedList(list, newCountry("Uruguay",0.0));
+    connectDoubleLinkedList(list, newCountry("Argentina",0.0));
+    connectDoubleLinkedList(list, newCountry("Paraguay",0.0));
+    connectDoubleLinkedList(list, newCountry("Bolivia",0.0));
+    connectDoubleLinkedList(list, newCountry("Chile",0.0));
+    connectDoubleLinkedList(list, newCountry("Peru",0.0));
+    connectDoubleLinkedList(list, newCountry("Ecuador",0.0));
+    return 0;
 }
