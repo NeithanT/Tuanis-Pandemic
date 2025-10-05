@@ -12,11 +12,6 @@ struct Country{
     float corruption;
 	int poorness;
 	int gangs;
-    Struct Country *right;
-	Struct Country *left;
-};
-
-struct NodeCountry{
 	NodeCountry *prev;
 	NodeCountry *next;
 };
@@ -25,7 +20,7 @@ struct DoubleLinkedList {
 	NodeCountry *start;
 };
 
-Struct Country newCountry (char* name, float corruption) {}
+struct Country newCountry (char* name, float corruption) {}
 
-Struct DoubleLinkedList newDoubleLinkedList () {}
+struct DoubleLinkedList newDoubleLinkedList () {}
 #endif //SRC_STRUCTS_H0
