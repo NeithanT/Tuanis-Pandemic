@@ -8,4 +8,8 @@ int modifiedAspectsCountries(struct DoubleLinkedList* list, int position, int mo
 
 int initialCorruption(struct DoubleLinkedList* list);
 
+void modifiedAfterTurn(struct DoubleLinkedList* list, int position, int change);
+
+void AfterTurn(struct DoubleLinkedList* list);
+
 #endif //SRC_RANDOM_H

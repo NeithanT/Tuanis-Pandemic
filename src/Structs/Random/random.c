@@ -19,17 +19,14 @@ int modifiedAspectsCountries(struct DoubleLinkedList* list, int position, int mo
         actual = actual->next;
         current++;
     }
-    while (actual -> poorness != 0) {
-        if (actual -> next != NULL)
-            actual = actual -> next;
-        else break;
+    while (actual -> next != NULL && actual -> poorness != 0) {
+        actual = actual -> next;
     }
-    while (actual -> poorness != 0) {
-        if (actual -> prev != NULL) {
-            actual = actual -> prev;
-        }
-        else break;
+
+    while (actual -> prev != NULL && actual -> poorness != 0) {
+        actual = actual -> prev;
     }
+
     if (modifiedCount < 3) {
         actual->poorness = (higher == 0) ? 3 : 2;
         actual->gangs = (higher == 1) ? 3 : 2;
@@ -43,4 +40,75 @@ int modifiedAspectsCountries(struct DoubleLinkedList* list, int position, int mo
     actual->poorness = 1;
     actual->gangs = 1;
     return 0;
+}
+
+
+
+int AfterTurn(struct DoubleLinkedList* list) {
+    for (int i = 0; i < 9; i++) {
+        int modifier = rand() % 21;
+        int higher = rand() % 2;
+        modifiedAfterTurn(list,modifier,higher);
+    }
+}
+
+void modifiedAfterTurn(struct DoubleLinkedList* list, int position, int change) {
+    struct Country *actual = list->start;
+    int current = 0;
+    while (current != position) {
+        actual = actual->next;
+        current++;
+    }
+    while (actual -> next != NULL && actual -> poorness != 0) {
+        actual = actual -> next;
+    }
+
+    while (actual -> prev != NULL && actual -> poorness != 0) {
+        actual = actual -> prev;
+    }
+
+    switch (change) {
+        case 0:
+            if (actual -> poorness == 3) {
+                while (actual -> prev != NULL && actual -> prev -> poorness == 3) {
+
+                    actual = actual -> prev;
+
+                }
+                while (actual -> next != NULL && actual -> next -> poorness == 3) {
+                    actual = actual -> next;
+                }
+                if (actual -> prev != NULL && actual -> prev -> poorness != 3) {
+                    actual -> prev -> poorness += 1;
+                }
+                if (actual -> next != NULL && actual -> next -> poorness != 3) {
+                    actual -> next -> poorness += 1;
+                }
+
+            }
+
+            else actual -> poorness += 1;
+            break;
+        case 1:
+            if (actual -> gangs == 3) {
+
+                while (actual -> prev != NULL && actual -> prev -> gangs == 3) {
+                    actual = actual -> prev;
+                }
+
+                while (actual -> next != NULL && actual -> next -> gangs == 3) {
+                    actual = actual -> next;
+                }
+
+                if (actual -> prev != NULL && actual -> prev -> gangs != 3)
+                    actual -> prev -> gangs += 1;
+                if (actual -> next != NULL && actual -> next -> gangs != 3)
+                    actual -> next -> gangs += 1;
+
+            }
+
+            else actual -> gangs += 1;
+            break;
+    }
+
 }
