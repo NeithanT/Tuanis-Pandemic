@@ -4,12 +4,15 @@
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkWindow" id="Window">
     <property name="can-focus">False</property>
-    <property name="default-width">1080</property>
+    <property name="default-width">1440</property>
     <property name="default-height">720</property>
     <child>
       <object class="GtkFixed" id="Container">
+        <property name="name">Container</property>
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
         <child>
           <object class="GtkButton" id="BtnOne">
             <property name="label" translatable="yes">button</property>
@@ -39,15 +42,15 @@
         <child>
           <object class="GtkImage" id="ImgArgentina">
             <property name="name">ImgArgentina</property>
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
             <property name="pixbuf">../Images/Argentina.png</property>
           </object>
           <packing>
-            <property name="x">410</property>
-            <property name="y">532</property>
+            <property name="x">399</property>
+            <property name="y">503</property>
           </packing>
         </child>
         <child>
@@ -58,10 +61,14 @@
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="pixbuf">../Images/Mexico.png</property>
+            <style>
+              <class name="image"/>
+              <class name="image:hover"/>
+            </style>
           </object>
           <packing>
-            <property name="x">10</property>
-            <property name="y">10</property>
+            <property name="x">15</property>
+            <property name="y">15</property>
           </packing>
         </child>
         <child>
@@ -74,8 +81,8 @@
             <property name="pixbuf">../Images/Guatemala.png</property>
           </object>
           <packing>
-            <property name="x">174</property>
-            <property name="y">125</property>
+            <property name="x">170</property>
+            <property name="y">121</property>
           </packing>
         </child>
         <child>
@@ -88,8 +95,8 @@
             <property name="pixbuf">../Images/Belice.png</property>
           </object>
           <packing>
-            <property name="x">194</property>
-            <property name="y">112</property>
+            <property name="x">190</property>
+            <property name="y">110</property>
           </packing>
         </child>
         <child>
@@ -102,8 +109,8 @@
             <property name="pixbuf">../Images/ElSalvador.png</property>
           </object>
           <packing>
-            <property name="x">184</property>
-            <property name="y">144</property>
+            <property name="x">180</property>
+            <property name="y">140</property>
           </packing>
         </child>
         <child>
@@ -116,8 +123,8 @@
             <property name="pixbuf">../Images/Honduras.png</property>
           </object>
           <packing>
-            <property name="x">210</property>
-            <property name="y">135</property>
+            <property name="x">204</property>
+            <property name="y">129</property>
           </packing>
         </child>
         <child>
@@ -130,8 +137,8 @@
             <property name="pixbuf">../Images/Nicaragua.png</property>
           </object>
           <packing>
-            <property name="x">220</property>
-            <property name="y">153</property>
+            <property name="x">215</property>
+            <property name="y">145</property>
           </packing>
         </child>
         <child>
@@ -144,8 +151,8 @@
             <property name="pixbuf">../Images/CostaRica.png</property>
           </object>
           <packing>
-            <property name="x">225</property>
-            <property name="y">181</property>
+            <property name="x">219</property>
+            <property name="y">171</property>
           </packing>
         </child>
         <child>
@@ -158,8 +165,8 @@
             <property name="pixbuf">../Images/Panama.png</property>
           </object>
           <packing>
-            <property name="x">264</property>
-            <property name="y">192</property>
+            <property name="x">256</property>
+            <property name="y">182</property>
           </packing>
         </child>
         <child>
@@ -172,8 +179,8 @@
             <property name="pixbuf">../Images/Colombia.png</property>
           </object>
           <packing>
-            <property name="x">270</property>
-            <property name="y">220</property>
+            <property name="x">266</property>
+            <property name="y">209</property>
           </packing>
         </child>
         <child>
@@ -186,22 +193,22 @@
             <property name="pixbuf">../Images/Venezuela.png</property>
           </object>
           <packing>
-            <property name="x">351</property>
-            <property name="y">227</property>
+            <property name="x">341</property>
+            <property name="y">215</property>
           </packing>
         </child>
         <child>
           <object class="GtkImage" id="ImgBrasil">
             <property name="name">ImgBrasil</property>
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
             <property name="pixbuf">../Images/Brasil.png</property>
           </object>
           <packing>
-            <property name="x">348</property>
-            <property name="y">280</property>
+            <property name="x">338</property>
+            <property name="y">266</property>
           </packing>
         </child>
         <child>
@@ -214,8 +221,8 @@
             <property name="pixbuf">../Images/Ecuador.png</property>
           </object>
           <packing>
-            <property name="x">254</property>
-            <property name="y">313</property>
+            <property name="x">249</property>
+            <property name="y">296</property>
           </packing>
         </child>
         <child>
@@ -227,8 +234,8 @@
             <property name="pixbuf">../Images/Peru.png</property>
           </object>
           <packing>
-            <property name="x">272</property>
-            <property name="y">339</property>
+            <property name="x">267</property>
+            <property name="y">322</property>
           </packing>
         </child>
         <child>
@@ -241,22 +248,22 @@
             <property name="pixbuf">../Images/Bolivia.png</property>
           </object>
           <packing>
-            <property name="x">391</property>
-            <property name="y">422</property>
+            <property name="x">381</property>
+            <property name="y">400</property>
           </packing>
         </child>
         <child>
           <object class="GtkImage" id="ImgChile">
             <property name="name">ImgChile</property>
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
             <property name="pixbuf">../Images/Chile.png</property>
           </object>
           <packing>
-            <property name="x">384</property>
-            <property name="y">496</property>
+            <property name="x">375</property>
+            <property name="y">468</property>
           </packing>
         </child>
         <child>
@@ -269,8 +276,8 @@
             <property name="pixbuf">../Images/Paraguay.png</property>
           </object>
           <packing>
-            <property name="x">461</property>
-            <property name="y">508</property>
+            <property name="x">444</property>
+            <property name="y">479</property>
           </packing>
         </child>
         <child>
@@ -283,8 +290,8 @@
             <property name="pixbuf">../Images/Uruguay.png</property>
           </object>
           <packing>
-            <property name="x">505</property>
-            <property name="y">594</property>
+            <property name="x">483</property>
+            <property name="y">560</property>
           </packing>
         </child>
         <child>
@@ -297,8 +304,8 @@
             <property name="pixbuf">../Images/Guyana.png</property>
           </object>
           <packing>
-            <property name="x">442</property>
-            <property name="y">247</property>
+            <property name="x">423</property>
+            <property name="y">232</property>
           </packing>
         </child>
         <child>
@@ -311,8 +318,8 @@
             <property name="pixbuf">../Images/Surinam.png</property>
           </object>
           <packing>
-            <property name="x">470</property>
-            <property name="y">257</property>
+            <property name="x">450</property>
+            <property name="y">240</property>
           </packing>
         </child>
         <child>
@@ -325,8 +332,8 @@
             <property name="pixbuf">../Images/GuayanaFrancesa.png</property>
           </object>
           <packing>
-            <property name="x">497</property>
-            <property name="y">258</property>
+            <property name="x">478</property>
+            <property name="y">241</property>
           </packing>
         </child>
       </object>
