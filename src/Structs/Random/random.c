@@ -1,5 +1,17 @@
 #include "random.h"
 
+/**
+ * Calcula el % de corrupción que tiene un país, basandose en los
+ * valores de gangs y poorness
+ * @param country
+ */
+void calculateCorruption(struct Country* country) {
+
+    country->corruption = (country->gangs + country->poorness) % 2;
+    printf("%s%s%s%f", "La corrupción del país:", country->name, "es ", country->corruption);
+
+}
+
 int initialCorruption(struct DoubleLinkedList* list) {
     //TODO colocar el srand(time(NULL)); en main
     int modifiedCount = 0;

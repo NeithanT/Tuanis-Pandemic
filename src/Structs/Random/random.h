@@ -4,6 +4,10 @@
 #include "<stdlib.h>"
 #include "../structs.h"
 
+
+
+float calculateCorruption(struct Country* country);
+
 int modifiedAspectsCountries(struct DoubleLinkedList* list, int position, int modifiedCount, int higher);
 
 int initialCorruption(struct DoubleLinkedList* list);
