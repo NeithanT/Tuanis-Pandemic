@@ -88,3 +88,19 @@ int fillList (struct DoubleLinkedList* list) {
     connectDoubleLinkedList(list, newCountry("Ecuador",0.0));
     return 0;
 }
+
+//Function that provides the length of a double_linked_list -> Used in Player.c
+int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList) {
+
+    if (doubleLinkedList == NULL || doubleLinkedList->start == NULL) {
+        printf("ERROR700: CANNOT CALCULATE SIZE OF DOUBLELINKEDLIST");
+        return -1;
+    }
+    int size = 0;
+    struct Country* current_country = doubleLinkedList->start;
+    while (current_country != NULL) {
+        current_country = current_country->next;
+        size++;
+    }
+    return size;
+}

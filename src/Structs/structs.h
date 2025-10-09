@@ -26,5 +26,9 @@ struct DoubleLinkedList newDoubleLinkedList () {}
 
 struct DoubleLinkedList connectDoubleLinkedList (struct DoubleLinkedList* doubleList, struct Country* country ) {}
 
+int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
+
+
+
 
 #endif //SRC_STRUCTS_H0
