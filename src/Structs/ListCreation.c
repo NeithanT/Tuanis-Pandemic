@@ -104,3 +104,21 @@ int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList) {
     }
     return size;
 }
+
+/**
+ * Funcion para imprimir los paises y conocer sus fronteras
+ * @param doubleLinkedList
+ */
+void printDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList) {
+    if (doubleLinkedList == NULL || doubleLinkedList->start == NULL) { // Revisar que la lista no este vacia o no exista
+        printf("ERROR700: CANNOT PRINT DOUBLELINKEDLIST");
+    }
+    struct Country* current_country = doubleLinkedList->start; // Apuntar al inicio
+    printf("%s, ==>", current_country -> name ); // Imprimir el primer pais con su unica frontera
+    current_country = current_country -> next;
+    while (current_country -> next != NULL) { //Imprimir todos los paises con ambas fronteras
+        printf("<== %s ==>", current_country -> name);
+        current_country = current_country -> next;
+    }
+    printf("<== %s \n", current_country -> name ); //Imprimir el ultimo pais con su unica frontera
+}
