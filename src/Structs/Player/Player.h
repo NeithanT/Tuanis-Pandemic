@@ -1,0 +1,8 @@
+//
+// Created by seb on 6/10/25.
+//
+
+#ifndef TUANIS_PANDEMIC_PLAYER_H
+#define TUANIS_PANDEMIC_PLAYER_H
+
+#endif //TUANIS_PANDEMIC_PLAYER_H
