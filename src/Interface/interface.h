@@ -4,15 +4,15 @@
 #include <gtk/gtk.h>
 
 /** */
-void update_img_corruption(GtkWidget *image, float corruptPercentage);
+void start_window();
 
-/** */
-void startWindow();
-
+/**W */
+static void draw(GtkWidget *widget, cairo_t *cr, gpointer data);
+    
 /** */
 void btn_one_clicked(GtkWidget *widget, gpointer data);
 
 /** */
-void update_label(const char *text);
+void label_one_update(const char *text);
 
 #endif // INTERFACE_H
