@@ -1,7 +1,24 @@
 //
 // Created by emmanuel on 4/10/25.
 //
+#include <signal.h>
+#include <stdbool.h>
+
 #include "structs.h"
+#include "Random/random.h"
+
+//###############################################################################
+
+
+struct DoubleLinkedList* initializeDoubleLinkedList() {
+
+    struct DoubleLinkedList* doubleLinkedList = newDoubleLinkedList();
+    fillDoubleLinkedList(doubleLinkedList);
+    initialCorruption(doubleLinkedList);
+    return doubleLinkedList;
+}
+
+//###############################################################################
 
 //FUncion para crear un pais
 struct Country* newCountry (char* name, float corruption) {
@@ -9,7 +26,8 @@ struct Country* newCountry (char* name, float corruption) {
     struct Country *newCountry = calloc(1, sizeof( struct Country));
 
     if (newCountry == NULL) { //Revisar si se creo el pais
-        return -1;
+        printf("ERROR1700: No se ha logrado crear el país");
+        return NULL;
     }
 
     //Asignarle el nombre y la corrupcion
@@ -18,6 +36,8 @@ struct Country* newCountry (char* name, float corruption) {
 
     return newCountry;
 }
+
+//###############################################################################
 
 //Funcion para crear una lista
 struct DoubleLinkedList* newDoubleLinkedList () {
@@ -29,6 +49,8 @@ struct DoubleLinkedList* newDoubleLinkedList () {
     return newDoubleLinkedList;
 
 }
+
+//###############################################################################
 
 //Funcion para llenar la lista con los paises
 //Entradas: La lista doble y el pais a rellenar
@@ -62,6 +84,58 @@ int connectDoubleLinkedList (struct DoubleLinkedList* doubleList, struct Country
     return 0;
 
 }
+//###############################################################################
+
+/**
+ * Funciona utilizada para iterar sobre la lista de países, eliminando países hasta que
+ * retorne True, indicando que ya no queda ningún país muerto que eliminar, de otra manera, elimina el país
+ * y retorna False
+ * @param doubleLinkedList
+ * @return True si ya se han eliminado todos los paises muertos de la lista, False de lo contrario
+ */
+bool eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList) {
+
+    bool allCountriesErased = false;
+
+    if (doubleLinkedList == NULL || doubleLinkedList -> start == NULL) {
+        printf("ERROR1800: No se la logrado borrar el país");
+        return false;
+    }
+
+    struct Country* current = doubleLinkedList -> start;
+
+
+    //Esta condición verifica si el primer país se corrompio, y cambia el primer país al segundo país en la lista
+    if (current->gangs == 3 && current->poorness) {
+        struct Country* nextCountry = current->next;
+        doubleLinkedList -> start = nextCountry;
+        nextCountry->prev = doubleLinkedList;
+        free(current);
+        current = NULL;
+        return allCountriesErased;
+    }
+    while (current != NULL) {
+        //Esta verificación es únicamente para el último país en la lista de paises (No revisa el país siguiente)
+        if (current->next == NULL && current->gangs == 3 && current->poorness) {
+            free(current);
+            current = NULL;
+            return allCountriesErased;
+        }
+        //Esta verificación elimina el país muerto, y reacomoda los punteros para que todo quede bien en la lista
+        else if (current->gangs == 3 && current->poorness) {
+            struct Country* nextCountry = current->next;
+            struct Country* previousCountry = current->prev;
+            previousCountry->next = nextCountry;
+            nextCountry->prev = previousCountry;
+            free(current);
+            current = NULL;
+            return allCountriesErased;
+        }
+    }
+    allCountriesErased = true; //Si llega hasta aqui, es porque no queda ningún país muerto por eliminar
+    return allCountriesErased;
+}
+//###############################################################################
 
 int fillList (struct DoubleLinkedList* list) {
 
@@ -89,6 +163,9 @@ int fillList (struct DoubleLinkedList* list) {
     return 0;
 }
 
+
+//###############################################################################
+
 //Function that provides the length of a double_linked_list -> Used in Player.c
 int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList) {
 
@@ -104,6 +181,10 @@ int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList) {
     }
     return size;
 }
+
+
+//###############################################################################
+
 
 /**
  * Funcion para imprimir los paises y conocer sus fronteras
@@ -122,3 +203,6 @@ void printDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList) {
     }
     printf("<== %s \n", current_country -> name ); //Imprimir el ultimo pais con su unica frontera
 }
+
+
+//###############################################################################

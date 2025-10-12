@@ -8,12 +8,16 @@
 
 float calculateCorruption(struct Country* country);
 
-int modifiedAspectsCountries(struct DoubleLinkedList* list, int position, int modifiedCount, int higher);
+int modifyAspectsCountry(struct DoubleLinkedList* list, int position, int modifiedCount, int higher);
 
 int initialCorruption(struct DoubleLinkedList* list);
 
-void modifiedAfterTurn(struct DoubleLinkedList* list, int position, int change);
+void calculateCorruptionCountryList(struct DoubleLinkedList* doubleLinkedList);
 
-void AfterTurn(struct DoubleLinkedList* list);
+void modifyAspectsAfterTurn(struct DoubleLinkedList* list, int position, int change);
+
+void randomCorruptAfterTurn(struct DoubleLinkedList* list);
+
+
 
 #endif //SRC_RANDOM_H

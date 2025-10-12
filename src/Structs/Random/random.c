@@ -1,16 +1,43 @@
 #include "random.h"
 
+//###############################################################################
+
+/**
+ * Calcula los valores de corrupción, de todos los países en la lista de países
+ * @param doubleLinkedList
+ */
+void calculateCorruptionCountryList(struct DoubleLinkedList* doubleLinkedList) {
+
+    if (doubleLinkedList == NULL || doubleLinkedList->start == NULL) {
+        printf("ERROR2000: No se ha podido calcular el valor de corrupción de la lista");
+        return;
+    }
+    struct Country* current = doubleLinkedList->start;
+    while (current != NULL) {
+        calculateCorruption(current);
+        current = current->next;
+    }
+
+}
+
+//###############################################################################
 /**
  * Calcula el % de corrupción que tiene un país, basandose en los
  * valores de gangs y poorness
  * @param country
  */
-void calculateCorruption(struct Country* country) {
 
+
+void calculateCorruptionCountry(struct Country* country) {
+
+    if (country == NULL) {
+        printf("ERROR1200: No se pudo calcular la corrupción");
+        return;
+    }
     country->corruption = (country->gangs + country->poorness) % 2;
-    printf("%s%s%s%f", "La corrupción del país:", country->name, "es ", country->corruption);
-
 }
+
+//###############################################################################
 
 /**
  * Llama a la funcion de modificar los aspectos de un pais para el inicio del juego
@@ -24,12 +51,14 @@ int initialCorruption(struct DoubleLinkedList* list) {
     for (int i = 0; i < 9; i++) {
         int modifier = rand() % 21; // Obtener un pais entre los 21 de LATAM
         int higher = rand() % 2;    // Obtener uno de los dos aspectos a modificar
-        modifiedAspectsCountries(list,modifier,modifiedCount,higher); //Llamar la funcion para modificar
+        modifyAspectsCountry(list,modifier,modifiedCount,higher); //Llamar la funcion para modificar
         modifiedCount++; //Sumar uno a la cantidad de modificaciones
     }
     return 0;
 }
 
+
+//###############################################################################
 /**
  * Funcion donde se modifican los valores iniciales
  * @param list
@@ -38,7 +67,7 @@ int initialCorruption(struct DoubleLinkedList* list) {
  * @param higher
  * @return
  */
-int modifiedAspectsCountries(struct DoubleLinkedList* list, int position, int modifiedCount, int higher) {
+int modifyAspectsCountry(struct DoubleLinkedList* list, int position, int modifiedCount, int higher) {
     struct Country *actual = list->start; //Se apunta al inicio
     int current = 0; //La posicion actual
     while (current != position) { //Buscar el pais a modificar
@@ -75,13 +104,15 @@ int modifiedAspectsCountries(struct DoubleLinkedList* list, int position, int mo
     return 0;
 }
 
+//###############################################################################
+
 /**
  * Funcion para modificar los aspectos despues de un turno
  * @param list
  * @param position
  * @param change
  */
-void modifiedAfterTurn(struct DoubleLinkedList *list, int position, int change) {
+void modifyAspectsAfterTurn(struct DoubleLinkedList *list, int position, int change) {
     struct Country *actual = list->start; //Apuntamos al actual
     int current = 0;
     while (current != position) { //Buscar el pais actual
@@ -160,16 +191,19 @@ void modifiedAfterTurn(struct DoubleLinkedList *list, int position, int change) 
 
 }
 
+//###############################################################################
+
 /**
  * Funcion para modificar tres paises despues de un turno
  * @param list
  * @return
  */
-int AfterTurn(struct DoubleLinkedList* list) {
+int randomCorruptAfterTurn(struct DoubleLinkedList* list) {
     for (int i = 0; i < 3; i++) {
-        int modifier = rand() % 21;
-        int higher = rand() % 2;
-        modifiedAfterTurn(list,modifier,higher);
+        int positionCountryToModify = rand() % 21;
+        int valueOfProblematic = rand() % 2;
+        modifyAspectsAfterTurn(list,positionCountryToModify,valueOfProblematic);
     }
 }
 
+//###############################################################################
