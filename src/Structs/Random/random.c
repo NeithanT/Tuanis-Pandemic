@@ -65,7 +65,7 @@ int modifiedAspectsCountries(struct DoubleLinkedList* list, int position, int mo
     // Modificar si fueron los primeros 6 numeros un 2 o un 1 si se eligio un 1 o 0
     if (modifiedCount >= 3 && modifiedCount < 6) {
         actual->poorness = (higher == 0) ? 2 : 1;
-        actual->gangs = (higher == 0) ? 1 : 2;
+        actual->gangs = (higher == 1) ? 1 : 2;
         return 0;
     }
 
