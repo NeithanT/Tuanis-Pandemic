@@ -22,27 +22,27 @@ typedef struct {
 } CountryImage;
 
 CountryImage countries[] = {
-    {"Argentina", 410, 532, 0, 0, NULL},
-    {"Belice", 194, 112, 0, 0, NULL},
-    {"Bolivia", 391, 422, 0, 0, NULL},
-    {"Brasil", 348, 280, 0, 0, NULL},
-    {"Chile", 384, 496, 0, 0, NULL},
-    {"Colombia", 270, 220, 0, 0, NULL},
-    {"CostaRica", 225, 181, 0, 0, NULL},
-    {"Ecuador", 254, 313, 0, 0, NULL},
-    {"ElSalvador", 184, 144, 0, 0, NULL},
-    {"Guatemala", 174, 125, 0, 0, NULL},
-    {"GuayanaFrancesa", 497, 258, 0, 0, NULL},
-    {"Guyana", 442, 247, 0, 0, NULL},
-    {"Honduras", 210, 135, 0, 0, NULL},
-    {"Mexico", 10, 10, 0, 0, NULL},
-    {"Nicaragua", 220, 153, 0, 0, NULL},
-    {"Panama", 264, 192, 0, 0, NULL},
-    {"Paraguay", 461, 508, 0, 0, NULL},
-    {"Peru", 272, 339, 0, 0, NULL},
-    {"Surinam", 470, 257, 0, 0, NULL},
-    {"Uruguay", 505, 594, 0, 0, NULL},
-    {"Venezuela", 351, 227, 0, 0, NULL}
+    {"Argentina", 395, 505, 0, 0, NULL},
+    {"Belice", 230, 138, 0, 0, NULL},
+    {"Bolivia", 376, 401, 0, 0, NULL},
+    {"Brasil", 336, 273, 0, 0, NULL},
+    {"Chile", 371, 470, 0, 0, NULL},
+    {"Colombia", 285, 211, 0, 0, NULL},
+    {"CostaRica", 250, 200, 0, 0, NULL},
+    {"Ecuador", 266, 308, 0, 0, NULL},
+    {"ElSalvador", 218, 170, 0, 0, NULL},
+    {"Guatemala", 200, 141, 0, 0, NULL},
+    {"GuayanaFrancesa", 509, 265, 0, 0, NULL},
+    {"Guyana", 448, 246, 0, 0, NULL},
+    {"Honduras", 227, 156, 0, 0, NULL},
+    {"Mexico", 15, 15, 0, 0, NULL},
+    {"Nicaragua", 240, 170, 0, 0, NULL},
+    {"Panama", 276, 209, 0, 0, NULL},
+    {"Paraguay", 450, 481, 0, 0, NULL},
+    {"Peru", 265, 322, 0, 0, NULL},
+    {"Surinam", 477, 264, 0, 0, NULL},
+    {"Uruguay", 506, 577, 0, 0, NULL},
+    {"Venezuela", 343, 218, 0, 0, NULL}
 };
 
 static void draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
@@ -111,14 +111,6 @@ static void draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_restore(cr);
 }
 
-static void on_btn_one_clicked(GtkButton *button, gpointer user_data) {
-    
-    gtk_widget_queue_draw(drawingarea);
-    
-    // Update label
-    gtk_label_set_text(info_label, "Corruption levels updated!");
-}
-
 void start_window() {
 
     gtk_init(0, NULL);
@@ -152,14 +144,10 @@ void start_window() {
     // Get widgets from the builder
     win = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
     drawingarea = GTK_WIDGET(gtk_builder_get_object(builder, "drawing_area"));
-    update_button = GTK_WIDGET(gtk_builder_get_object(builder, "btn_one"));
-    info_label = GTK_LABEL(gtk_builder_get_object(builder, "lbl_one"));
-
     gtk_widget_set_size_request(drawingarea, 500, 500);
     // Connect signals
     g_signal_connect(win, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(drawingarea, "draw", G_CALLBACK(draw), NULL);
-    g_signal_connect(update_button, "clicked", G_CALLBACK(on_btn_one_clicked), drawingarea);
 
     gtk_widget_show_all(win);
     // free memory things...
