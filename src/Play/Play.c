@@ -1,5 +1,7 @@
 #include "Play.h"
 
+#include "../Structs/Player/Player.h"
+
 
 //###############################################################################
 /**
@@ -33,20 +35,23 @@ int consultAspects(struct DoubleLinkedList* list) {
 void StartGame() {
 
     struct DoubleLinkedList* countryList = initializeDoubleLinkedList();
+    struct Player* Player = allocateInitialPlayerOnMap(countryList);
+    struct Player* Ally = allocateInitialPlayerOnMap(countryList);
+
     bool isGameOver = false;
-    bool turnoPlayer = true;
+    bool isTurnPlayer = true;
     while (!isGameOver) {
         //Turno player
-        if (turnoPlayer == true) {
-            turnPlayer(countryList);
+        if (isTurnPlayer == true) {
+            turnPlayer(countryList,Player);
             turnCorruption(countryList);
-            turnoPlayer = false;
+            isTurnPlayer = false;
         }
         //Turno aliado
         else {
-            turnAlly(countryList);
+            turnAlly(Ally);
             turnCorruption(countryList);
-            turnoPlayer = true;
+            isTurnPlayer = true;
         }
 
         //Revisa si hay países para eliminar y si ya se gano el juego
@@ -62,15 +67,24 @@ void StartGame() {
 
 //###############################################################################
 
-void turnPlayer(struct DoubleLinkedList* doubleLinkedList) {
+/**
+//TODO: Implementar función del turno de player con la interfaz gráfica
+void turnPlayer(struct DoubleLinkedList* doubleLinkedList, struct Player* player) {
 
-
+    if (doubleLinkedList == NULL || doubleLinkedList->start ==NULL || player == NULL) {
+        printf("ERROR2500: No se ha podido aplicar el turno del jugador");
+        return;
+    }
+    move_player(doubleLinkedList, player);
 }
+*/
+
 
 //###############################################################################
 
-
-void turnAlly(struct DoubleLinkedList* doubleLinkedList){}
+void turnAlly(struct Player* ally) {
+    moveAllyRandomCountry(ally);
+}
 
 
 

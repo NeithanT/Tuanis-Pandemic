@@ -207,3 +207,15 @@ int randomCorruptAfterTurn(struct DoubleLinkedList* list) {
 }
 
 //###############################################################################
+
+void reduceRandomProblem(struct Country* country) {
+
+    if (country == NULL) {
+        printf("ERROR2200: No se ha podido reducir el problema");
+        return;
+    }
+
+
+
+
+}

@@ -14,9 +14,9 @@
 
 int StartGame();
 
-void turnPlayer(struct DoubleLinkedList* doubleLinkedList);
+void turnPlayer(struct DoubleLinkedList* doubleLinkedList, struct Player* player);
 
-void turnAlly(struct DoubleLinkedList* double_linked_list);
+void turnAlly(struct DoubleLinkedList* doubleLinkedList,struct Player* ally);
 
 void turnCorruption (struct DoubleLinkedList* doubleLinkedList);
 

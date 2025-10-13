@@ -7,11 +7,14 @@
 #include "../structs.h"
 
 struct Player {
-    Country* current_country;
+    struct Country* current_country;
 };
 
-void move_player(struct DoubleLinkedList* double_linked_list,struct Player* player);
-void allocate_initial_player_on_map(struct DoubleLinkedList* double_linked_list, struct Player* player);
+void move_player(struct DoubleLinkedList* doubleLinkedList,struct Player* player, int isAlly);
+
+struct Country* moveAllyRandomCountry(struct Player* player);
+
+struct Player* allocateInitialPlayerOnMap(struct DoubleLinkedList* doubleLinkedList);
 
 /**
  * TODO: FUNCIONES A AGREGAR:
