@@ -38,5 +38,9 @@ struct DoubleLinkedList* initializeDoubleLinkedList();
 
 void printDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
 
+int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
+
+
+
 
 #endif //SRC_STRUCTS_H0
