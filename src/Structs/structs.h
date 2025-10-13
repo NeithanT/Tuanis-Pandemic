@@ -18,11 +18,27 @@ struct DoubleLinkedList {
 	struct Country *start;
 };
 
-struct Country *newCountry (char* name, float corruption) {}
+struct Country* newCountry (char* name, float corruption);
 
-struct DoubleLinkedList *newDoubleLinkedList () {}
+bool eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList);
 
-struct DoubleLinkedList *connectDoubleLinkedList (struct DoubleLinkedList* doubleList, struct Country* country ) {}
+struct DoubleLinkedList* newDoubleLinkedList ();
+
+int connectDoubleLinkedList (struct DoubleLinkedList* doubleList, struct Country* country );
+
+int fillList (struct DoubleLinkedList* list);
+
+struct DoubleLinkedList* initializeDoubleLinkedList();
+
+int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
+
+struct DoubleLinkedList* initializeDoubleLinkedList();
+
+void printDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
+
+int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
+
+
 
 
 #endif //SRC_STRUCTS_H0
