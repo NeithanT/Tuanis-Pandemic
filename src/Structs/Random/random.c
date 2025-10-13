@@ -1,4 +1,6 @@
 #include "random.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 /**
  * Calcula el % de corrupción que tiene un país, basandose en los

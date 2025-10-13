@@ -2,18 +2,6 @@
 <!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
-  <object class="GtkImage" id="img_right_arrow">
-    <property name="name">img_right_arrow</property>
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="pixbuf">../Images/Right.png</property>
-  </object>
-  <object class="GtkImage" id="left_arrow_img">
-    <property name="name">left_arrow_img</property>
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="pixbuf">../Images/Left.png</property>
-  </object>
   <object class="GtkWindow" id="window">
     <property name="name">window</property>
     <property name="width-request">700</property>
@@ -23,12 +11,12 @@
     <property name="hexpand">True</property>
     <property name="vexpand">True</property>
     <property name="title" translatable="yes">Tuanis Pandemic</property>
-    <property name="default-width">900</property>
+    <property name="default-width">700</property>
     <property name="default-height">500</property>
     <child>
       <object class="GtkBox" id="box">
         <property name="name">box</property>
-        <property name="width-request">900</property>
+        <property name="width-request">700</property>
         <property name="height-request">500</property>
         <property name="visible">True</property>
         <property name="can-focus">False</property>
@@ -69,70 +57,33 @@
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkButton" id="btn_left_shift">
-                <property name="name">btn_left_shift</property>
+              <object class="GtkButton" id="btn_one">
+                <property name="label" translatable="yes">button</property>
+                <property name="name">btn_one</property>
+                <property name="width-request">100</property>
+                <property name="height-request">80</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="image">left_arrow_img</property>
-                <property name="always-show-image">True</property>
                 <signal name="clicked" handler="on_btn_one_clicked" swapped="no"/>
               </object>
               <packing>
-                <property name="x">20</property>
-                <property name="y">130</property>
+                <property name="x">30</property>
+                <property name="y">40</property>
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="lbl_current_country">
-                <property name="name">lbl_current_country</property>
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Mexico</property>
-              </object>
-              <packing>
-                <property name="x">130</property>
-                <property name="y">135</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkDrawingArea" id="drawing_current_country">
-                <property name="name">drawing_current_country</property>
+              <object class="GtkLabel" id="lbl_one">
+                <property name="name">lbl_one</property>
                 <property name="width-request">100</property>
                 <property name="height-request">80</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="label" translatable="yes">label</property>
               </object>
               <packing>
-                <property name="x">100</property>
-                <property name="y">60</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="btn_right_shift">
-                <property name="name">btn_right_shift</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="image">img_right_arrow</property>
-              </object>
-              <packing>
-                <property name="x">240</property>
-                <property name="y">130</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="lbl_guide">
-                <property name="name">lbl_guide</property>
-                <property name="width-request">100</property>
-                <property name="height-request">80</property>
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Pais Actual</property>
-              </object>
-              <packing>
-                <property name="x">100</property>
-                <property name="y">10</property>
+                <property name="x">30</property>
+                <property name="y">200</property>
               </packing>
             </child>
           </object>

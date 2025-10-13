@@ -1,7 +1,5 @@
 #ifndef SRC_RANDOM_H
 #define SRC_RANDOM_H
-#include "<stdio.h>"
-#include "<stdlib.h>"
 #include "../structs.h"
 
 

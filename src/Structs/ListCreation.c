@@ -2,6 +2,8 @@
 // Created by emmanuel on 4/10/25.
 //
 #include "structs.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 //FUncion para crear un pais
 struct Country* newCountry (char* name, float corruption) {
