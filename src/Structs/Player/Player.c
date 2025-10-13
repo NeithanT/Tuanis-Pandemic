@@ -4,6 +4,12 @@
 //
 
 #include "Player.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Country* pick_country() {
+    return NULL; // TODO: implementar con interfaz
+}
 
 //###############################################################################
 
@@ -14,7 +20,7 @@ struct Player* allocateInitialPlayerOnMap(struct DoubleLinkedList* doubleLinkedL
         return NULL;
     }
 
-    struct Player* newPlayer = calloc(sizeof(struct Player));
+    struct Player* newPlayer = calloc(1, sizeof(struct Player));
     struct Country* current_country = doubleLinkedList->start;
     newPlayer->current_country = current_country;
 
@@ -37,7 +43,7 @@ void move_player(struct DoubleLinkedList* doubleLinkedList,struct Player* player
         printf("Cant move the player because the parameters are invalid");
     }
     if (isAlly) {
-        moveAllyRandomCountry();
+        moveAllyRandomCountry(player);
     }
     else {
     struct Country* selected_country = pick_country();
@@ -53,11 +59,11 @@ void move_player(struct DoubleLinkedList* doubleLinkedList,struct Player* player
 
 //###############################################################################
 
-struct Country* moveAllyRandomCountry(struct Player* player) {
+void moveAllyRandomCountry(struct Player* player) {
 
     if (player->current_country == NULL) {
         printf("ERROR2500: No se ha podido obtener un Country Random");
-        return NULL;
+        return;
     }
 
     int randomMove = rand() % 2;
@@ -78,5 +84,4 @@ struct Country* moveAllyRandomCountry(struct Player* player) {
             player->current_country = player->current_country->prev;
         }
     }
-        else {return player->current_country;}
-    }
+}

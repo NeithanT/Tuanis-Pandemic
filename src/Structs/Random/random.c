@@ -30,7 +30,7 @@ void calculateCorruptionCountryList(struct DoubleLinkedList* doubleLinkedList) {
  */
 
 
-void calculateCorruptionCountry(struct Country* country) {
+void calculateCorruption(struct Country* country) {
 
     if (country == NULL) {
         printf("ERROR1200: No se pudo calcular la corrupción");
@@ -200,7 +200,7 @@ void modifyAspectsAfterTurn(struct DoubleLinkedList *list, int position, int cha
  * @param list
  * @return
  */
-int randomCorruptAfterTurn(struct DoubleLinkedList* list) {
+void randomCorruptAfterTurn(struct DoubleLinkedList* list) {
     for (int i = 0; i < 3; i++) {
         int positionCountryToModify = rand() % 21;
         int valueOfProblematic = rand() % 2;

@@ -9,14 +9,15 @@
 
 #include "../Structs/structs.h"
 #include "../Structs/Random/random.h"
+#include "../Structs/Player/Player.h"
 
 
 
-int StartGame();
+void StartGame();
 
 void turnPlayer(struct DoubleLinkedList* doubleLinkedList, struct Player* player);
 
-void turnAlly(struct DoubleLinkedList* doubleLinkedList,struct Player* ally);
+void turnAlly(struct Player* ally);
 
 void turnCorruption (struct DoubleLinkedList* doubleLinkedList);
 

@@ -4,7 +4,7 @@
 
 
 
-float calculateCorruption(struct Country* country);
+void calculateCorruption(struct Country* country);
 
 int modifyAspectsCountry(struct DoubleLinkedList* list, int position, int modifiedCount, int higher);
 

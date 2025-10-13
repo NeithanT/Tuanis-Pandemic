@@ -67,7 +67,6 @@ void StartGame() {
 
 //###############################################################################
 
-/**
 //TODO: Implementar función del turno de player con la interfaz gráfica
 void turnPlayer(struct DoubleLinkedList* doubleLinkedList, struct Player* player) {
 
@@ -75,9 +74,8 @@ void turnPlayer(struct DoubleLinkedList* doubleLinkedList, struct Player* player
         printf("ERROR2500: No se ha podido aplicar el turno del jugador");
         return;
     }
-    move_player(doubleLinkedList, player);
+    move_player(doubleLinkedList, player, 0);
 }
-*/
 
 
 //###############################################################################

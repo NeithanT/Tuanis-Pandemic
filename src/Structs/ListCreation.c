@@ -1,9 +1,8 @@
 //
 // Created by emmanuel on 4/10/25.
 //
-#include <signal.h>
-#include <stdbool.h>
-
+#include <stdlib.h>
+#include <stdio.h>
 #include "structs.h"
 #include "Player/Player.h"
 #include "Random/random.h"
@@ -14,7 +13,7 @@
 struct DoubleLinkedList* initializeDoubleLinkedList() {
 
     struct DoubleLinkedList* doubleLinkedList = newDoubleLinkedList();
-    fillDoubleLinkedList(doubleLinkedList);
+    fillList(doubleLinkedList);
     initialCorruption(doubleLinkedList);
 
     return doubleLinkedList;
@@ -46,7 +45,7 @@ struct DoubleLinkedList* newDoubleLinkedList () {
 
     struct DoubleLinkedList* newDoubleLinkedList = calloc(1, sizeof(struct DoubleLinkedList));
     if (newDoubleLinkedList == NULL) { //Revisar si se creo la lista
-        return -1;
+        return NULL;
     }
     return newDoubleLinkedList;
 
@@ -95,13 +94,13 @@ int connectDoubleLinkedList (struct DoubleLinkedList* doubleList, struct Country
  * @param doubleLinkedList
  * @return True si ya se han eliminado todos los paises muertos de la lista, False de lo contrario
  */
-bool eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList) {
+int eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList) {
 
-    bool allCountriesErased = false;
+    int allCountriesErased = 0;
 
     if (doubleLinkedList == NULL || doubleLinkedList -> start == NULL) {
         printf("ERROR1800: No se la logrado borrar el país");
-        return false;
+        return -1;
     }
 
     struct Country* current = doubleLinkedList -> start;
@@ -111,7 +110,6 @@ bool eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList) {
     if (current->gangs == 3 && current->poorness == 3) {
         struct Country* nextCountry = current->next;
         doubleLinkedList -> start = nextCountry;
-        nextCountry->prev = doubleLinkedList;
         free(current);
         current = NULL;
         return allCountriesErased;
@@ -134,12 +132,11 @@ bool eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList) {
             return allCountriesErased;
         }
     }
-    allCountriesErased = true; //Si llega hasta aqui, es porque no queda ningún país muerto por eliminar
-    return allCountriesErased;
+    return 1;
 }
 //###############################################################################
 
-int fillList (struct DoubleLinkedList* list) {
+int fillList(struct DoubleLinkedList* list) {
 
     connectDoubleLinkedList(list, newCountry("Mexico",0.0));
     connectDoubleLinkedList(list, newCountry("Belice",0.0));

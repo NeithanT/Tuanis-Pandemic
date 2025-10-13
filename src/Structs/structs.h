@@ -20,19 +20,17 @@ struct DoubleLinkedList {
 
 struct Country* newCountry (char* name, float corruption);
 
-bool eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList);
+int eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList);
 
 struct DoubleLinkedList* newDoubleLinkedList ();
 
 int connectDoubleLinkedList (struct DoubleLinkedList* doubleList, struct Country* country );
 
-int fillList (struct DoubleLinkedList* list);
+int fillList(struct DoubleLinkedList* list);
 
 struct DoubleLinkedList* initializeDoubleLinkedList();
 
 int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
-
-struct DoubleLinkedList* initializeDoubleLinkedList();
 
 void printDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
 

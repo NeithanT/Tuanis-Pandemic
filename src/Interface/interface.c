@@ -1,19 +1,25 @@
 #include <gtk/gtk.h>
 #include <cairo.h>
 #include <gdk/gdk.h>
+#include "interface.h"
+#include "../Structs/structs.h"
 
 #define NUM_COUNTRIES 21
 #define PATH "src/Images/"
 #define WIDTH 700
 #define HEIGHT 500
 #define DIVISION 200
+
 GtkWidget *win;
-GtkWidget *drawingarea;
-GtkWidget *update_button;
-GtkLabel *info_label;
+GtkWidget *drawing_area;
+GtkWidget *btn_right_shift;
+GtkWidget *btn_left_shift;
+GtkLabel *lbl_current_country;
 cairo_surface_t *surface;
 double scale;
 
+struct DoubleLinkedList* list;
+struct Country* current_country;
 typedef struct {
     const char *name;
     int x, y;
@@ -44,6 +50,47 @@ CountryImage countries[] = {
     {"Uruguay", 506, 577, 0, 0, NULL},
     {"Venezuela", 343, 218, 0, 0, NULL}
 };
+
+void update_img_corruption(GdkPixbuf *pixbuf, float corruptPercentage) {
+
+    int width = gdk_pixbuf_get_width(pixbuf);
+    int height = gdk_pixbuf_get_height(pixbuf);
+
+    // Create new pixbuf for colored version
+    // colored_pixels is a pointer to the first pixel...
+    guchar *colored_pixels = gdk_pixbuf_get_pixels(pixbuf);
+    int pixels_per_row = gdk_pixbuf_get_rowstride(pixbuf);
+
+    // get the limit at which it starts painting red
+    int split_y = (int)(height * corruptPercentage);
+
+    // Transform each pixel
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+
+            // 4 bytes per pixel that's the reason por x * 4
+            // and the pixel's per row, because, that's why pixels_per_row * y
+            guchar *current_pixel = colored_pixels + (y * pixels_per_row) + x * 4;
+
+            if (current_pixel[3] == 0) {
+                // transparent pixel
+                continue;
+            }
+            if (y > split_y) {
+                // green
+                current_pixel[0] = 76;
+                current_pixel[1] = 185;
+                current_pixel[2] = 68;
+                
+            } else {
+                // red
+                current_pixel[0] = 239;
+                current_pixel[1] = 41;
+                current_pixel[2] = 23;
+            }
+        }
+    }
+}
 
 static void draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     
@@ -111,6 +158,25 @@ static void draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_restore(cr);
 }
 
+void btn_right_shift_clicked(GtkWidget *widget, gpointer data) {
+    if (current_country->next != NULL) {
+        current_country = current_country->next;
+        label_current_country_update(current_country->name);
+    }
+}
+
+void btn_left_shift_clicked(GtkWidget *widget, gpointer data) {
+    if (current_country->prev != NULL) {
+        current_country = current_country->prev;
+        label_current_country_update(current_country->name);
+    }
+}
+
+void label_current_country_update(char *text) {
+    gtk_label_set_text(lbl_current_country, text);
+}
+
+
 void start_window() {
 
     gtk_init(0, NULL);
@@ -126,6 +192,7 @@ void start_window() {
         strcat(path, countries[i].name);
         strcat(path, ".png");
         countries[i].pixbuf = gdk_pixbuf_new_from_file(path, NULL);
+        update_img_corruption(countries[i].pixbuf, 0.5);
         if (countries[i].pixbuf) {
             countries[i].width = gdk_pixbuf_get_width(countries[i].pixbuf);
             countries[i].height = gdk_pixbuf_get_height(countries[i].pixbuf);
@@ -143,12 +210,24 @@ void start_window() {
 
     // Get widgets from the builder
     win = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
-    drawingarea = GTK_WIDGET(gtk_builder_get_object(builder, "drawing_area"));
-    gtk_widget_set_size_request(drawingarea, 500, 500);
+    drawing_area = GTK_WIDGET(gtk_builder_get_object(builder, "drawing_area"));
+    btn_right_shift = GTK_WIDGET(gtk_builder_get_object(builder, "btn_right_shift"));
+    btn_left_shift = GTK_WIDGET(gtk_builder_get_object(builder, "btn_left_shift"));
+    lbl_current_country = GTK_LABEL(gtk_builder_get_object(builder, "lbl_current_country"));
+
+    //check if any widget is null
+
+    list = initializeDoubleLinkedList();
+    current_country = list->start;
+
+    gtk_widget_set_size_request(drawing_area, 500, 500);
     // Connect signals
     g_signal_connect(win, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    g_signal_connect(drawingarea, "draw", G_CALLBACK(draw), NULL);
+    g_signal_connect(drawing_area, "draw", G_CALLBACK(draw), NULL);
 
+    // connect buttons 
+    g_signal_connect(btn_right_shift, "clicked", G_CALLBACK(btn_right_shift_clicked), NULL);
+    g_signal_connect(btn_left_shift, "clicked", G_CALLBACK(btn_left_shift_clicked), NULL);
     gtk_widget_show_all(win);
     // free memory things...
     

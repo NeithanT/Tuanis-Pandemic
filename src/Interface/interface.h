@@ -6,13 +6,19 @@
 /** */
 void start_window();
 
-/**W */
+/** */
+void update_img_corruption(GdkPixbuf *pixbuf, float corruptPercentage);
+
+/** */
 static void draw(GtkWidget *widget, cairo_t *cr, gpointer data);
     
 /** */
-void btn_one_clicked(GtkWidget *widget, gpointer data);
+void btn_right_shift_clicked(GtkWidget *widget, gpointer data);
 
 /** */
-void label_one_update(const char *text);
+void btn_left_shift_clicked(GtkWidget *widget, gpointer data);
+
+/** */
+void label_current_country_update(char *text);
 
 #endif // INTERFACE_H

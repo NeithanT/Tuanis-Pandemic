@@ -12,7 +12,9 @@ struct Player {
 
 void move_player(struct DoubleLinkedList* doubleLinkedList,struct Player* player, int isAlly);
 
-struct Country* moveAllyRandomCountry(struct Player* player);
+void moveAllyRandomCountry(struct Player* player);
+
+struct Country* pick_country();
 
 struct Player* allocateInitialPlayerOnMap(struct DoubleLinkedList* doubleLinkedList);
 
