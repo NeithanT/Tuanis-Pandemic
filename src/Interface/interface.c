@@ -24,7 +24,8 @@ typedef struct {
     const char *name;
     int x, y;
     int width, height;
-    GdkPixbuf *pixbuf;
+    GdkPixbuf *original_pixbuf;
+    GdkPixbuf *modified_pixbuf;
 } CountryImage;
 
 CountryImage countries[] = {
@@ -102,7 +103,7 @@ static void draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     int max_x = 0, max_y = 0, cord_x = 0, cord_y = 0;
     for (int i = 0; i < NUM_COUNTRIES; i++) {
 
-        if (countries[i].pixbuf) {
+        if (countries[i].original_pixbuf) {
 
             cord_x = countries[i].x + countries[i].width;
             cord_y = countries[i].y + countries[i].height;
@@ -128,18 +129,8 @@ static void draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     }
 
     // now we have the scale of how much bigger the new image is
-    // center the content in the drawing area
-    double dw = max_x * scale;
-    double dh = max_y * scale;
-    // printf every value to check
-
-    printf("width: %d height: %d max_x: %d max_y: %d dw: %f dh: %f\n", width, height, max_x, max_y, dw, dh);
-
-    double tx = (width - dw) / 2.0;
-    double ty = (height - dh) / 2.0;
 
     cairo_save(cr);
-    cairo_translate(cr, tx, ty);
     cairo_scale(cr, scale, scale);
 
     // draw map
@@ -149,8 +140,8 @@ static void draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
     // draw flags
     for (int i = 0; i < NUM_COUNTRIES; i++) {
-        if (countries[i].pixbuf) {
-            gdk_cairo_set_source_pixbuf(cr, countries[i].pixbuf, countries[i].x, countries[i].y);
+        if (countries[i].original_pixbuf) {
+            gdk_cairo_set_source_pixbuf(cr, countries[i].original_pixbuf, countries[i].x, countries[i].y);
             cairo_paint(cr);
         }
     }
@@ -183,19 +174,19 @@ void start_window() {
     scale = 1.0;
     
     // create a surface for the drawing area
-    surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, WIDTH - DIVISION, HEIGHT);
-    
+    //surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, WIDTH - DIVISION, HEIGHT);
+    surface = cairo_image_surface_create_from_png(PATH "blue_image.png");
     // load country images
     for (int i = 0; i < NUM_COUNTRIES; i++) {
 
         char path[200] = PATH;
         strcat(path, countries[i].name);
         strcat(path, ".png");
-        countries[i].pixbuf = gdk_pixbuf_new_from_file(path, NULL);
-        update_img_corruption(countries[i].pixbuf, 0.5);
-        if (countries[i].pixbuf) {
-            countries[i].width = gdk_pixbuf_get_width(countries[i].pixbuf);
-            countries[i].height = gdk_pixbuf_get_height(countries[i].pixbuf);
+        countries[i].original_pixbuf = gdk_pixbuf_new_from_file(path, NULL);
+        update_img_corruption(countries[i].original_pixbuf, 0.5);
+        if (countries[i].original_pixbuf) {
+            countries[i].width = gdk_pixbuf_get_width(countries[i].original_pixbuf);
+            countries[i].height = gdk_pixbuf_get_height(countries[i].original_pixbuf);
         }
     }
 
@@ -220,7 +211,6 @@ void start_window() {
     list = initializeDoubleLinkedList();
     current_country = list->start;
 
-    gtk_widget_set_size_request(drawing_area, 500, 500);
     // Connect signals
     g_signal_connect(win, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(drawing_area, "draw", G_CALLBACK(draw), NULL);
@@ -229,6 +219,8 @@ void start_window() {
     g_signal_connect(btn_right_shift, "clicked", G_CALLBACK(btn_right_shift_clicked), NULL);
     g_signal_connect(btn_left_shift, "clicked", G_CALLBACK(btn_left_shift_clicked), NULL);
     gtk_widget_show_all(win);
+
+    
     // free memory things...
     
     g_object_unref(builder);
@@ -236,8 +228,8 @@ void start_window() {
 
     cairo_surface_destroy(surface);
     for (int i = 0; i < NUM_COUNTRIES; i++) {
-        if (countries[i].pixbuf) {
-            g_object_unref(countries[i].pixbuf);
+        if (countries[i].original_pixbuf) {
+            g_object_unref(countries[i].original_pixbuf);
         }
     }
 }

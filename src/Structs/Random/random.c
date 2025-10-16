@@ -25,7 +25,7 @@ void calculateCorruptionCountryList(struct DoubleLinkedList* doubleLinkedList) {
 //###############################################################################
 /**
  * Calcula el % de corrupción que tiene un país, basandose en los
- * valores de gangs y poorness
+ * valores de crime y poverty
  * @param country
  */
 
@@ -36,14 +36,14 @@ void calculateCorruption(struct Country* country) {
         printf("ERROR1200: No se pudo calcular la corrupción");
         return;
     }
-    country->corruption = (country->gangs + country->poorness) % 2;
+    country->corruption = (country->crime + country->poverty) % 2;
 }
 
 //###############################################################################
 
 /**
  * Llama a la funcion de modificar los aspectos de un pais para el inicio del juego
- * Se modifican los valores de poorness y gangs por la funcion de rand, para elegir un pais entre los 21 y se elige cual aspecto modificar
+ * Se modifican los valores de poverty y crime por la funcion de rand, para elegir un pais entre los 21 y se elige cual aspecto modificar
  * @param list
  * @return
  */
@@ -77,32 +77,32 @@ int modifyAspectsCountry(struct DoubleLinkedList* list, int position, int modifi
         current++;
     }
     //Revisar si el actual ya se modifico y si es asi mover a la derecha
-    while (actual -> next != NULL && actual -> poorness != 0) {
+    while (actual -> next != NULL && actual -> poverty != 0) {
         actual = actual -> next;
     }
 
     //Revisar si el actual ya se modifico y si es asi mover a la izquierda por si ya se llenaron a la derecha
-    while (actual -> prev != NULL && actual -> poorness != 0) {
+    while (actual -> prev != NULL && actual -> poverty != 0) {
         actual = actual -> prev;
     }
 
     // Modificar si fueron los primeros 3 numeros un 3 o un 2 si se eligio un 1 o 0
     if (modifiedCount < 3) {
-        actual->poorness = (higher == 0) ? 3 : 2;
-        actual->gangs = (higher == 1) ? 3 : 2;
+        actual->poverty = (higher == 0) ? 3 : 2;
+        actual->crime = (higher == 1) ? 3 : 2;
         return 0;
     }
 
     // Modificar si fueron los primeros 6 numeros un 2 o un 1 si se eligio un 1 o 0
     if (modifiedCount >= 3 && modifiedCount < 6) {
-        actual->poorness = (higher == 0) ? 2 : 1;
-        actual->gangs = (higher == 0) ? 1 : 2;
+        actual->poverty = (higher == 0) ? 2 : 1;
+        actual->crime = (higher == 0) ? 1 : 2;
         return 0;
     }
 
     // Modificar si fueron los ultimos 3 numeros un 1 a cada aspecto
-    actual->poorness = 1;
-    actual->gangs = 1;
+    actual->poverty = 1;
+    actual->crime = 1;
     return 0;
 }
 
@@ -124,69 +124,69 @@ void modifyAspectsAfterTurn(struct DoubleLinkedList *list, int position, int cha
 
     switch (change) {
         case 0:
-            if (actual -> poorness == 3) { //Revisar si el pais ya tiene el aspecto al maximo entonces agregar a ambos lados
+            if (actual -> poverty == 3) { //Revisar si el pais ya tiene el aspecto al maximo entonces agregar a ambos lados
                 printf("Se intento sumar 1 al pais %s pero su aspecto pobreza esta al maximo\n", actual -> name);
                 //Buscar el pais a la izquierda sin la pobreza al maximo y agregarle 1
-                while (actual -> prev != NULL && actual -> prev -> poorness == 3) {
+                while (actual -> prev != NULL && actual -> prev -> poverty == 3) {
 
                     actual = actual -> prev;
                 }
 
-            	if (actual -> prev != NULL && actual -> prev -> poorness != 3) {
-            		actual -> prev -> poorness += 1;
-            		printf("Se agrego 1 al aspecto pobreza y ahora su nivel es %d en el pais %s \n" , actual -> prev -> poorness, actual -> prev -> name);
+            	if (actual -> prev != NULL && actual -> prev -> poverty != 3) {
+            		actual -> prev -> poverty += 1;
+            		printf("Se agrego 1 al aspecto pobreza y ahora su nivel es %d en el pais %s \n" , actual -> prev -> poverty, actual -> prev -> name);
             	}
 
                 //Buscar el pais a la derecha sin la pobreza al maximo y agregarle 1
-                while (actual -> next != NULL && actual -> next -> poorness == 3) {
+                while (actual -> next != NULL && actual -> next -> poverty == 3) {
                     actual = actual -> next;
                 }
 
-                if (actual -> next != NULL && actual -> next -> poorness != 3) {
-                    actual -> next -> poorness += 1;
-                    printf("Se agrego 1 al aspecto pobreza y ahora su nivel es %d en el pais %s \n" , actual -> next -> poorness, actual -> next -> name);
+                if (actual -> next != NULL && actual -> next -> poverty != 3) {
+                    actual -> next -> poverty += 1;
+                    printf("Se agrego 1 al aspecto pobreza y ahora su nivel es %d en el pais %s \n" , actual -> next -> poverty, actual -> next -> name);
                 }
 				break;
             }
 
             // Si el pais no tiene al maximo la pobreza se le suma uno nada mas
             else {
-	            actual -> poorness += 1;
-            	printf("Se agrego 1 al aspecto pobreza y ahora su nivel es %d en el pais %s \n" , actual -> poorness, actual -> name);
+	            actual -> poverty += 1;
+            	printf("Se agrego 1 al aspecto pobreza y ahora su nivel es %d en el pais %s \n" , actual -> poverty, actual -> name);
             	break;
             }
 
         case 1:
             // Revisamos si los narcos estan al maximo y si es asi sumamos a los lados
-            if (actual -> gangs == 3) {
+            if (actual -> crime == 3) {
                 printf("Se intento sumar 1 al pais %s pero su aspecto narcos esta al maximo\n", actual -> name);
 
                 // Buscar el pais a la izquierda que no tenga los narcos al maximo y sumarle 1
-                while (actual -> prev != NULL && actual -> prev -> gangs == 3) {
+                while (actual -> prev != NULL && actual -> prev -> crime == 3) {
                     actual = actual -> prev;
                 }
 
-                if (actual -> prev != NULL && actual -> prev -> gangs != 3) {
-                    actual -> prev -> gangs += 1;
-                    printf("Se agrego 1 al aspecto narcos y ahora tiene un nivel de %d, del pais %s \n" , actual -> prev -> gangs, actual -> prev -> name);
+                if (actual -> prev != NULL && actual -> prev -> crime != 3) {
+                    actual -> prev -> crime += 1;
+                    printf("Se agrego 1 al aspecto narcos y ahora tiene un nivel de %d, del pais %s \n" , actual -> prev -> crime, actual -> prev -> name);
                 }
 
                 // Buscar el pais a la derecha que no tenga los narcos al maximo y sumarle 1
-            	while (actual -> next != NULL && actual -> next -> gangs == 3) {
+            	while (actual -> next != NULL && actual -> next -> crime == 3) {
             		actual = actual -> next;
             	}
 
-                if (actual -> next != NULL && actual -> next -> gangs != 3) {
-                    actual -> next -> gangs += 1;
-                    printf("Se agrego 1 al aspecto narcos y ahora tiene un nivel de %d, del pais %s \n" , actual -> next -> gangs, actual -> next -> name);
+                if (actual -> next != NULL && actual -> next -> crime != 3) {
+                    actual -> next -> crime += 1;
+                    printf("Se agrego 1 al aspecto narcos y ahora tiene un nivel de %d, del pais %s \n" , actual -> next -> crime, actual -> next -> name);
                 }
 
             }
 
             //En caso de que no este al maximo los narcos sumarle 1
             else {
-	            actual -> gangs += 1;
-            	printf("Se agrego 1 al aspecto narcos y ahora tiene un nivel de %d, del pais %s \n" , actual -> gangs, actual -> name);
+	            actual -> crime += 1;
+            	printf("Se agrego 1 al aspecto narcos y ahora tiene un nivel de %d, del pais %s \n" , actual -> crime, actual -> name);
             	break;
             }
     }

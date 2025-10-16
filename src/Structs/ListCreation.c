@@ -107,7 +107,7 @@ int eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList) {
 
 
     //Esta condición verifica si el primer país se corrompio, y cambia el primer país al segundo país en la lista
-    if (current->gangs == 3 && current->poorness == 3) {
+    if (current->crime == 3 && current->poverty == 3) {
         struct Country* nextCountry = current->next;
         doubleLinkedList -> start = nextCountry;
         free(current);
@@ -116,13 +116,13 @@ int eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList) {
     }
     while (current != NULL) {
         //Esta verificación es únicamente para el último país en la lista de paises (No revisa el país siguiente)
-        if (current->next == NULL && current->gangs == 3 && current->poorness == 3) {
+        if (current->next == NULL && current->crime == 3 && current->poverty == 3) {
             free(current);
             current = NULL;
             return allCountriesErased;
         }
         //Esta verificación elimina el país muerto, y reacomoda los punteros para que todo quede bien en la lista
-        else if (current->gangs == 3 && current->poorness == 3) {
+        else if (current->crime == 3 && current->poverty == 3) {
             struct Country* nextCountry = current->next;
             struct Country* previousCountry = current->prev;
             previousCountry->next = nextCountry;
@@ -139,20 +139,96 @@ int eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList) {
 int fillList(struct DoubleLinkedList* list) {
 
     connectDoubleLinkedList(list, newCountry("Mexico",0.0));
-    connectDoubleLinkedList(list, newCountry("Belice",0.0));
+    /*
+        ("Mexico", "Belice")
+        ("Mexico", "Guatemala")
+    */
     connectDoubleLinkedList(list, newCountry("Guatemala",0.0));
+    /*
+        ("Guatemala", "Mexico")
+        ("Guatemala", "Belice")
+        ("Guatemala", "Honduras")
+        ("Guatemala", "El Salvador")
+    */
+    connectDoubleLinkedList(list, newCountry("Belice",0.0));
+    /*
+        ("Belice", "Mexico")
+        ("Belice", "Guatemala")
+    */
     connectDoubleLinkedList(list, newCountry("El Salvador",0.0));
+    /*
+        ("El Salvador", "Guatemala")
+        ("El Salvador", "Honduras")
+    */
     connectDoubleLinkedList(list, newCountry("Honduras",0.0));
+    /*
+        ("Honduras", "Guatemala")
+        ("Honduras", "El Salvador")
+        ("Honduras", "Nicaragua")
+    */
     connectDoubleLinkedList(list, newCountry("Nicaragua",0.0));
+    /*
+        ("Nicaragua", "Honduras")
+        ("Nicaragua", "Costa Rica")
+    */
     connectDoubleLinkedList(list, newCountry("Costa Rica",0.0));
+    /*
+        ("Costa Rica", "Nicaragua")
+        ("Costa Rica",  "Panama")
+    */
     connectDoubleLinkedList(list, newCountry("Panama",0.0));
+    /*
+        ("Panama", "Costa Rica")
+        ("Panama", "Colombia")
+    */
     connectDoubleLinkedList(list, newCountry("Colombia",0.0));
+    /*
+        ("Colombia", "Panama")
+        ("Colombia", "Venezuela")
+        ("Colombia", "Brasil")
+        ("Colombia", "Ecuador")
+        ("Colombia", "Peru")
+    */
     connectDoubleLinkedList(list, newCountry("Venezuela",0.0));
+    /*
+        ("Venezuela", "Colombia")
+        ("Venezuela", "Brasil")
+        ("Venezuela", "Guyana")
+    */
     connectDoubleLinkedList(list, newCountry("Guyana",0.0));
+    /*
+        ("Guyana", "Venezuela")
+        ("Guyana", "Brasil")
+        ("Guyana", "Surinnam")
+    */
     connectDoubleLinkedList(list, newCountry("Surinam",0.0));
-    connectDoubleLinkedList(list, newCountry("GuayanaFrancesa",0.0));
+    /*
+        ("Surinam", "Guyana")
+        ("Surinam", "Brasil")
+        ("Surinam", "Guayana Francesa")
+    */
+    connectDoubleLinkedList(list, newCountry("Guayana Francesa",0.0));
+    /*
+        ("Guayana Francesa", "Surinam")
+        ("Guayana Francesa", "Brasil")
+    */
     connectDoubleLinkedList(list, newCountry("Brasil",0.0));
+    /*
+        ("Brasil", "Guayana Francesa")
+        ("Brasil", "Surinam")
+        ("Brasil", "Guyana")
+        ("Brasil", "Venezuela")
+        ("Brasil", "Colombia")
+        ("Brasil", "Peru")
+        ("Brasil", "Bolivia")
+        ("Brasil", "Paraguay")
+        ("Brasil", "Argentina")
+        ("Brasil", "Uruguay")
+    */
     connectDoubleLinkedList(list, newCountry("Uruguay",0.0));
+    /*
+        ("Uruguay", "")
+    */
     connectDoubleLinkedList(list, newCountry("Argentina",0.0));
     connectDoubleLinkedList(list, newCountry("Paraguay",0.0));
     connectDoubleLinkedList(list, newCountry("Bolivia",0.0));
