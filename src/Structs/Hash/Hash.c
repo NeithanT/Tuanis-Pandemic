@@ -259,18 +259,6 @@ void freeListSolutions(struct listSolutions* listSolutions) {
 
 //#####################################################################################
 
-int main(){
-
-	struct hastTable* table = createNewHashTable();
-    populateHashTable(table);
-	printHashTable(table);//
-	freeHashTable(table);
-	return 0;
-
-}
-
-//#####################################################################################
-
 // Código para crear e insertar todas las soluciones en la tabla hash
 
 // NOTA: Se asume que 'table' ya fue creado con createNewHashTable();
