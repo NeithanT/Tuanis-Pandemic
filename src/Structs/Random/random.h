@@ -1,19 +1,21 @@
 #ifndef SRC_RANDOM_H
 #define SRC_RANDOM_H
-#include "<stdio.h>"
-#include "<stdlib.h>"
 #include "../structs.h"
 
 
 
-float calculateCorruption(struct Country* country);
+void calculateCorruption(struct Country* country);
 
-int modifiedAspectsCountries(struct DoubleLinkedList* list, int position, int modifiedCount, int higher);
+int modifyAspectsCountry(struct DoubleLinkedList* list, int position, int modifiedCount);
 
 int initialCorruption(struct DoubleLinkedList* list);
 
-void modifiedAfterTurn(struct DoubleLinkedList* list, int position, int change);
+void calculateCorruptionCountryList(struct DoubleLinkedList* doubleLinkedList);
 
-void AfterTurn(struct DoubleLinkedList* list);
+void modifyAspectsAfterTurn(struct DoubleLinkedList* list, int position, int change);
+
+void randomCorruptAfterTurn(struct DoubleLinkedList* list);
+
+int modifyStartProbability(struct Country* actual, int modifiedCount);
 
 #endif //SRC_RANDOM_H

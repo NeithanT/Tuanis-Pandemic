@@ -1,7 +1,6 @@
 //
 // Created by emmanuel on 4/10/25.
 //
-
 #ifndef SRC_STRUCTS_H
 #define SRC_STRUCTS_H
 #include <stdio.h>
@@ -12,19 +11,36 @@ struct Country{
     float corruption;
 	int poorness;
 	int gangs;
-	struct Country *prev;
-	struct Country *next;
+	int inequality;
+	int politicalWeakness;
+	struct Country* prev;
+	struct Country* next;
+	struct DoubleLinkedList* connected_countries;
 };
 
 struct DoubleLinkedList {
 	struct Country *start;
 };
 
-struct Country newCountry (char* name, float corruption) {}
+struct Country* newCountry (char* name, float corruption);
 
-struct DoubleLinkedList newDoubleLinkedList () {}
+int eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList);
 
-struct DoubleLinkedList connectDoubleLinkedList (struct DoubleLinkedList* doubleList, struct Country* country ) {}
+struct DoubleLinkedList* newDoubleLinkedList ();
+
+int connectDoubleLinkedList (struct DoubleLinkedList* doubleList, struct Country* country );
+
+int fillList(struct DoubleLinkedList* list);
+
+struct DoubleLinkedList* initializeDoubleLinkedList();
+
+int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
+
+void printDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
+
+int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
+
+
 
 
 #endif //SRC_STRUCTS_H0

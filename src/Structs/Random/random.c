@@ -1,16 +1,45 @@
 #include "random.h"
+#include <stdio.h>
+#include <stdlib.h>
 
+//###############################################################################
+
+/**
+ * Calcula los valores de corrupción, de todos los países en la lista de países
+ * @param doubleLinkedList
+ */
+void calculateCorruptionCountryList(struct DoubleLinkedList* doubleLinkedList) {
+
+    if (doubleLinkedList == NULL || doubleLinkedList->start == NULL) {
+        printf("ERROR2000: No se ha podido calcular el valor de corrupción de la lista");
+        return;
+    }
+    struct Country* current = doubleLinkedList->start;
+    while (current != NULL) {
+        calculateCorruption(current);
+        current = current->next;
+    }
+
+}
+
+//###############################################################################
 /**
  * Calcula el % de corrupción que tiene un país, basandose en los
  * valores de gangs y poorness
  * @param country
  */
+
+
 void calculateCorruption(struct Country* country) {
 
-    country->corruption = (country->gangs + country->poorness) % 2;
-    printf("%s%s%s%f", "La corrupción del país:", country->name, "es ", country->corruption);
-
+    if (country == NULL) {
+        printf("ERROR1200: No se pudo calcular la corrupción");
+        return;
+    }
+    country->corruption = (country -> gangs + country -> poorness + country -> inequality + country -> politicalWeakness) / 12.0;
 }
+
+//###############################################################################
 
 /**
  * Llama a la funcion de modificar los aspectos de un pais para el inicio del juego
@@ -31,6 +60,46 @@ int initialCorruption(struct DoubleLinkedList* list) {
 }
 
 /**
+ *
+ * @param actual
+ * @param modifiedCount
+ * @return
+ */
+int modifyStartProbability(struct Country* actual, int modifiedCount) {
+    int combo = rand() % 6;
+
+    if (modifiedCount == 0) {
+        int high = 3;
+        int low = 2;
+
+        switch (combo) {
+            case 0: actual -> poorness = high; actual -> gangs = high; actual -> inequality = low; actual -> politicalWeakness = low; break;
+            case 1: actual -> poorness = high; actual -> gangs = low; actual -> inequality = high; actual -> politicalWeakness = low; break;
+            case 2: actual -> poorness = high; actual -> gangs = low; actual -> inequality = low; actual -> politicalWeakness = high; break;
+            case 3: actual -> poorness = low; actual -> gangs = high; actual -> inequality = high; actual -> politicalWeakness = low; break;
+            case 4: actual -> poorness = low; actual -> gangs = high; actual -> inequality = low; actual -> politicalWeakness = high; break;
+            case 5: actual -> poorness = low; actual -> gangs = low; actual -> inequality = high; actual -> politicalWeakness = high; break;
+
+        }
+    }
+    if (modifiedCount == 1) {
+        int high = 2;
+        int low = 1;
+        switch (combo) {
+            case 0: actual -> poorness = high; actual -> gangs = high; actual -> inequality = low; actual -> politicalWeakness = low; break;
+            case 1: actual -> poorness = high; actual -> gangs = low; actual -> inequality = high; actual -> politicalWeakness = low; break;
+            case 2: actual -> poorness = high; actual -> gangs = low; actual -> inequality = low; actual -> politicalWeakness = high; break;
+            case 3: actual -> poorness = low; actual -> gangs = high; actual -> inequality = high; actual -> politicalWeakness = low; break;
+            case 4: actual -> poorness = low; actual -> gangs = high; actual -> inequality = low; actual -> politicalWeakness = high; break;
+            case 5: actual -> poorness = low; actual -> gangs = low; actual -> inequality = high; actual -> politicalWeakness = high; break;
+        }
+
+    }
+    return 0;
+}
+
+//###############################################################################
+/**
  * Funcion donde se modifican los valores iniciales
  * @param list
  * @param position
@@ -38,7 +107,7 @@ int initialCorruption(struct DoubleLinkedList* list) {
  * @param higher
  * @return
  */
-int modifiedAspectsCountries(struct DoubleLinkedList* list, int position, int modifiedCount, int higher) {
+int modifyAspectsCountry(struct DoubleLinkedList* list, int position, int modifiedCount) {
     struct Country *actual = list->start; //Se apunta al inicio
     int current = 0; //La posicion actual
     while (current != position) { //Buscar el pais a modificar
@@ -57,23 +126,25 @@ int modifiedAspectsCountries(struct DoubleLinkedList* list, int position, int mo
 
     // Modificar si fueron los primeros 3 numeros un 3 o un 2 si se eligio un 1 o 0
     if (modifiedCount < 3) {
-        actual->poorness = (higher == 0) ? 3 : 2;
-        actual->gangs = (higher == 1) ? 3 : 2;
+        modifyStartProbability(actual, 0);
         return 0;
     }
 
     // Modificar si fueron los primeros 6 numeros un 2 o un 1 si se eligio un 1 o 0
     if (modifiedCount >= 3 && modifiedCount < 6) {
-        actual->poorness = (higher == 0) ? 2 : 1;
-        actual->gangs = (higher == 1) ? 1 : 2;
+        modifyStartProbability(actual, 1);
         return 0;
     }
 
     // Modificar si fueron los ultimos 3 numeros un 1 a cada aspecto
     actual->poorness = 1;
     actual->gangs = 1;
+    actual->inequality = 1;
+    actual -> politicalWeakness = 1;
     return 0;
 }
+
+//###############################################################################
 
 /**
  * Funcion para modificar los aspectos despues de un turno
@@ -81,7 +152,12 @@ int modifiedAspectsCountries(struct DoubleLinkedList* list, int position, int mo
  * @param position
  * @param change
  */
-void modifiedAfterTurn(struct DoubleLinkedList *list, int position, int change) {
+
+/**
+ * Los printf en este programa no son necesarios, son para pruebas.
+ */
+
+void modifyAspectsAfterTurn(struct DoubleLinkedList *list, int position, int change) {
     struct Country *actual = list->start; //Apuntamos al actual
     int current = 0;
     while (current != position) { //Buscar el pais actual
@@ -147,6 +223,7 @@ void modifiedAfterTurn(struct DoubleLinkedList *list, int position, int change) 
                     actual -> next -> gangs += 1;
                     printf("Se agrego 1 al aspecto narcos y ahora tiene un nivel de %d, del pais %s \n" , actual -> next -> gangs, actual -> next -> name);
                 }
+            	break;
 
             }
 
@@ -156,20 +233,105 @@ void modifiedAfterTurn(struct DoubleLinkedList *list, int position, int change) 
             	printf("Se agrego 1 al aspecto narcos y ahora tiene un nivel de %d, del pais %s \n" , actual -> gangs, actual -> name);
             	break;
             }
+        case 2:
+
+            // Revisamos si los narcos estan al maximo y si es asi sumamos a los lados
+            if (actual -> inequality == 3) {
+                printf("Se intento sumar 1 al pais %s pero su aspecto desigualdad esta al maximo\n", actual -> name);
+
+                // Buscar el pais a la izquierda que no tenga los narcos al maximo y sumarle 1
+                while (actual -> prev != NULL && actual -> prev -> inequality == 3) {
+                    actual = actual -> prev;
+                }
+
+                if (actual -> prev != NULL && actual -> prev -> inequality != 3) {
+                    actual -> prev -> inequality += 1;
+                    printf("Se agrego 1 al aspecto desigualdad y ahora tiene un nivel de %d, del pais %s \n" , actual -> prev -> inequality, actual -> prev -> name);
+                }
+
+                // Buscar el pais a la derecha que no tenga los narcos al maximo y sumarle 1
+                while (actual -> next != NULL && actual -> next -> inequality == 3) {
+                    actual = actual -> next;
+                }
+
+                if (actual -> next != NULL && actual -> next -> inequality != 3) {
+                    actual -> next -> inequality += 1;
+                    printf("Se agrego 1 al aspecto desigualdad y ahora tiene un nivel de %d, del pais %s \n" , actual -> next -> inequality, actual -> next -> name);
+                }
+            	break;
+            }
+            else {
+            	actual -> inequality += 1;
+            	printf("Se agrego 1 al aspecto desigualdad y ahora tiene un nivel de %d, del pais %s \n" , actual -> inequality, actual -> name);
+            	break;
+            }
+        case 3:
+            // Revisamos si los narcos estan al maximo y si es asi sumamos a los lados
+            if (actual -> politicalWeakness == 3) {
+                printf("Se intento sumar 1 al pais %s pero su aspecto Debilidad politica esta al maximo\n", actual -> name);
+
+                // Buscar el pais a la izquierda que no tenga los narcos al maximo y sumarle 1
+                while (actual -> prev != NULL && actual -> prev -> politicalWeakness == 3) {
+                    actual = actual -> prev;
+                }
+
+                if (actual -> prev != NULL && actual -> prev -> politicalWeakness != 3) {
+                    actual -> prev -> politicalWeakness += 1;
+                    printf("Se agrego 1 al aspecto Debilidad politica y ahora tiene un nivel de %d el pais %s \n" , actual -> prev -> politicalWeakness, actual -> prev -> name);
+                }
+
+                // Buscar el pais a la derecha que no tenga los narcos al maximo y sumarle 1
+                while (actual -> next != NULL && actual -> next -> politicalWeakness == 3) {
+                    actual = actual -> next;
+                }
+
+                if (actual -> next != NULL && actual -> next -> politicalWeakness != 3) {
+                    actual -> next -> politicalWeakness += 1;
+                    printf("Se agrego 1 al aspecto Debilidad politica y ahora tiene un nivel de %d el pais %s \n" , actual -> next -> politicalWeakness, actual -> next -> name);
+                }
+            	break;
+
+            }
+            else {
+            	actual -> politicalWeakness += 1;
+            	printf("Se agrego 1 al aspecto Debilidad politica y ahora tiene un nivel de %d, del pais %s \n" , actual -> politicalWeakness, actual -> name);
+            	break;
+            }
+            }
+
+
     }
 
-}
+
+
+//###############################################################################
 
 /**
  * Funcion para modificar tres paises despues de un turno
  * @param list
  * @return
  */
-int AfterTurn(struct DoubleLinkedList* list) {
+void randomCorruptAfterTurn(struct DoubleLinkedList* list) {
     for (int i = 0; i < 3; i++) {
-        int modifier = rand() % 21;
-        int higher = rand() % 2;
-        modifiedAfterTurn(list,modifier,higher);
+        int positionCountryToModify = rand() % 21;
+        int valueOfProblematic1 = rand() % 4;
+        modifyAspectsAfterTurn(list,positionCountryToModify,valueOfProblematic1);
+        int valueOfProblematic2 = rand() % 4;
+        modifyAspectsAfterTurn(list,positionCountryToModify,valueOfProblematic2);
     }
 }
 
+
+//###############################################################################
+
+void reduceRandomProblem(struct Country* country) {
+
+    if (country == NULL) {
+        printf("ERROR2200: No se ha podido reducir el problema");
+        return;
+    }
+
+
+
+
+}
