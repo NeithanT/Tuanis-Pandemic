@@ -254,6 +254,9 @@ void free_list_solutions(struct listSolutions* listSolutions) {
 }
 
 
+
+
+
 //#####################################################################################
 
 // Código para crear e insertar todas las soluciones en la tabla hash
