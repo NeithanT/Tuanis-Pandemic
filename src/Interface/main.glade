@@ -150,6 +150,54 @@
               </packing>
             </child>
             <child>
+              <object class="GtkLabel" id="lbl_poverty">
+                <property name="name">lbl_poverty</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Pobreza: 0</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">160</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_crime">
+                <property name="name">lbl_crime</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Crimen: 0</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">180</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_corruption">
+                <property name="name">lbl_corruption</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Corrupcion: 0.0</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">200</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_unemployment">
+                <property name="name">lbl_unemployment</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Desempleo: 0</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">220</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkButton" id="btn_country">
                 <property name="label" translatable="yes">Cambiar Pais</property>
                 <property name="name">btn_country</property>
@@ -215,6 +263,55 @@ Politica</property>
               <packing>
                 <property name="x">260</property>
                 <property name="y">320</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_player_turn">
+                <property name="label" translatable="yes">Turno Jugador</property>
+                <property name="name">btn_player_turn</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">380</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_ally_turn">
+                <property name="label" translatable="yes">Turno Aliado</property>
+                <property name="name">btn_ally_turn</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="x">260</property>
+                <property name="y">380</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="scrolledwindow_solutions">
+                <property name="name">scrolledwindow_solutions</property>
+                <property name="width-request">180</property>
+                <property name="height-request">100</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="shadow-type">in</property>
+                <child>
+                  <object class="GtkTextView" id="textview_solutions">
+                    <property name="name">textview_solutions</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="editable">False</property>
+                    <property name="wrap-mode">word</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="x">10</property>
+                <property name="y">450</property>
               </packing>
             </child>
           </object>

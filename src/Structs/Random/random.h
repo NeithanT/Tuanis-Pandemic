@@ -2,8 +2,6 @@
 #define SRC_RANDOM_H
 #include "../structs.h"
 
-
-
 void calculateCorruption(struct Country* country);
 
 int modifyAspectsCountry(struct DoubleLinkedList* list, int position, int modifiedCount, int higher);
@@ -15,7 +13,5 @@ void calculateCorruptionCountryList(struct DoubleLinkedList* doubleLinkedList);
 void modifyAspectsAfterTurn(struct DoubleLinkedList* list, int position, int change);
 
 void randomCorruptAfterTurn(struct DoubleLinkedList* list);
-
-
 
 #endif //SRC_RANDOM_H

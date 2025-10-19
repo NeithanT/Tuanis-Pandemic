@@ -33,12 +33,10 @@ struct slotHashTable {
 struct hastTable {
 
     struct slotHashTable** slots;
-
-
 };
 
 struct listSolutions* createNewList();
-struct nodeList* createNewNode();
+struct nodeList* createNewNode(char* solution_string);
 void insertNode(struct listSolutions* listSolutionsCountry,char* SolutionString);
 
 struct hastTable* createNewHashTable();
@@ -51,7 +49,6 @@ struct slotHashTable* pairKeyNameAndValue(char* keyName, struct listSolutions* l
 struct listSolutions* searchByKey(struct hastTable* table, char* keyName);
 void printHashTable(struct hastTable* table);
 void populateHashTable(struct hastTable* table);
-
 
 
 void copySolutionsToNewList(struct listSolutions* oldListSolutions, struct listSolutions* newListSolutions);

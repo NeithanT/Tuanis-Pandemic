@@ -4,7 +4,7 @@
 #include <gtk/gtk.h>
 
 /** */
-void start_window();
+void start_window(int argc, char *argv[]);
 
 /** */
 void update_img_corruption(GdkPixbuf *pixbuf, float corruptPercentage);

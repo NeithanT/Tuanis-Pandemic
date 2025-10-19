@@ -11,8 +11,6 @@
 #include "../Structs/Random/random.h"
 #include "../Structs/Player/Player.h"
 
-
-
 void StartGame();
 
 void turnPlayer(struct DoubleLinkedList* doubleLinkedList, struct Player* player);

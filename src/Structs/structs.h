@@ -13,6 +13,7 @@ struct Country{
 	int political_stability;
 	struct Country* prev;
 	struct Country* next;
+	struct Country* next_connected;
 	struct DoubleLinkedList* connected_countries;
 };
 
@@ -32,13 +33,7 @@ int fillList(struct DoubleLinkedList* list);
 
 struct DoubleLinkedList* initializeDoubleLinkedList();
 
-int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
-
-void printDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
-
-int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
-
-
+struct Country* getCountryByPosition(struct DoubleLinkedList* list, int position);
 
 
 #endif //SRC_STRUCTS_H0
