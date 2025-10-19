@@ -43,9 +43,6 @@ void label_current_country_update(char *text);
 /** End player turn and start computer turns */
 void end_player_turn();
 
-/** Handle end turn button click */
-void btn_end_turn_clicked(GtkWidget *widget, gpointer data);
-
 /** Handle move to country button click */
 void btn_country_clicked(GtkWidget *widget, gpointer data);
 

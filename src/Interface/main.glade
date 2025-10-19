@@ -16,14 +16,14 @@
   </object>
   <object class="GtkWindow" id="window">
     <property name="name">window</property>
-    <property name="width-request">700</property>
-    <property name="height-request">500</property>
+    <property name="width-request">1300</property>
+    <property name="height-request">800</property>
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="hexpand">True</property>
     <property name="vexpand">True</property>
     <property name="title" translatable="yes">Tuanis Pandemic</property>
-    <property name="default-width">1200</property>
+    <property name="default-width">1300</property>
     <property name="default-height">800</property>
     <child>
       <object class="GtkPaned" id="paned_main">
@@ -289,20 +289,6 @@ Politica</property>
               <packing>
                 <property name="x">20</property>
                 <property name="y">250</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="btn_end_turn">
-                <property name="label" translatable="yes">Terminar Turno</property>
-                <property name="name">btn_end_turn</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Termina tu turno y comienza la fase de corrupcion</property>
-              </object>
-              <packing>
-                <property name="x">20</property>
-                <property name="y">520</property>
               </packing>
             </child>
             <child>

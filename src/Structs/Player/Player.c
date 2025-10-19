@@ -8,7 +8,9 @@
 #include <stdlib.h>
 
 struct Country* pick_country() {
-    return NULL; // TODO: implementar con interfaz
+    // This function is now handled by the GUI dialog
+    // Keeping it for compatibility
+    return NULL;
 }
 
 //###############################################################################
