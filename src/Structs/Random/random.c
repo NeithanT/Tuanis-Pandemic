@@ -25,7 +25,8 @@ void calculateCorruptionCountryList(struct DoubleLinkedList* doubleLinkedList) {
 //###############################################################################
 /**
  * Calcula el % de corrupción que tiene un país, basandose en los
- * valores de crime y poverty
+ * valores de crime, poverty, unemployment y political_stability
+ * Corruption is a percentage from 0.0 to 1.0
  * @param country
  */
 
@@ -36,7 +37,18 @@ void calculateCorruption(struct Country* country) {
         printf("ERROR1200: No se pudo calcular la corrupción");
         return;
     }
-    country->corruption = (country->crime + country->poverty) % 2;
+    // Each attribute contributes to corruption
+    // poverty, crime, unemployment: 0-3 (higher is worse)
+    // political_stability: 0-100 (lower is worse)
+    float total = 0.0;
+    
+    // Normalize each attribute to 0-1 scale
+    total += (float)country->poverty / 3.0 * 0.25;      // 25% weight
+    total += (float)country->crime / 3.0 * 0.25;        // 25% weight
+    total += (float)country->unemployment / 3.0 * 0.25; // 25% weight
+    total += (1.0 - ((float)country->political_stability / 100.0)) * 0.25; // 25% weight
+    
+    country->corruption = total;
 }
 
 //###############################################################################

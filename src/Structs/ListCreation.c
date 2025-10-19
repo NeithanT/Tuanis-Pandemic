@@ -44,6 +44,10 @@ struct Country* newCountry (char* name, float corruption) {
     //Asignarle el nombre y la corrupcion
     newCountry -> name = name;
     newCountry -> corruption = corruption;
+    newCountry -> poverty = 0;
+    newCountry -> crime = 0;
+    newCountry -> unemployment = 0;
+    newCountry -> political_stability = 100; // Start with good stability
 
     return newCountry;
 }

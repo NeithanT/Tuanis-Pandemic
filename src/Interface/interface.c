@@ -16,6 +16,7 @@
 
 GtkWidget *win;
 GtkWidget *drawing_area;
+GtkWidget *drawing_current_country;
 GtkWidget *btn_right_shift;
 GtkWidget *btn_left_shift;
 GtkLabel *lbl_current_country;
@@ -24,6 +25,8 @@ GtkLabel *lbl_crime;
 GtkLabel *lbl_corruption;
 GtkLabel *lbl_unemployment;
 GtkLabel *lbl_solutions;
+GtkLabel *lbl_game_status;
+GtkLabel *lbl_political_stability;
 cairo_surface_t *surface;
 double scale;
 
@@ -41,6 +44,18 @@ typedef struct {
 struct hastTable* hash_table;
 struct Player* player;
 struct Player* ally;
+
+// Game state
+typedef enum {
+    TURN_PLAYER_MOVE,
+    TURN_PLAYER_ACTION,
+    TURN_CORRUPTION,
+    TURN_ALLY,
+    GAME_OVER
+} GameState;
+
+GameState current_game_state = TURN_PLAYER_MOVE;
+int player_actions_remaining = 4; // Player can do 4 actions per turn
 
 int is_connected(struct Country* country1, struct Country* country2) {
     if (!country1 || !country2 || !country1->connected_countries) return 0;
@@ -235,12 +250,16 @@ static void draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
                 // Create a copy of the pixbuf to modify
                 GdkPixbuf* temp_pixbuf = gdk_pixbuf_copy(countries[i].original_pixbuf);
                 if (temp_pixbuf) {
+                    // Show corruption for current country and connected ones
                     if (country_data == current_country || is_connected(current_country, country_data)) {
                         update_img_corruption(temp_pixbuf, country_data->corruption);
                     }
+                    
+                    // Highlight current country with border
                     if (country_data == current_country) {
                         draw_img_border(temp_pixbuf);
                     }
+                    
                     gdk_cairo_set_source_pixbuf(cr, temp_pixbuf, countries[i].x, countries[i].y);
                     cairo_paint(cr);
                     g_object_unref(temp_pixbuf);
@@ -288,18 +307,49 @@ void btn_left_shift_clicked(GtkWidget *widget, gpointer data) {
 void label_current_country_update(char *text) {
     gtk_label_set_text(lbl_current_country, text);
     if (current_country) {
-        char buffer[100];
-        sprintf(buffer, "Pobreza: %d", current_country->poverty);
+        char buffer[200];
+        
+        // Game state info
+        if (lbl_game_status) {
+            if (current_game_state == TURN_PLAYER_MOVE) {
+                sprintf(buffer, "Tu turno: MOVIMIENTO - Haz clic en un país conectado (azul/verde)");
+            } else if (current_game_state == TURN_PLAYER_ACTION) {
+                sprintf(buffer, "Tu turno: ACCIONES (%d restantes) - Reduce los problemas", player_actions_remaining);
+            } else if (current_game_state == TURN_CORRUPTION || current_game_state == TURN_ALLY) {
+                sprintf(buffer, "Turno del oponente...");
+            } else {
+                sprintf(buffer, "Juego terminado");
+            }
+            gtk_label_set_text(lbl_game_status, buffer);
+        }
+        
+        sprintf(buffer, "Pobreza: %d/3", current_country->poverty);
         gtk_label_set_text(lbl_poverty, buffer);
-        sprintf(buffer, "Crimen: %d", current_country->crime);
+        sprintf(buffer, "Crimen: %d/3", current_country->crime);
         gtk_label_set_text(lbl_crime, buffer);
-        sprintf(buffer, "Corrupcion: %.2f", current_country->corruption);
+        sprintf(buffer, "Corrupcion: %.0f%%", current_country->corruption * 100);
         gtk_label_set_text(lbl_corruption, buffer);
-        sprintf(buffer, "Desempleo: %d", current_country->unemployment);
+        sprintf(buffer, "Desempleo: %d/3", current_country->unemployment);
         gtk_label_set_text(lbl_unemployment, buffer);
+        
+        if (lbl_political_stability) {
+            sprintf(buffer, "Estabilidad Política: %d%%", current_country->political_stability);
+            gtk_label_set_text(lbl_political_stability, buffer);
+        }
         
         // Update solutions
         update_solutions_text();
+        
+        // Redraw the current country image
+        if (drawing_current_country) {
+            gtk_widget_queue_draw(drawing_current_country);
+        }
+    }
+}
+
+void btn_end_turn_clicked(GtkWidget *widget, gpointer data) {
+    if (current_game_state == TURN_PLAYER_ACTION) {
+        end_player_turn();
     }
 }
 
@@ -321,46 +371,229 @@ void update_solutions_text() {
 }
 
 void btn_action_poverty_clicked(GtkWidget *widget, gpointer data) {
-    if (current_country) {
-        current_country->poverty = 0; // Apply solution
-        gtk_widget_queue_draw(drawing_area); // Redraw to update corruption display
+    if (current_country && player_actions_remaining > 0 && current_game_state == TURN_PLAYER_ACTION) {
+        // Check if player is in this country or connected to it
+        if (current_country == player->current_country || 
+            is_connected(player->current_country, current_country)) {
+            if (current_country->poverty > 0) {
+                current_country->poverty--;
+                player_actions_remaining--;
+                calculateCorruption(current_country);
+                label_current_country_update(current_country->name);
+                gtk_widget_queue_draw(drawing_area);
+                
+                if (player_actions_remaining <= 0) {
+                    end_player_turn();
+                }
+            }
+        }
     }
 }
 
 void btn_action_crime_clicked(GtkWidget *widget, gpointer data) {
-    if (current_country) {
-        current_country->crime = 0;
-        gtk_widget_queue_draw(drawing_area);
+    if (current_country && player_actions_remaining > 0 && current_game_state == TURN_PLAYER_ACTION) {
+        if (current_country == player->current_country || 
+            is_connected(player->current_country, current_country)) {
+            if (current_country->crime > 0) {
+                current_country->crime--;
+                player_actions_remaining--;
+                calculateCorruption(current_country);
+                label_current_country_update(current_country->name);
+                gtk_widget_queue_draw(drawing_area);
+                
+                if (player_actions_remaining <= 0) {
+                    end_player_turn();
+                }
+            }
+        }
     }
 }
 
 void btn_action_inequality_clicked(GtkWidget *widget, gpointer data) {
-    if (current_country) {
-        current_country->unemployment = 0;
-        gtk_widget_queue_draw(drawing_area);
+    if (current_country && player_actions_remaining > 0 && current_game_state == TURN_PLAYER_ACTION) {
+        if (current_country == player->current_country || 
+            is_connected(player->current_country, current_country)) {
+            if (current_country->unemployment > 0) {
+                current_country->unemployment--;
+                player_actions_remaining--;
+                calculateCorruption(current_country);
+                label_current_country_update(current_country->name);
+                gtk_widget_queue_draw(drawing_area);
+                
+                if (player_actions_remaining <= 0) {
+                    end_player_turn();
+                }
+            }
+        }
     }
 }
 
 void btn_action_political_weakness_clicked(GtkWidget *widget, gpointer data) {
-    if (current_country) {
-        current_country->political_stability = 100; // Assuming higher is better
-        gtk_widget_queue_draw(drawing_area);
+    if (current_country && player_actions_remaining > 0 && current_game_state == TURN_PLAYER_ACTION) {
+        if (current_country->political_stability < 100) {
+            current_country->political_stability += 25;
+            if (current_country->political_stability > 100) current_country->political_stability = 100;
+            player_actions_remaining--;
+            label_current_country_update(current_country->name);
+            gtk_widget_queue_draw(drawing_area);
+            
+            if (player_actions_remaining <= 0) {
+                end_player_turn();
+            }
+        }
     }
+}
+
+// Function to get country at mouse position
+struct Country* get_country_at_position(int x, int y) {
+    // Adjust for scale
+    int scaled_x = (int)(x / scale);
+    int scaled_y = (int)(y / scale);
+    
+    // Check each country's bounds
+    for (int i = 0; i < NUM_COUNTRIES; i++) {
+        if (countries[i].original_pixbuf) {
+            int cx = countries[i].x;
+            int cy = countries[i].y;
+            int cw = countries[i].width;
+            int ch = countries[i].height;
+            
+            if (scaled_x >= cx && scaled_x < cx + cw && 
+                scaled_y >= cy && scaled_y < cy + ch) {
+                
+                // Check if pixel is not transparent
+                int local_x = scaled_x - cx;
+                int local_y = scaled_y - cy;
+                
+                if (local_x >= 0 && local_x < cw && local_y >= 0 && local_y < ch) {
+                    guchar *pixels = gdk_pixbuf_get_pixels(countries[i].original_pixbuf);
+                    int rowstride = gdk_pixbuf_get_rowstride(countries[i].original_pixbuf);
+                    guchar *pixel = pixels + local_y * rowstride + local_x * 4;
+                    
+                    if (pixel[3] > 0) { // Not transparent
+                        return find_country_by_name(countries[i].name);
+                    }
+                }
+            }
+        }
+    }
+    return NULL;
+}
+
+// Mouse click handler for the map
+gboolean on_drawing_area_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data) {
+    if (event->button == 1) { // Left click
+        struct Country* clicked_country = get_country_at_position(event->x, event->y);
+        
+        if (clicked_country) {
+            printf("Clicked on: %s\n", clicked_country->name);
+            
+            if (current_game_state == TURN_PLAYER_MOVE) {
+                // Check if player can move to this country
+                if (clicked_country == player->current_country) {
+                    printf("Already in this country, starting action phase.\n");
+                    current_country = clicked_country;
+                    label_current_country_update(current_country->name);
+                    
+                    // Transition to action phase
+                    current_game_state = TURN_PLAYER_ACTION;
+                    player_actions_remaining = 4;
+                    
+                    gtk_widget_queue_draw(drawing_area);
+                } else if (is_connected(player->current_country, clicked_country)) {
+                    printf("Moving from %s to %s\n", player->current_country->name, clicked_country->name);
+                    player->current_country = clicked_country;
+                    current_country = clicked_country;
+                    label_current_country_update(current_country->name);
+                    
+                    // Transition to action phase
+                    current_game_state = TURN_PLAYER_ACTION;
+                    player_actions_remaining = 4;
+                    
+                    gtk_widget_queue_draw(drawing_area);
+                } else {
+                    printf("Cannot move to %s - not connected to %s\n", clicked_country->name, player->current_country->name);
+                }
+            } else if (current_game_state == TURN_PLAYER_ACTION) {
+                // Just update the view to this country
+                current_country = clicked_country;
+                label_current_country_update(current_country->name);
+                gtk_widget_queue_draw(drawing_area);
+            }
+        }
+    }
+    return TRUE;
+}
+
+void end_player_turn() {
+    printf("Player turn ended. Starting corruption turn.\n");
+    current_game_state = TURN_CORRUPTION;
+    
+    // Corruption spreads
+    turnCorruption(list);
+    calculateCorruptionCountryList(list);
+    
+    // Clean dead countries
+    while (!eraseDeadCountries(list));
+    
+    // Check for winner
+    int winner = verifyWinner(list);
+    if (winner != 2) {
+        current_game_state = GAME_OVER;
+        check_winner();
+        return;
+    }
+    
+    // Ally turn
+    printf("Starting ally turn.\n");
+    current_game_state = TURN_ALLY;
+    turnAlly(ally);
+    
+    // Corruption spreads again
+    turnCorruption(list);
+    calculateCorruptionCountryList(list);
+    
+    // Clean dead countries
+    while (!eraseDeadCountries(list));
+    
+    // Check for winner
+    winner = verifyWinner(list);
+    if (winner != 2) {
+        current_game_state = GAME_OVER;
+        check_winner();
+        return;
+    }
+    
+    // Back to player turn
+    printf("Starting player turn.\n");
+    current_game_state = TURN_PLAYER_MOVE;
+    player_actions_remaining = 4;
+    
+    // Update display
+    if (player && player->current_country) {
+        current_country = player->current_country;
+    }
+    label_current_country_update(current_country->name);
+    gtk_widget_queue_draw(drawing_area);
 }
 
 void check_winner() {
     int winner = verifyWinner(list);
     if (winner != 2) {
-        char msg[100];
+        char msg[200];
         if (winner == 0) {
-            strcpy(msg, "Player Wins!");
+            strcpy(msg, "¡Felicidades! Has ganado. Todos los países tienen al menos un problema resuelto.");
         } else {
-            strcpy(msg, "Corruption Wins!");
+            sprintf(msg, "La corrupción ha ganado. Solo quedan %d países.", lengthDoubleLinkedList(list));
         }
-        GtkWidget *dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "%s", msg);
+        GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(win), 
+                                                     GTK_DIALOG_MODAL, 
+                                                     GTK_MESSAGE_INFO, 
+                                                     GTK_BUTTONS_OK, 
+                                                     "%s", msg);
         gtk_dialog_run(GTK_DIALOG(dialog));
         gtk_widget_destroy(dialog);
-        // Perhaps reset or exit
+        gtk_main_quit();
     }
 }
 
@@ -420,23 +653,26 @@ void start_window(int argc, char *argv[]) {
     hash_table = createNewHashTable();
     //populateHashTable(hash_table);
     list = initializeDoubleLinkedList();
+    
+    // Calculate initial corruption for all countries
+    calculateCorruptionCountryList(list);
+    
     player = allocateInitialPlayerOnMap(list);
     ally = allocateInitialPlayerOnMap(list);
-
-    // Set some test corruption
-    struct Country* test_country = list->start;
-    while (test_country) {
-        if (strcmp(test_country->name, "Mexico") == 0) {
-            test_country->corruption = 0.5;
-        } else if (strcmp(test_country->name, "Guatemala") == 0) {
-            test_country->corruption = 0.3;
-        }
-        test_country = test_country->next;
+    
+    // Make sure ally is in a different country
+    while (ally->current_country == player->current_country) {
+        ally = allocateInitialPlayerOnMap(list);
     }
+    
+    // Set game state
+    current_game_state = TURN_PLAYER_MOVE;
+    player_actions_remaining = 4;
 
     // Get widgets from the builder
     win = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
     drawing_area = GTK_WIDGET(gtk_builder_get_object(builder, "drawing_area"));
+    drawing_current_country = GTK_WIDGET(gtk_builder_get_object(builder, "drawing_current_country"));
     btn_right_shift = GTK_WIDGET(gtk_builder_get_object(builder, "btn_right_shift"));
     btn_left_shift = GTK_WIDGET(gtk_builder_get_object(builder, "btn_left_shift"));
     lbl_current_country = GTK_LABEL(gtk_builder_get_object(builder, "lbl_current_country"));
@@ -444,10 +680,12 @@ void start_window(int argc, char *argv[]) {
     lbl_crime = GTK_LABEL(gtk_builder_get_object(builder, "lbl_crime"));
     lbl_corruption = GTK_LABEL(gtk_builder_get_object(builder, "lbl_corruption"));
     lbl_unemployment = GTK_LABEL(gtk_builder_get_object(builder, "lbl_unemployment"));
+    lbl_game_status = GTK_LABEL(gtk_builder_get_object(builder, "lbl_game_status"));
+    lbl_political_stability = GTK_LABEL(gtk_builder_get_object(builder, "lbl_political_stability"));
     //textview_solutions = GTK_TEXT_VIEW(gtk_builder_get_object(builder, "textview_solutions"));
 
-    // Check if widgets are null
-    if (!win || !drawing_area || !btn_right_shift || !btn_left_shift || !lbl_current_country ||
+    // Check if widgets are null (optional ones can be NULL)
+    if (!win || !drawing_area || !drawing_current_country || !btn_right_shift || !btn_left_shift || !lbl_current_country ||
         !lbl_poverty || !lbl_crime || !lbl_corruption || !lbl_unemployment /*|| !textview_solutions*/) {
         g_printerr("Error: Some widgets not found in glade file\n");
         return;
@@ -457,13 +695,13 @@ void start_window(int argc, char *argv[]) {
     // Get action buttons
     GtkWidget *btn_action_poverty = GTK_WIDGET(gtk_builder_get_object(builder, "btn_action_poverty"));
     GtkWidget *btn_action_crime = GTK_WIDGET(gtk_builder_get_object(builder, "btn_action_crime"));
-    GtkWidget *btn_action_inequality = GTK_WIDGET(gtk_builder_get_object(builder, "btn_action_inequality"));
+    GtkWidget *btn_action_unemployment = GTK_WIDGET(gtk_builder_get_object(builder, "btn_action_unemployment"));
     GtkWidget *btn_action_political_weakness = GTK_WIDGET(gtk_builder_get_object(builder, "btn_action_political_weakness"));
 
     // Check if widgets are null
-    if (!win || !drawing_area || !btn_right_shift || !btn_left_shift || !lbl_current_country ||
+    if (!win || !drawing_area || !drawing_current_country || !btn_right_shift || !btn_left_shift || !lbl_current_country ||
         !lbl_poverty || !lbl_crime || !lbl_corruption || !lbl_unemployment ||
-        !btn_action_poverty || !btn_action_crime || !btn_action_inequality || !btn_action_political_weakness) {
+        !btn_action_poverty || !btn_action_crime || !btn_action_unemployment || !btn_action_political_weakness) {
         g_printerr("Error: Some widgets not found in glade file\n");
         return;
     }
@@ -475,19 +713,31 @@ void start_window(int argc, char *argv[]) {
         return;
     }
 
-    current_country = list->start;
+    current_country = player->current_country;
+    label_current_country_update(current_country->name);
 
     // Connect signals
     g_signal_connect(win, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(drawing_area, "draw", G_CALLBACK(draw), NULL);
+    g_signal_connect(drawing_current_country, "draw", G_CALLBACK(draw), NULL);
+    
+    // Enable button press events for the drawing area
+    gtk_widget_add_events(drawing_area, GDK_BUTTON_PRESS_MASK);
+    g_signal_connect(drawing_area, "button-press-event", G_CALLBACK(on_drawing_area_button_press), NULL);
 
     // connect buttons 
     g_signal_connect(btn_right_shift, "clicked", G_CALLBACK(btn_right_shift_clicked), NULL);
     g_signal_connect(btn_left_shift, "clicked", G_CALLBACK(btn_left_shift_clicked), NULL);
     g_signal_connect(btn_action_poverty, "clicked", G_CALLBACK(btn_action_poverty_clicked), NULL);
     g_signal_connect(btn_action_crime, "clicked", G_CALLBACK(btn_action_crime_clicked), NULL);
-    g_signal_connect(btn_action_inequality, "clicked", G_CALLBACK(btn_action_inequality_clicked), NULL);
+    g_signal_connect(btn_action_unemployment, "clicked", G_CALLBACK(btn_action_inequality_clicked), NULL);
     g_signal_connect(btn_action_political_weakness, "clicked", G_CALLBACK(btn_action_political_weakness_clicked), NULL);
+    
+    // Try to get end turn button if it exists
+    GtkWidget *btn_end_turn = GTK_WIDGET(gtk_builder_get_object(builder, "btn_end_turn"));
+    if (btn_end_turn) {
+        g_signal_connect(btn_end_turn, "clicked", G_CALLBACK(btn_end_turn_clicked), NULL);
+    }
     
     gtk_widget_show_all(win);
     gtk_window_present(GTK_WINDOW(win));

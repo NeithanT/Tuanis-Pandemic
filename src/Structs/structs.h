@@ -35,5 +35,6 @@ struct DoubleLinkedList* initializeDoubleLinkedList();
 
 struct Country* getCountryByPosition(struct DoubleLinkedList* list, int position);
 
+int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList);
 
 #endif //SRC_STRUCTS_H0

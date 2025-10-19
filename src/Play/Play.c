@@ -117,13 +117,14 @@ int verifyWinner(struct DoubleLinkedList* doubleLinkedList) {
     //Esta condición verifica si todos los paises vivos tienen un 0 en alguna propiedad.
     struct Country* actual = doubleLinkedList -> start;
     while (actual != NULL) {
-        if (actual->crime != 0 && actual->corruption != 0) { //Verifica que el país tenga alguna problemática != 0
-            return winner; //Valor invalido, indica que nadie ha ganado
+        // Check if this country has ANY problem that is NOT zero
+        if (actual->crime != 0 || actual->poverty != 0 || actual->unemployment != 0) {
+            return winner; //At least one country still has problems, game continues
         }
         actual = actual -> next;
 
     }
-    winner = 0;   //Si ha llegado hasta aquí, es porque todos los paises tienen al menos una problematica en 0
+    winner = 0;   //Si ha llegado hasta aquí, es porque todos los paises tienen todas las problematicas en 0
     return winner;
 
 }

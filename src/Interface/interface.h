@@ -41,4 +41,16 @@ void btn_left_shift_clicked(GtkWidget *widget, gpointer data);
 /** */
 void label_current_country_update(char *text);
 
+/** End player turn and start computer turns */
+void end_player_turn();
+
+/** Handle end turn button click */
+void btn_end_turn_clicked(GtkWidget *widget, gpointer data);
+
+/** Get country at mouse position */
+struct Country* get_country_at_position(int x, int y);
+
+/** Handle mouse clicks on the drawing area */
+gboolean on_drawing_area_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data);
+
 #endif // INTERFACE_H
