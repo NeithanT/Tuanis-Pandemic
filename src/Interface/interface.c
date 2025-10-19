@@ -15,6 +15,7 @@
 #define MAX_BUFFER_LEN 1000
 
 GtkWidget *win;
+GtkBox *box_right_panel;
 GtkWidget *drawing_area;
 GtkWidget *drawing_current_country;
 GtkWidget *btn_right_shift;
@@ -35,6 +36,7 @@ GtkLabel *lbl_political_stability;
 GtkTextView *textview_messages;
 GtkTextBuffer *textbuffer_messages;
 cairo_surface_t *surface;
+cairo_surface_t *surface_cur_country;
 
 struct Country* current_country;
 
@@ -52,9 +54,37 @@ typedef enum {
     GAME_OVER
 } GameState;
 
+
+struct CountryImage countries[] = {
+    {"Argentina", 395, 505, 0, 0, NULL},
+    {"Belice", 230, 138, 0, 0, NULL},
+    {"Bolivia", 376, 401, 0, 0, NULL},
+    {"Brasil", 336, 273, 0, 0, NULL},
+    {"Chile", 371, 470, 0, 0, NULL},
+    {"Colombia", 285, 211, 0, 0, NULL},
+    {"CostaRica", 250, 200, 0, 0, NULL},
+    {"Ecuador", 266, 308, 0, 0, NULL},
+    {"ElSalvador", 218, 170, 0, 0, NULL},
+    {"Guatemala", 200, 141, 0, 0, NULL},
+    {"GuayanaFrancesa", 509, 265, 0, 0, NULL},
+    {"Guyana", 448, 246, 0, 0, NULL},
+    {"Honduras", 227, 156, 0, 0, NULL},
+    {"Mexico", 15, 15, 0, 0, NULL},
+    {"Nicaragua", 240, 170, 0, 0, NULL},
+    {"Panama", 276, 209, 0, 0, NULL},
+    {"Paraguay", 450, 481, 0, 0, NULL},
+    {"Peru", 265, 322, 0, 0, NULL},
+    {"Surinam", 477, 264, 0, 0, NULL},
+    {"Uruguay", 506, 577, 0, 0, NULL},
+    {"Venezuela", 343, 218, 0, 0, NULL}
+};
+
 GameState current_game_state = SELECT_STARTING_COUNTRY;
 
 int player_actions_remaining = 4; // Player can do 4 actions per turn
+
+// Forward declarations
+void update_current_country_surface();
 
 // Function to add messages to the message log
 void add_message(const char* message) {
@@ -186,30 +216,6 @@ void perform_action(const char* action_name, int* action_value, int max_value, i
     }
 }
 
-struct CountryImage countries[] = {
-    {"Argentina", 395, 505, 0, 0, NULL},
-    {"Belice", 230, 138, 0, 0, NULL},
-    {"Bolivia", 376, 401, 0, 0, NULL},
-    {"Brasil", 336, 273, 0, 0, NULL},
-    {"Chile", 371, 470, 0, 0, NULL},
-    {"Colombia", 285, 211, 0, 0, NULL},
-    {"CostaRica", 250, 200, 0, 0, NULL},
-    {"Ecuador", 266, 308, 0, 0, NULL},
-    {"ElSalvador", 218, 170, 0, 0, NULL},
-    {"Guatemala", 200, 141, 0, 0, NULL},
-    {"GuayanaFrancesa", 509, 265, 0, 0, NULL},
-    {"Guyana", 448, 246, 0, 0, NULL},
-    {"Honduras", 227, 156, 0, 0, NULL},
-    {"Mexico", 15, 15, 0, 0, NULL},
-    {"Nicaragua", 240, 170, 0, 0, NULL},
-    {"Panama", 276, 209, 0, 0, NULL},
-    {"Paraguay", 450, 481, 0, 0, NULL},
-    {"Peru", 265, 322, 0, 0, NULL},
-    {"Surinam", 477, 264, 0, 0, NULL},
-    {"Uruguay", 506, 577, 0, 0, NULL},
-    {"Venezuela", 343, 218, 0, 0, NULL}
-};
-
 int min_distance_to_edge(int x, int y, int width, int height) {
     int dist = x;
     if (y < dist) dist = y;
@@ -315,202 +321,431 @@ void get_country_position(const char* name, int* x, int* y) {
     }
 }
 
-static void draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
+// Calculate the scale factor for the map
+double calculate_map_scale(int widget_width, int widget_height) {
+    if (!list || !list->start) return 1.0;
     
-    int width = gtk_widget_get_allocated_width(widget);
-    int height = gtk_widget_get_allocated_height(widget);
-
-    // get the right most and lowest zone of the surface...
-    // this is done by adding the position and the length
-    int max_x = 0, max_y = 0, cord_x = 0, cord_y = 0;
+    // Find the boundaries of the map
+    int max_x = 0, max_y = 0;
     struct Country* current = list->start;
     while (current) {
         if (current->image && current->image->original_pixbuf) {
-            cord_x = current->image->x + current->image->width;
-            cord_y = current->image->y + current->image->height;
+            int cord_x = current->image->x + current->image->width;
+            int cord_y = current->image->y + current->image->height;
             if (cord_x > max_x) max_x = cord_x;
             if (cord_y > max_y) max_y = cord_y;
         }
         current = current->next;
     }
-
-    // get the current available drawing area size
-    // so after the window has been resized, this is the new size
     
-    // compute scale
-    // scale is always computed by getting the lowest proportion between
-    // the new width and new height and the actual height and width
-    // this is so the windows stays proportional and does not overflow
-    // who cares 
-    double scale_width = (double)width / max_x;
-    double scale_height = (double)height / max_y;
-    if (scale_height < scale_width) {
-        scale = scale_height;
-    } else {
-        scale = scale_width;
+    // Calculate scale to fit widget, maintaining aspect ratio
+    double scale_width = (double)widget_width / max_x;
+    double scale_height = (double)widget_height / max_y;
+    return (scale_height < scale_width) ? scale_height : scale_width;
+}
+
+// Draw a single country on the map
+void draw_country_on_map(cairo_t *cr, struct Country* country, gboolean highlight_border, gboolean show_corruption) {
+    if (!country || !country->image || !country->image->original_pixbuf) return;
+    
+    GdkPixbuf* temp_pixbuf = gdk_pixbuf_copy(country->image->original_pixbuf);
+    if (!temp_pixbuf) return;
+    
+    // Apply corruption coloring if needed
+    if (show_corruption) {
+        update_img_corruption(temp_pixbuf, country->corruption);
     }
+    
+    // Add border highlight if needed
+    if (highlight_border) {
+        draw_img_border(temp_pixbuf);
+    }
+    
+    gdk_cairo_set_source_pixbuf(cr, temp_pixbuf, country->image->x, country->image->y);
+    cairo_paint(cr);
+    g_object_unref(temp_pixbuf);
+}
 
-    // now we have the scale of how much bigger the new image is
-
+// Main drawing function for the map
+static void draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
+    int width = gtk_widget_get_allocated_width(widget);
+    int height = gtk_widget_get_allocated_height(widget);
+    
+    // Calculate scale
+    scale = calculate_map_scale(width, height);
+    
     cairo_save(cr);
     cairo_scale(cr, scale, scale);
-
-    // draw map
+    
+    // Draw background
     cairo_set_source_surface(cr, surface, 0, 0);
     cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_NEAREST);
     cairo_paint(cr);
-
-    // draw flags
-    current = list->start;
+    
+    // Draw all countries
+    struct Country* current = list->start;
     while (current) {
-        if (current->image && current->image->original_pixbuf) {
-            struct Country* country_data = current;
-            // Create a copy of the pixbuf to modify
-            GdkPixbuf* temp_pixbuf = gdk_pixbuf_copy(current->image->original_pixbuf);
-            if (temp_pixbuf) {
-                // During action phase, show current and connected countries
-                if (current_game_state == TURN_PLAYER_ACTION && 
-                    (country_data == current_country || is_connected(current_country, country_data))) {
-                    update_img_corruption(temp_pixbuf, country_data->corruption);
-                }
-                
-                // Highlight current country with black border
-                if (country_data == current_country) {
-                    draw_img_border(temp_pixbuf);
-                }
-                
-                gdk_cairo_set_source_pixbuf(cr, temp_pixbuf, current->image->x, current->image->y);
-                cairo_paint(cr);
-                g_object_unref(temp_pixbuf);
-            }
-        }
+        gboolean highlight = (current == current_country);
+        gboolean show_corruption = (current_game_state == TURN_PLAYER_ACTION && 
+                                    (current == current_country || is_connected(current_country, current)));
+        
+        draw_country_on_map(cr, current, highlight, show_corruption);
         current = current->next;
     }
-
+    
     cairo_restore(cr);
 }
 
+// Drawing function for the current country detail view
+static void draw_current_country(GtkWidget *widget, cairo_t *cr, gpointer data) {
+    if (!current_country || !current_country->image || !current_country->image->original_pixbuf || !surface_cur_country) {
+        // Draw a light gray placeholder
+        cairo_set_source_rgb(cr, 0.9, 0.9, 0.9);
+        cairo_paint(cr);
+        return;
+    }
+    
+    int width = gtk_widget_get_allocated_width(widget);
+    int height = gtk_widget_get_allocated_height(widget);
+    
+    // Update the surface with the current country
+    update_current_country_surface();
+    
+    // Get surface dimensions
+    int surf_width = cairo_image_surface_get_width(surface_cur_country);
+    int surf_height = cairo_image_surface_get_height(surface_cur_country);
+    
+    // Prevent division by zero
+    if (surf_width <= 0 || surf_height <= 0 || width <= 0 || height <= 0) {
+        cairo_set_source_rgb(cr, 1, 0, 0);
+        cairo_paint(cr);
+        return;
+    }
+    
+    // Calculate scale to fit the widget
+    double scale_x = (double)width / surf_width;
+    double scale_y = (double)height / surf_height;
+    double detail_scale = (scale_x < scale_y) ? scale_x : scale_y;
+    
+    // Center the image
+    int scaled_width = surf_width * detail_scale;
+    int scaled_height = surf_height * detail_scale;
+    int offset_x = (width - scaled_width) / 2;
+    int offset_y = (height - scaled_height) / 2;
+    
+    cairo_save(cr);
+    cairo_translate(cr, offset_x, offset_y);
+    cairo_scale(cr, detail_scale, detail_scale);
+    
+    // Draw the surface
+    cairo_set_source_surface(cr, surface_cur_country, 0, 0);
+    cairo_paint(cr);
+    
+    cairo_restore(cr);
+}
+
+// Navigate to the next country in the list
 void btn_right_shift_clicked(GtkWidget *widget, gpointer data) {
     if (!current_country) return;
     
-    if (current_country->next != NULL) {
-        current_country = current_country->next;
-        label_current_country_update(current_country->name);
-        if (drawing_area) gtk_widget_queue_draw(drawing_area);
+    if (current_game_state == SELECT_STARTING_COUNTRY) {
+        // During country selection, navigate through all countries
+        if (current_country->next != NULL) {
+            current_country = current_country->next;
+        }
+    } else {
+        // During gameplay, navigate through player's current country and its connected countries
+        if (!player || !player->current_country || !player->current_country->connected_countries) {
+            return;
+        }
+        
+        struct DoubleLinkedList* nav_list = player->current_country->connected_countries;
+        
+        // Build navigation array: player's country + connected countries
+        int total_countries = nav_list->connected_count + 1;
+        struct Country* available_countries[22]; // Max 21 countries + player's location
+        
+        available_countries[0] = player->current_country;
+        for (int i = 0; i < nav_list->connected_count; i++) {
+            available_countries[i + 1] = nav_list->connected_list[i];
+        }
+        
+        // Find current_country in the available list
+        int current_index = -1;
+        for (int i = 0; i < total_countries; i++) {
+            if (available_countries[i] == current_country) {
+                current_index = i;
+                break;
+            }
+        }
+        
+        // Move to next country (wrap around)
+        if (current_index == -1) {
+            current_country = available_countries[0]; // Default to player's country
+        } else {
+            int next_index = (current_index + 1) % total_countries;
+            current_country = available_countries[next_index];
+        }
     }
+    
+    label_current_country_update(current_country->name);
+    
+    if (drawing_area) gtk_widget_queue_draw(drawing_area);
+    if (drawing_current_country) gtk_widget_queue_draw(drawing_current_country);
 }
 
+// Navigate to the previous country in the list
 void btn_left_shift_clicked(GtkWidget *widget, gpointer data) {
     if (!current_country) return;
     
-    if (current_country->prev != NULL) {
-        current_country = current_country->prev;
-        label_current_country_update(current_country->name);
-        if (drawing_area) gtk_widget_queue_draw(drawing_area);
+    if (current_game_state == SELECT_STARTING_COUNTRY) {
+        // During country selection, navigate through all countries
+        if (current_country->prev != NULL) {
+            current_country = current_country->prev;
+        }
+    } else {
+        // During gameplay, navigate through player's current country and its connected countries
+        if (!player || !player->current_country || !player->current_country->connected_countries) {
+            return;
+        }
+        
+        struct DoubleLinkedList* nav_list = player->current_country->connected_countries;
+        
+        // Build navigation array: player's country + connected countries
+        int total_countries = nav_list->connected_count + 1;
+        struct Country* available_countries[22]; // Max 21 countries + player's location
+        
+        available_countries[0] = player->current_country;
+        for (int i = 0; i < nav_list->connected_count; i++) {
+            available_countries[i + 1] = nav_list->connected_list[i];
+        }
+        
+        // Find current_country in the available list
+        int current_index = -1;
+        for (int i = 0; i < total_countries; i++) {
+            if (available_countries[i] == current_country) {
+                current_index = i;
+                break;
+            }
+        }
+        
+        // Move to previous country (wrap around)
+        if (current_index == -1) {
+            current_country = available_countries[0]; // Default to player's country
+        } else {
+            int prev_index = (current_index - 1 + total_countries) % total_countries;
+            current_country = available_countries[prev_index];
+        }
+    }
+    
+    label_current_country_update(current_country->name);
+    
+    if (drawing_area) gtk_widget_queue_draw(drawing_area);
+    if (drawing_current_country) gtk_widget_queue_draw(drawing_current_country);
+}
+
+// Update the surface for the current country detail view
+void update_current_country_surface() {
+    if (!current_country || !current_country->image || !current_country->image->original_pixbuf) {
+        return;
+    }
+    
+    // Get the dimensions of the current country image
+    int img_width = gdk_pixbuf_get_width(current_country->image->original_pixbuf);
+    int img_height = gdk_pixbuf_get_height(current_country->image->original_pixbuf);
+    
+    // Recreate surface with the correct dimensions if needed
+    if (surface_cur_country) {
+        int surf_width = cairo_image_surface_get_width(surface_cur_country);
+        int surf_height = cairo_image_surface_get_height(surface_cur_country);
+        
+        if (surf_width != img_width || surf_height != img_height) {
+            cairo_surface_destroy(surface_cur_country);
+            surface_cur_country = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, img_width, img_height);
+        }
+    }
+    
+    // Clear and draw on the surface
+    if (surface_cur_country) {
+        cairo_t *cr = cairo_create(surface_cur_country);
+        
+        // Clear the surface with transparency
+        cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
+        cairo_paint(cr);
+        cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+        
+        // Create a temporary pixbuf with corruption colors
+        GdkPixbuf* temp_pixbuf = gdk_pixbuf_copy(current_country->image->original_pixbuf);
+        if (temp_pixbuf) {
+            update_img_corruption(temp_pixbuf, current_country->corruption);
+            
+            // Draw the pixbuf onto the surface
+            gdk_cairo_set_source_pixbuf(cr, temp_pixbuf, 0, 0);
+            cairo_paint(cr);
+            
+            g_object_unref(temp_pixbuf);
+        }
+        
+        cairo_destroy(cr);
     }
 }
 
+// Get the game state description text
+const char* get_game_state_text(char* buffer) {
+    switch (current_game_state) {
+        case SELECT_STARTING_COUNTRY:
+            return "Selecciona tu país de inicio - Usa las flechas y presiona 'Escoger País'";
+        case TURN_PLAYER_MOVE:
+            return "Tu turno: MOVIMIENTO - Haz clic en un país conectado o quédate aquí";
+        case TURN_PLAYER_ACTION:
+            sprintf(buffer, "Tu turno: ACCIONES (%d restantes)", player_actions_remaining);
+            return buffer;
+        case TURN_CORRUPTION:
+            return "Turno: CORRUPCIÓN se expande...";
+        case GAME_OVER:
+            return "JUEGO TERMINADO";
+        default:
+            return "Estado desconocido";
+    }
+}
+
+// Update country statistics labels
+void update_country_stats_labels() {
+    if (!current_country) return;
+    
+    char buffer[200];
+    
+    sprintf(buffer, "Pobreza: %d/3", current_country->poverty);
+    gtk_label_set_text(lbl_poverty, buffer);
+    
+    sprintf(buffer, "Crimen: %d/3", current_country->crime);
+    gtk_label_set_text(lbl_crime, buffer);
+    
+    sprintf(buffer, "Corrupcion: %.0f%%", current_country->corruption * 100);
+    gtk_label_set_text(lbl_corruption, buffer);
+    
+    sprintf(buffer, "Desempleo: %d/3", current_country->unemployment);
+    gtk_label_set_text(lbl_unemployment, buffer);
+    
+    if (lbl_political_stability) {
+        sprintf(buffer, "Estabilidad Política: %d/100", current_country->political_stability);
+        gtk_label_set_text(lbl_political_stability, buffer);
+    }
+}
+
+// Update the "Move to Country" button state and text
+void update_move_button() {
+    if (!btn_country || !current_country) return;
+    
+    if (current_game_state == SELECT_STARTING_COUNTRY) {
+        gtk_button_set_label(GTK_BUTTON(btn_country), "Escoger País");
+        gtk_widget_set_visible(btn_country, TRUE);
+    } 
+    else if (current_game_state == TURN_PLAYER_MOVE) {
+        if (current_country == player->current_country) {
+            gtk_button_set_label(GTK_BUTTON(btn_country), "Quedarse Aquí");
+            gtk_widget_set_visible(btn_country, TRUE);
+        } 
+        else if (is_connected(player->current_country, current_country)) {
+            char button_text[100];
+            sprintf(button_text, "Mover a %s", current_country->name);
+            gtk_button_set_label(GTK_BUTTON(btn_country), button_text);
+            gtk_widget_set_visible(btn_country, TRUE);
+        } 
+        else {
+            gtk_widget_set_visible(btn_country, FALSE);
+        }
+    } 
+    else {
+        gtk_widget_set_visible(btn_country, FALSE);
+    }
+}
+
+// Main label update function
 void label_current_country_update(char *text) {
-    if (!text || !lbl_current_country) return;
+    if (!text || !lbl_current_country || !current_country) return;
     
     gtk_label_set_text(lbl_current_country, text);
-    if (current_country) {
+    
+    // Update game state label
+    if (lbl_game_status) {
         char buffer[200];
-        
-        // Game state info
-        if (lbl_game_status) {
-            const char* state_text = "";
-            switch (current_game_state) {
-                case SELECT_STARTING_COUNTRY:
-                    state_text = "Selecciona tu país de inicio - Usa las flechas y presiona 'Escoger País'";
-                    break;
-                case TURN_PLAYER_MOVE:
-                    state_text = "Tu turno: MOVIMIENTO - Haz clic en un país conectado o quédate aquí";
-                    break;
-                case TURN_PLAYER_ACTION:
-                    sprintf(buffer, "Tu turno: ACCIONES (%d restantes)", player_actions_remaining);
-                    state_text = buffer;
-                    break;
-                case TURN_CORRUPTION:
-                    state_text = "Turno: CORRUPCIÓN se expande...";
-                    break;
-                case GAME_OVER:
-                    state_text = "JUEGO TERMINADO";
-                    break;
-            }
-            gtk_label_set_text(lbl_game_status, state_text);
-        }
-        
-        sprintf(buffer, "Pobreza: %d/3", current_country->poverty);
-        gtk_label_set_text(lbl_poverty, buffer);
-        sprintf(buffer, "Crimen: %d/3", current_country->crime);
-        gtk_label_set_text(lbl_crime, buffer);
-        sprintf(buffer, "Corrupcion: %.0f%%", current_country->corruption * 100);
-        gtk_label_set_text(lbl_corruption, buffer);
-        sprintf(buffer, "Desempleo: %d/3", current_country->unemployment);
-        gtk_label_set_text(lbl_unemployment, buffer);
-        
-        if (lbl_political_stability) {
-            sprintf(buffer, "Estabilidad Política: %d/100", current_country->political_stability);
-            gtk_label_set_text(lbl_political_stability, buffer);
-        }
-        
-        // Update solutions
-        update_solutions_text();
-        
-        // Update "Move to Country" button visibility and label
-        if (btn_country) {
-            if (current_game_state == SELECT_STARTING_COUNTRY) {
-                // Show "Choose Country" button during selection
-                gtk_button_set_label(GTK_BUTTON(btn_country), "Escoger País");
-                gtk_widget_set_visible(btn_country, TRUE);
-            } else if (current_game_state == TURN_PLAYER_MOVE) {
-                if (current_country == player->current_country) {
-                    // Show "Stay Here" button
-                    gtk_button_set_label(GTK_BUTTON(btn_country), "Quedarse Aquí");
-                    gtk_widget_set_visible(btn_country, TRUE);
-                } else if (is_connected(player->current_country, current_country)) {
-                    // Show "Move to Country" button
-                    char button_text[100];
-                    sprintf(button_text, "Mover a %s", current_country->name);
-                    gtk_button_set_label(GTK_BUTTON(btn_country), button_text);
-                    gtk_widget_set_visible(btn_country, TRUE);
-                } else {
-                    // Hide button if not connected
-                    gtk_widget_set_visible(btn_country, FALSE);
-                }
-            } else {
-                // Hide button during action phase
-                gtk_widget_set_visible(btn_country, FALSE);
-            }
-        }
-        
-        // Redraw the current country image
-        if (drawing_current_country) {
-            gtk_widget_queue_draw(drawing_current_country);
-        }
+        const char* state_text = get_game_state_text(buffer);
+        gtk_label_set_text(lbl_game_status, state_text);
     }
+    
+    // Update country statistics
+    update_country_stats_labels();
+    
+    // Update solutions text
+    update_solutions_text();
+    
+    // Update move button state
+    update_move_button();
+    
+    // Redraw the current country detail image
+    if (drawing_current_country) {
+        gtk_widget_queue_draw(drawing_current_country);
+    }
+}
+
+// Start game with selected country
+void start_game_with_country(struct Country* country) {
+    if (!country || !player) return;
+    
+    player->current_country = country;
+    char msg[MAX_ACTION_MSG_LEN];
+    sprintf(msg, "¡Bienvenido a %s! El juego comienza...", country->name);
+    add_message(msg);
+    add_message("Tu turno - MOVIMIENTO");
+    
+    current_game_state = TURN_PLAYER_MOVE;
+    player_actions_remaining = 4;
+    label_current_country_update(country->name);
+    update_button_states();
+    gtk_widget_queue_draw(drawing_area);
+}
+
+// Move player to a new country
+void move_player_to_country(struct Country* destination) {
+    if (!destination || !player || !player->current_country) return;
+    
+    char msg[MAX_ACTION_MSG_LEN];
+    sprintf(msg, "Moviéndose de %s a %s", player->current_country->name, destination->name);
+    add_message(msg);
+    
+    player->current_country = destination;
+    current_game_state = TURN_PLAYER_ACTION;
+    player_actions_remaining = 4;
+    
+    label_current_country_update(destination->name);
+    gtk_widget_queue_draw(drawing_area);
+}
+
+// Stay in current country
+void stay_in_current_country() {
+    if (!player || !player->current_country) return;
+    
+    char msg[MAX_ACTION_MSG_LEN];
+    sprintf(msg, "Te quedas en %s", player->current_country->name);
+    add_message(msg);
+    
+    current_country = player->current_country;
+    current_game_state = TURN_PLAYER_ACTION;
+    player_actions_remaining = 4;
+    
+    label_current_country_update(current_country->name);
+    gtk_widget_queue_draw(drawing_area);
 }
 
 void btn_country_clicked(GtkWidget *widget, gpointer data) {
-    // Handle country selection at start
+    // Handle country selection at game start
     if (current_game_state == SELECT_STARTING_COUNTRY) {
         if (!current_country) {
             add_message("Error: No country selected.");
             return;
         }
-        player->current_country = current_country;
-        char msg[MAX_ACTION_MSG_LEN];
-        sprintf(msg, "¡Bienvenido a %s! El juego comienza...", current_country->name);
-        add_message(msg);
-        add_message("Tu turno - MOVIMIENTO");
-        
-        // Transition to first turn
-        current_game_state = TURN_PLAYER_MOVE;
-        player_actions_remaining = 4;
-        label_current_country_update(current_country->name);
-        update_button_states();
-        gtk_widget_queue_draw(drawing_area);
+        start_game_with_country(current_country);
         return;
     }
     
@@ -525,22 +760,13 @@ void btn_country_clicked(GtkWidget *widget, gpointer data) {
         return;
     }
     
-    // Check if we're staying in current country
+    // Stay in current country
     if (current_country == player->current_country) {
-        char msg[MAX_ACTION_MSG_LEN];
-        sprintf(msg, "Te quedas en %s", player->current_country->name);
-        add_message(msg);
-        
-        // Transition to action phase
-        current_game_state = TURN_PLAYER_ACTION;
-        player_actions_remaining = 4;
-        
-        label_current_country_update(current_country->name);
-        gtk_widget_queue_draw(drawing_area);
+        stay_in_current_country();
         return;
     }
     
-    // Check if the country is connected
+    // Check if destination is connected
     if (!is_connected(player->current_country, current_country)) {
         char msg[MAX_ACTION_MSG_LEN];
         sprintf(msg, "No puedes moverte a %s - no está conectado a %s.", 
@@ -549,38 +775,18 @@ void btn_country_clicked(GtkWidget *widget, gpointer data) {
         return;
     }
     
-    // Move the player
-    char msg[MAX_ACTION_MSG_LEN];
-    sprintf(msg, "Moviéndose de %s a %s", player->current_country->name, current_country->name);
-    add_message(msg);
-    player->current_country = current_country;
-    
-    // Transition to action phase
-    current_game_state = TURN_PLAYER_ACTION;
-    player_actions_remaining = 4;
-    
-    label_current_country_update(current_country->name);
-    gtk_widget_queue_draw(drawing_area);
+    // Move to new country
+    move_player_to_country(current_country);
 }
 
 void btn_stay_clicked(GtkWidget *widget, gpointer data) {
     if (current_game_state != TURN_PLAYER_MOVE) {
-        add_message("❌ No es tu turno de movimiento.");
+        add_message("No es tu turno de movimiento.");
         return;
     }
     
-    char msg[200];
-    sprintf(msg, "Te quedas en %s", player->current_country->name);
-    add_message(msg);
-    current_country = player->current_country;
-    
-    // Transition to action phase
-    current_game_state = TURN_PLAYER_ACTION;
-    player_actions_remaining = 4;
-    
-    label_current_country_update(current_country->name);
+    stay_in_current_country();
     update_button_states();
-    gtk_widget_queue_draw(drawing_area);
 }
 
 void update_solutions_text() {
@@ -748,6 +954,9 @@ void start_window(int argc, char *argv[]) {
 
     // create a surface for the drawing area, a image background in this case
     surface = cairo_image_surface_create_from_png(PATH "blue_image.png");
+    // Create a proper surface for current country (will be updated dynamically)
+    surface_cur_country = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 800, 600);
+
     if (!surface) {
         printf("No se encontro el background\n");
         return;
@@ -759,7 +968,7 @@ void start_window(int argc, char *argv[]) {
         strcat(path, countries[i].name);
         strcat(path, ".png");
         countries[i].original_pixbuf = gdk_pixbuf_new_from_file(path, NULL);
-        // Don't update corruption here, do it in draw
+        
         if (countries[i].original_pixbuf) {
             countries[i].width = gdk_pixbuf_get_width(countries[i].original_pixbuf);
             countries[i].height = gdk_pixbuf_get_height(countries[i].original_pixbuf);
@@ -772,6 +981,9 @@ void start_window(int argc, char *argv[]) {
     GError *error = NULL;
     if (!gtk_builder_add_from_file(builder, "src/Interface/main.glade", &error)) {
         g_printerr("No se encontro el archivo glade.\n");
+        if (error) {
+            g_printerr("GTK Error: %s\n", error->message);
+        }
         g_clear_error(&error);
         return;
     }
@@ -816,6 +1028,7 @@ void start_window(int argc, char *argv[]) {
     lbl_unemployment = GTK_LABEL(gtk_builder_get_object(builder, "lbl_unemployment"));
     lbl_game_status = GTK_LABEL(gtk_builder_get_object(builder, "lbl_game_status"));
     lbl_political_stability = GTK_LABEL(gtk_builder_get_object(builder, "lbl_political_stability"));
+    lbl_solutions = GTK_LABEL(gtk_builder_get_object(builder, "lbl_solutions"));
     textview_messages = GTK_TEXT_VIEW(gtk_builder_get_object(builder, "textview_messages"));
     // Get action buttons
     btn_action_poverty = GTK_WIDGET(gtk_builder_get_object(builder, "btn_action_poverty"));
@@ -823,7 +1036,7 @@ void start_window(int argc, char *argv[]) {
     btn_action_unemployment = GTK_WIDGET(gtk_builder_get_object(builder, "btn_action_unemployment"));
     btn_action_political_weakness = GTK_WIDGET(gtk_builder_get_object(builder, "btn_action_political_weakness"));
     btn_country = GTK_WIDGET(gtk_builder_get_object(builder, "btn_country"));
-
+    box_right_panel = GTK_BOX(gtk_builder_get_object(builder, "box_right_panel"));
     
     // Check if widgets are null (optional ones can be NULL)
     if (!win || !drawing_area || !drawing_current_country || !btn_right_shift || !btn_left_shift || !lbl_current_country ||
@@ -839,22 +1052,14 @@ void start_window(int argc, char *argv[]) {
         add_message("Selecciona tu país de inicio...");
     }
 
-    printf("Widgets retrieved\n");
-
     // Check if widgets are null
     if (!win || !drawing_area || !drawing_current_country || !btn_right_shift || !btn_left_shift || !lbl_current_country ||
-        !lbl_poverty || !lbl_crime || !lbl_corruption || !lbl_unemployment ||
+        !lbl_poverty || !lbl_crime || !lbl_corruption || !lbl_unemployment || !box_right_panel ||
         !btn_action_poverty || !btn_action_crime || !btn_action_unemployment || !btn_action_political_weakness) {
-        g_printerr("Error: Some widgets not found in glade file\n");
+        g_printerr("No se encontraron algunos widgets\n");
         return;
     }
 
-    // Get layout
-    GtkLayout *layout_game = GTK_LAYOUT(gtk_builder_get_object(builder, "layout_game"));
-    if (!layout_game) {
-        g_printerr("Error: layout_game not found\n");
-        return;
-    }
 
     // Show main window first
     gtk_widget_show_all(win);
@@ -867,8 +1072,8 @@ void start_window(int argc, char *argv[]) {
 
     // Connect signals
     g_signal_connect(win, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    g_signal_connect(drawing_area, "draw", G_CALLBACK(draw), NULL);
-    g_signal_connect(drawing_current_country, "draw", G_CALLBACK(draw), NULL);
+    g_signal_connect(drawing_area, "draw", G_CALLBACK(draw_map), NULL);
+    g_signal_connect(drawing_current_country, "draw", G_CALLBACK(draw_current_country), NULL);
     
     // connect buttons 
     g_signal_connect(btn_right_shift, "clicked", G_CALLBACK(btn_right_shift_clicked), NULL);
@@ -879,15 +1084,15 @@ void start_window(int argc, char *argv[]) {
     g_signal_connect(btn_action_political_weakness, "clicked", G_CALLBACK(btn_action_political_weakness_clicked), NULL); 
     g_signal_connect(btn_country, "clicked", G_CALLBACK(btn_country_clicked), NULL);
     
-    // Set initial button states
-    update_button_states();
-    
     // release memory
     g_object_unref(builder);
     gtk_main();
 
     // end of the program
     cairo_surface_destroy(surface);
+    if (surface_cur_country) {
+        cairo_surface_destroy(surface_cur_country);
+    }
     for (int i = 0; i < NUM_COUNTRIES; i++) {
         if (countries[i].original_pixbuf) {
             g_object_unref(countries[i].original_pixbuf);
