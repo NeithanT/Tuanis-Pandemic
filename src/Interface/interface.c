@@ -9,6 +9,7 @@
 #define WIDTH 700
 #define HEIGHT 500
 #define DIVISION 200
+#define BORDER_SIZE 5
 
 GtkWidget *win;
 GtkWidget *drawing_area;
@@ -51,6 +52,59 @@ CountryImage countries[] = {
     {"Uruguay", 506, 577, 0, 0, NULL},
     {"Venezuela", 343, 218, 0, 0, NULL}
 };
+
+int min_distance_to_edge(int x, int y, int width, int height) {
+    int dist = x;
+    if (y < dist) dist = y;
+    if (width - x < dist) dist = width - x;
+    if (height - y < dist) dist = height - y;
+    return dist;
+}
+
+int has_transparent_neighbor(guchar *pixels, int x, int y, int width, int height, 
+                            int rowstride, int search_radius) {
+    // search in a box "radius"
+    for (int dy = -search_radius; dy <= search_radius; dy++) {
+        for (int dx = -search_radius; dx <= search_radius; dx++) {
+            if (dx == 0 && dy == 0) continue;
+            
+            int nx = x + dx;
+            int ny = y + dy;
+            
+            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                guchar *neighbor = pixels + ny * rowstride + nx * 4;
+                if (neighbor[3] == 0) return 1; // Found transparent pixel
+            }
+        }
+    }
+    return 0;
+}
+
+void draw_img_border(GdkPixbuf *pixbuf) {
+    int width = gdk_pixbuf_get_width(pixbuf);
+    int height = gdk_pixbuf_get_height(pixbuf);
+
+    guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
+    int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            guchar *pixel = pixels + y * rowstride + x * 4;
+
+            if (pixel[3] == 0) continue; // Skip transparent pixels
+
+            // Check if pixel is near edge or has transparent neighbors
+            if (min_distance_to_edge(x, y, width, height) < BORDER_SIZE ||
+                has_transparent_neighbor(pixels, x, y, width, height, rowstride, BORDER_SIZE)) {
+                pixel[0] = 0; // R
+                pixel[1] = 0; // G
+                pixel[2] = 0; // B
+            }
+        }
+    }
+}
+
+
 
 void update_img_corruption(GdkPixbuf *pixbuf, float corruptPercentage) {
 
@@ -184,6 +238,7 @@ void start_window() {
         strcat(path, ".png");
         countries[i].original_pixbuf = gdk_pixbuf_new_from_file(path, NULL);
         update_img_corruption(countries[i].original_pixbuf, 0.5);
+        draw_img_border(countries[i].original_pixbuf);
         if (countries[i].original_pixbuf) {
             countries[i].width = gdk_pixbuf_get_width(countries[i].original_pixbuf);
             countries[i].height = gdk_pixbuf_get_height(countries[i].original_pixbuf);
