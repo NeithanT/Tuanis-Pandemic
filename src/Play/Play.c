@@ -1,14 +1,12 @@
 #include "Play.h"
 
 
-//###############################################################################
-/**
- * Funcion para consultar los aspectos de cada pais
- * @param list
- * @return
- */
+#include "Play.h"
 
-int consultAspects(struct DoubleLinkedList* list) {
+
+//###############################################################################
+
+int consult_aspects(struct DoubleLinkedList* list) {
     if (list == NULL) { //Revisar estado de la lista
         return 0;
     }
@@ -30,43 +28,43 @@ int consultAspects(struct DoubleLinkedList* list) {
  * hasta que la validación verifiyWinner sea != 2 (Indicando así un ganador)
  * Llama a la función throwWinner para mostrar el cartelito de ganador
  */
-void StartGame() {
+void start_game() {
 
-    struct DoubleLinkedList* countryList = initializeDoubleLinkedList();
-    struct Player* Player = allocateInitialPlayerOnMap(countryList);
-    struct Player* Ally = allocateInitialPlayerOnMap(countryList);
+    struct DoubleLinkedList* countryList = initialize_double_linked_list();
+    struct Player* Player = allocate_initial_player_on_map(countryList);
+    struct Player* Ally = allocate_initial_player_on_map(countryList);
 
     bool isGameOver = false;
     bool isTurnPlayer = true;
     while (!isGameOver) {
         //Turno player
         if (isTurnPlayer == true) {
-            turnPlayer(countryList,Player);
-            turnCorruption(countryList);
+            turn_player(countryList,Player);
+            turn_corruption(countryList);
             isTurnPlayer = false;
         }
         //Turno aliado
         else {
-            turnAlly(Ally);
-            turnCorruption(countryList);
+            turn_ally(Ally);
+            turn_corruption(countryList);
             isTurnPlayer = true;
         }
 
         //Revisa si hay países para eliminar y si ya se gano el juego
-        while (!eraseDeadCountries(countryList)); //Limpia los paises muertos
-        if (verifyWinner(countryList) != 2) {
+        while (!erase_dead_countries(countryList)); //Limpia los paises muertos
+        if (verify_winner(countryList) != 2) {
             isGameOver = true;
         }
     } //while
-    int winner = verifyWinner(countryList);
-    throwWinner(winner);
+    int winner = verify_winner(countryList);
+    throw_winner(winner);
 }
 
 
 //###############################################################################
 
 //TODO: Implementar función del turno de player con la interfaz gráfica
-void turnPlayer(struct DoubleLinkedList* doubleLinkedList, struct Player* player) {
+void turn_player(struct DoubleLinkedList* doubleLinkedList, struct Player* player) {
 
     if (doubleLinkedList == NULL || doubleLinkedList->start ==NULL || player == NULL) {
         printf("ERROR2500: No se ha podido aplicar el turno del jugador");
@@ -78,7 +76,7 @@ void turnPlayer(struct DoubleLinkedList* doubleLinkedList, struct Player* player
 
 //###############################################################################
 
-void turnAlly(struct Player* ally) {
+void turn_ally(struct Player* ally) {
     if (!ally || !ally->current_country) {
         printf("ERROR: Ally state invalid\n");
         return;
@@ -87,16 +85,16 @@ void turnAlly(struct Player* ally) {
     printf("Ally turn starting at %s\n", ally->current_country->name);
     
     // Ally moves to adjacent country (or stays)
-    moveAllyRandomCountry(ally);
+    move_ally_random_country(ally);
     printf("Ally moved to %s\n", ally->current_country->name);
     
     // Ally does 4 actions
     for (int i = 0; i < 4; i++) {
         // Reduce a random problem in current country
-        reduceRandomProblem(ally->current_country);
+        reduce_random_problem(ally->current_country);
         
         // Recalculate corruption after each action
-        calculateCorruption(ally->current_country);
+        calculate_corruption(ally->current_country);
     }
     
     printf("Ally turn complete\n");
@@ -105,9 +103,9 @@ void turnAlly(struct Player* ally) {
 
 
 //###############################################################################
-void turnCorruption (struct DoubleLinkedList* doubleLinkedList) {
-    randomCorruptAfterTurn(doubleLinkedList);
-    calculateCorruptionCountryList(doubleLinkedList);
+void turn_corruption (struct DoubleLinkedList* doubleLinkedList) {
+    random_corrupt_after_turn(doubleLinkedList);
+    calculate_corruption_country_list(doubleLinkedList);
 }
 
 
@@ -120,7 +118,7 @@ void turnCorruption (struct DoubleLinkedList* doubleLinkedList) {
  * @param doubleLinkedList la lista de países
  * @return (0 si el ganador es el jugador, 1 si es la corrupción, un 2 si nadie ha ganado)
  */
-int verifyWinner(struct DoubleLinkedList* doubleLinkedList) {
+int verify_winner(struct DoubleLinkedList* doubleLinkedList) {
 
     if (doubleLinkedList == NULL || doubleLinkedList->start == NULL) {
         printf("ERROR1500: No se ha podido verificar el ganador");
@@ -128,7 +126,7 @@ int verifyWinner(struct DoubleLinkedList* doubleLinkedList) {
     }
     int winner = 2;
     //Esta condición verifica si quedan 3 o menos paises vivos (Osea que ha ganado la corrupción)
-    if (lengthDoubleLinkedList(doubleLinkedList) <= 3) {
+    if (length_double_linked_list(doubleLinkedList) <= 3) {
         winner = 1;
         return winner; //Indica que ha ganado la corrupción
     }
@@ -151,7 +149,7 @@ int verifyWinner(struct DoubleLinkedList* doubleLinkedList) {
 
 //###############################################################################
 
-void throwWinner(int winner) {
+void throw_winner(int winner) {
 
     if (!winner) {
         printf("The player has win");

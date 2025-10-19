@@ -8,7 +8,7 @@
  * Calcula los valores de corrupción, de todos los países en la lista de países
  * @param doubleLinkedList
  */
-void calculateCorruptionCountryList(struct DoubleLinkedList* doubleLinkedList) {
+void calculate_corruption_country_list(struct DoubleLinkedList* doubleLinkedList) {
 
     if (doubleLinkedList == NULL || doubleLinkedList->start == NULL) {
         printf("ERROR2000: No se ha podido calcular el valor de corrupción de la lista");
@@ -16,7 +16,7 @@ void calculateCorruptionCountryList(struct DoubleLinkedList* doubleLinkedList) {
     }
     struct Country* current = doubleLinkedList->start;
     while (current != NULL) {
-        calculateCorruption(current);
+        calculate_corruption(current);
         current = current->next;
     }
 
@@ -31,7 +31,7 @@ void calculateCorruptionCountryList(struct DoubleLinkedList* doubleLinkedList) {
  */
 
 
-void calculateCorruption(struct Country* country) {
+void calculate_corruption(struct Country* country) {
 
     if (country == NULL) {
         printf("ERROR1200: No se pudo calcular la corrupción");
@@ -59,13 +59,13 @@ void calculateCorruption(struct Country* country) {
  * @param list
  * @return
  */
-int initialCorruption(struct DoubleLinkedList* list) {
+int initial_corruption(struct DoubleLinkedList* list) {
     //TODO colocar el srand(time(NULL)); en main
     int modifiedCount = 0; //Parametro para conocer cuantas modificaciones se llevan
     for (int i = 0; i < 9; i++) {
         int modifier = rand() % 21; // Obtener un pais entre los 21 de LATAM
         int higher = rand() % 2;    // Obtener uno de los dos aspectos a modificar
-        modifyAspectsCountry(list,modifier,modifiedCount,higher); //Llamar la funcion para modificar
+        modify_aspects_country(list,modifier,modifiedCount,higher); //Llamar la funcion para modificar
         modifiedCount++; //Sumar uno a la cantidad de modificaciones
     }
     return 0;
@@ -81,7 +81,7 @@ int initialCorruption(struct DoubleLinkedList* list) {
  * @param higher
  * @return
  */
-int modifyAspectsCountry(struct DoubleLinkedList* list, int position, int modifiedCount, int higher) {
+int modify_aspects_country(struct DoubleLinkedList* list, int position, int modifiedCount, int higher) {
     struct Country *actual = list->start; //Se apunta al inicio
     int current = 0; //La posicion actual
     while (current != position) { //Buscar el pais a modificar
@@ -126,7 +126,7 @@ int modifyAspectsCountry(struct DoubleLinkedList* list, int position, int modifi
  * @param position
  * @param change
  */
-void modifyAspectsAfterTurn(struct DoubleLinkedList *list, int position, int change) {
+void modify_aspects_after_turn(struct DoubleLinkedList *list, int position, int change) {
     struct Country *actual = list->start; //Apuntamos al actual
     int current = 0;
     while (current != position) { //Buscar el pais actual
@@ -212,26 +212,26 @@ void modifyAspectsAfterTurn(struct DoubleLinkedList *list, int position, int cha
  * @param list
  * @return
  */
-void randomCorruptAfterTurn(struct DoubleLinkedList* list) {
+void random_corrupt_after_turn(struct DoubleLinkedList* list) {
     if (!list || !list->start) {
         printf("ERROR: Cannot corrupt - list is empty\n");
         return;
     }
     
-    int list_length = lengthDoubleLinkedList(list);
+    int list_length = length_double_linked_list(list);
     if (list_length == 0) return;
     
     for (int i = 0; i < 3; i++) {
         // Get a random position within the actual list length
         int positionCountryToModify = rand() % list_length;
         int valueOfProblematic = rand() % 2;
-        modifyAspectsAfterTurn(list, positionCountryToModify, valueOfProblematic);
+        modify_aspects_after_turn(list, positionCountryToModify, valueOfProblematic);
     }
 }
 
 //###############################################################################
 
-void reduceRandomProblem(struct Country* country) {
+void reduce_random_problem(struct Country* country) {
 
     if (country == NULL) {
         printf("ERROR2200: No se ha podido reducir el problema");

@@ -31,20 +31,20 @@ struct DoubleLinkedList {
 	struct Country* connected_list[21];
 };
 
-struct Country* newCountry (char* name, float corruption);
+struct Country* new_country (char* name, float corruption);
 
-struct DoubleLinkedList* newDoubleLinkedList();
+struct DoubleLinkedList* new_double_linked_list();
 
-struct DoubleLinkedList* initializeDoubleLinkedList();
+struct DoubleLinkedList* initialize_double_linked_list();
 
-struct Country* getCountryByPosition(struct DoubleLinkedList* list, int position);
+struct Country* get_country_by_position(struct DoubleLinkedList* list, int position);
 
-int eraseDeadCountries(struct DoubleLinkedList* doubleLinkedList);
+int erase_dead_countries(struct DoubleLinkedList* doubleLinkedList);
 
-int connectDoubleLinkedList(struct DoubleLinkedList* doubleList, struct Country* country );
+int connect_double_linked_list(struct DoubleLinkedList* doubleList, struct Country* country );
 
-int fillList(struct DoubleLinkedList* list);
+int fill_list(struct DoubleLinkedList* list);
 
-int lengthDoubleLinkedList(struct DoubleLinkedList* doubleLinkedList);
+int length_double_linked_list(struct DoubleLinkedList* doubleLinkedList);
 
 #endif //SRC_STRUCTS_H0

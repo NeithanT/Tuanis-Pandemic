@@ -13,7 +13,7 @@ struct Country* pick_country() {
 
 //###############################################################################
 
-struct Player* allocateInitialPlayerOnMap(struct DoubleLinkedList* doubleLinkedList) {
+struct Player* allocate_initial_player_on_map(struct DoubleLinkedList* doubleLinkedList) {
 
     if (doubleLinkedList == NULL || doubleLinkedList->start == NULL) {
         printf("ERROR2100: No se ha podido colocar al jugador en el mapa");
@@ -24,7 +24,7 @@ struct Player* allocateInitialPlayerOnMap(struct DoubleLinkedList* doubleLinkedL
     struct Country* current_country = doubleLinkedList->start;
     newPlayer->current_country = current_country;
 
-    int sizeList = lengthDoubleLinkedList(doubleLinkedList);
+    int sizeList = length_double_linked_list(doubleLinkedList);
     int randomPosition = rand() % sizeList;
 
     while (randomPosition-- > 0) {
@@ -43,7 +43,7 @@ void move_player(struct DoubleLinkedList* doubleLinkedList,struct Player* player
         printf("Cant move the player because the parameters are invalid");
     }
     if (isAlly) {
-        moveAllyRandomCountry(player);
+        move_ally_random_country(player);
     }
     else {
     struct Country* selected_country = pick_country();
@@ -59,7 +59,7 @@ void move_player(struct DoubleLinkedList* doubleLinkedList,struct Player* player
 
 //###############################################################################
 
-void moveAllyRandomCountry(struct Player* player) {
+void move_ally_random_country(struct Player* player) {
 
     if (!player || !player->current_country) {
         printf("ERROR2500: No se ha podido obtener un Country Random");

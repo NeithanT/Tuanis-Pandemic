@@ -10,9 +10,6 @@
 
 #define NUM_COUNTRIES 21
 #define PATH "src/Images/"
-#define WIDTH 1000
-#define HEIGHT 800
-#define DIVISION 200
 #define BORDER_SIZE 5
 
 GtkWidget *win;
@@ -491,7 +488,7 @@ void update_solutions_text() {
     strcat(buffer, "\n");
     
     // Show solutions if available
-    struct listSolutions* solutions = searchByKey(hash_table, current_country->name);
+    struct listSolutions* solutions = search_by_key(hash_table, current_country->name);
     if (solutions && solutions->start) {
         strcat(buffer, "Soluciones:\n");
         struct nodeList* current = solutions->start;
@@ -538,7 +535,7 @@ void btn_action_poverty_clicked(GtkWidget *widget, gpointer data) {
         add_message(msg);
         
         // Recalculate corruption after change
-        calculateCorruption(current_country);
+        calculate_corruption(current_country);
         
         label_current_country_update(current_country->name);
         gtk_widget_queue_draw(drawing_area);
@@ -583,7 +580,7 @@ void btn_action_crime_clicked(GtkWidget *widget, gpointer data) {
                current_country->name, player_actions_remaining);
         add_message(msg);
         
-        calculateCorruption(current_country);
+        calculate_corruption(current_country);
         
         label_current_country_update(current_country->name);
         gtk_widget_queue_draw(drawing_area);
@@ -628,7 +625,7 @@ void btn_action_inequality_clicked(GtkWidget *widget, gpointer data) {
                current_country->name, player_actions_remaining);
         add_message(msg);
         
-        calculateCorruption(current_country);
+        calculate_corruption(current_country);
         
         label_current_country_update(current_country->name);
         gtk_widget_queue_draw(drawing_area);
@@ -674,7 +671,7 @@ void btn_action_political_weakness_clicked(GtkWidget *widget, gpointer data) {
                current_country->name, player_actions_remaining);
         add_message(msg);
         
-        calculateCorruption(current_country);
+        calculate_corruption(current_country);
         
         label_current_country_update(current_country->name);
         gtk_widget_queue_draw(drawing_area);
@@ -720,11 +717,11 @@ void end_player_turn() {
     current_game_state = TURN_CORRUPTION;
     
     // Corruption spreads
-    turnCorruption(list);
-    calculateCorruptionCountryList(list);
+    turn_corruption(list);
+    calculate_corruption_country_list(list);
     
     // Clean dead countries
-    while (!eraseDeadCountries(list));
+    while (!erase_dead_countries(list));
     
     // Check if player/ally are in dead countries and relocate them
     if (player && player->current_country && list->start) {
@@ -764,7 +761,7 @@ void end_player_turn() {
     }
     
     // Check for winner
-    int winner = verifyWinner(list);
+    int winner = verify_winner(list);
     if (winner != 2) {
         current_game_state = GAME_OVER;
         check_winner();
@@ -774,15 +771,15 @@ void end_player_turn() {
     // Ally turn
     add_message("--- Turno del aliado ---");
     current_game_state = TURN_ALLY;
-    turnAlly(ally);
+    turn_ally(ally);
     
     // Corruption spreads again
     add_message("La corrupción se expande de nuevo...");
-    turnCorruption(list);
-    calculateCorruptionCountryList(list);
+    turn_corruption(list);
+    calculate_corruption_country_list(list);
     
     // Clean dead countries
-    while (!eraseDeadCountries(list));
+    while (!erase_dead_countries(list));
     
     // Check if player/ally are in dead countries again
     if (player && player->current_country && list->start) {
@@ -822,7 +819,7 @@ void end_player_turn() {
     }
     
     // Check for winner
-    winner = verifyWinner(list);
+    winner = verify_winner(list);
     if (winner != 2) {
         current_game_state = GAME_OVER;
         check_winner();
@@ -858,13 +855,13 @@ void end_player_turn() {
 void check_winner() {
     if (!list) return;
     
-    int winner = verifyWinner(list);
+    int winner = verify_winner(list);
     if (winner != 2) {
         char msg[200];
         if (winner == 0) {
             strcpy(msg, "¡Felicidades! Has ganado. Todos los países tienen al menos un problema resuelto.");
         } else {
-            sprintf(msg, "La corrupción ha ganado. Solo quedan %d países.", lengthDoubleLinkedList(list));
+            sprintf(msg, "La corrupción ha ganado. Solo quedan %d países.", length_double_linked_list(list));
         }
         GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(win), 
                                                      GTK_DIALOG_MODAL, 
@@ -877,16 +874,7 @@ void check_winner() {
     }
 }
 
-struct Country* find_country_by_name(const char* name) {
-    struct Country* current = list->start;
-    while (current != NULL) {
-        if (strcmp(current->name, name) == 0) {
-            return current;
-        }
-        current = current->next;
-    }
-    return NULL;
-}
+
 
 
 void start_window(int argc, char *argv[]) {
@@ -941,9 +929,9 @@ void start_window(int argc, char *argv[]) {
     }
 
     // Initialize game elements
-    hash_table = createNewHashTable();
-    populateHashTable(hash_table);
-    list = initializeDoubleLinkedList();
+    hash_table = create_new_hash_table();
+    populate_hash_table(hash_table);
+    list = initialize_double_linked_list();
     
     // Assign images to countries
     struct Country* current = list->start;
@@ -958,14 +946,14 @@ void start_window(int argc, char *argv[]) {
     }
     
     // Calculate initial corruption for all countries
-    calculateCorruptionCountryList(list);
+    calculate_corruption_country_list(list);
     
-    player = allocateInitialPlayerOnMap(list);
-    ally = allocateInitialPlayerOnMap(list);
+    player = allocate_initial_player_on_map(list);
+    ally = allocate_initial_player_on_map(list);
     
     // Make sure ally is in a different country
     while (ally->current_country == player->current_country) {
-        ally = allocateInitialPlayerOnMap(list);
+        ally = allocate_initial_player_on_map(list);
     }
     
     // Set game state

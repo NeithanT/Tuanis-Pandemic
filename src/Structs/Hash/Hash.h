@@ -34,29 +34,29 @@ struct hastTable {
     struct slotHashTable** slots;
 };
 
-struct listSolutions* createNewList();
-struct nodeList* createNewNode(char* solution_string);
-void insertNode(struct listSolutions* listSolutionsCountry,char* SolutionString);
+struct listSolutions* create_new_list();
+struct nodeList* create_new_node(char* solution_string);
+void insert_node(struct listSolutions* listSolutionsCountry,char* SolutionString);
 
-struct hastTable* createNewHashTable();
-struct slotHashTable* createNewSlotHashTable();
+struct hastTable* create_new_hash_table();
+struct slotHashTable* create_new_slot_hash_table();
 
-void insertHashSlots(struct hastTable* table,char* nameKey, struct listSolutions* list_solutions);
-struct slotHashTable* pairKeyNameAndValue(char* keyName, struct listSolutions* listSolutions);
-
-
-struct listSolutions* searchByKey(struct hastTable* table, char* keyName);
-void printHashTable(struct hastTable* table);
-void populateHashTable(struct hastTable* table);
+void insert_hash_slots(struct hastTable* table,char* nameKey, struct listSolutions* list_solutions);
+struct slotHashTable* pair_key_name_and_value(char* keyName, struct listSolutions* listSolutions);
 
 
-void copySolutionsToNewList(struct listSolutions* oldListSolutions, struct listSolutions* newListSolutions);
-int lengthSolutionList(struct listSolutions* listSolutions);
-void printListSolutions(struct listSolutions* listSolutions);
+struct listSolutions* search_by_key(struct hastTable* table, char* keyName);
+void print_hash_table(struct hastTable* table);
+void populate_hash_table(struct hastTable* table);
 
 
-void freeListSolutions(struct listSolutions* listSolutions);
-void freeHashTable(struct hastTable* table);
+void copy_solutions_to_new_list(struct listSolutions* oldListSolutions, struct listSolutions* newListSolutions);
+int length_solution_list(struct listSolutions* listSolutions);
+void print_list_solutions(struct listSolutions* listSolutions);
+
+
+void free_list_solutions(struct listSolutions* listSolutions);
+void free_hash_table(struct hastTable* table);
 
 
 #endif //TUANIS_PANDEMIC_HASH_H

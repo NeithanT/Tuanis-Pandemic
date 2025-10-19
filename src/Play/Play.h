@@ -11,18 +11,18 @@
 #include "../Structs/Random/random.h"
 #include "../Structs/Player/Player.h"
 
-void StartGame();
+void start_game();
 
-void turnPlayer(struct DoubleLinkedList* doubleLinkedList, struct Player* player);
+void turn_player(struct DoubleLinkedList* doubleLinkedList, struct Player* player);
 
-void turnAlly(struct Player* ally);
+void turn_ally(struct Player* ally);
 
-void turnCorruption (struct DoubleLinkedList* doubleLinkedList);
+void turn_corruption (struct DoubleLinkedList* doubleLinkedList);
 
-int consultAspects(struct DoubleLinkedList* list);
+int consult_aspects(struct DoubleLinkedList* list);
 
-int verifyWinner(struct DoubleLinkedList* doubleLinkedList);
+int verify_winner(struct DoubleLinkedList* doubleLinkedList);
 
-void throwWinner(int winner);
+void throw_winner(int winner);
 
 #endif //TEC_PLAY_H
