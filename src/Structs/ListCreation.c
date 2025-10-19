@@ -3,18 +3,28 @@
 //
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "structs.h"
 #include "Player/Player.h"
 #include "Random/random.h"
 
 //###############################################################################
 
+// Prototypes
+void populateConnections(struct DoubleLinkedList* list);
+struct Country* findCountryByName(struct DoubleLinkedList* list, const char* name);
+
 
 struct DoubleLinkedList* initializeDoubleLinkedList() {
 
     struct DoubleLinkedList* doubleLinkedList = newDoubleLinkedList();
     fillList(doubleLinkedList);
+    printf("About to populate connections\n");
+    populateConnections(doubleLinkedList);
+    printf("Connections populated\n");
+    printf("About to initial corruption\n");
     initialCorruption(doubleLinkedList);
+    printf("Initial corruption done\n");
 
     return doubleLinkedList;
 }
@@ -53,10 +63,23 @@ struct DoubleLinkedList* newDoubleLinkedList () {
 
 //###############################################################################
 
-//Funcion para llenar la lista con los paises
-//Entradas: La lista doble y el pais a rellenar
-int connectDoubleLinkedList (struct DoubleLinkedList* doubleList, struct Country* country ) {
+//Funcion para conectar a lista conectada (single linked)
+void connectToConnected(struct DoubleLinkedList* list, struct Country* country) {
+    if (list == NULL || country == NULL) return;
+    if (list->start == NULL) {
+        list->start = country;
+        country->next_connected = NULL;
+    } else {
+        struct Country* current = list->start;
+        while (current->next_connected != NULL) {
+            current = current->next_connected;
+        }
+        current->next_connected = country;
+        country->next_connected = NULL;
+    }
+}
 
+int connectDoubleLinkedList(struct DoubleLinkedList* doubleList, struct Country* country) {
     //Revisar si la lista doble y el pais se crearon
     if (doubleList == NULL || country == NULL) {
         return -1;
@@ -83,7 +106,6 @@ int connectDoubleLinkedList (struct DoubleLinkedList* doubleList, struct Country
     country -> prev = previous;
 
     return 0;
-
 }
 //###############################################################################
 
@@ -155,7 +177,7 @@ int fillList(struct DoubleLinkedList* list) {
         ("Belice", "Mexico")
         ("Belice", "Guatemala")
     */
-    connectDoubleLinkedList(list, newCountry("El Salvador",0.0));
+    connectDoubleLinkedList(list, newCountry("ElSalvador",0.0));
     /*
         ("El Salvador", "Guatemala")
         ("El Salvador", "Honduras")
@@ -171,7 +193,7 @@ int fillList(struct DoubleLinkedList* list) {
         ("Nicaragua", "Honduras")
         ("Nicaragua", "Costa Rica")
     */
-    connectDoubleLinkedList(list, newCountry("Costa Rica",0.0));
+    connectDoubleLinkedList(list, newCountry("CostaRica",0.0));
     /*
         ("Costa Rica", "Nicaragua")
         ("Costa Rica",  "Panama")
@@ -207,7 +229,7 @@ int fillList(struct DoubleLinkedList* list) {
         ("Surinam", "Brasil")
         ("Surinam", "Guayana Francesa")
     */
-    connectDoubleLinkedList(list, newCountry("Guayana Francesa",0.0));
+    connectDoubleLinkedList(list, newCountry("GuayanaFrancesa",0.0));
     /*
         ("Guayana Francesa", "Surinam")
         ("Guayana Francesa", "Brasil")
@@ -279,5 +301,215 @@ void printDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList) {
     printf("<== %s \n", current_country -> name ); //Imprimir el ultimo pais con su unica frontera
 }
 
+
+//###############################################################################
+
+// Function to populate connected_countries for each country
+void populateConnections(struct DoubleLinkedList* list) {
+    struct Country* current = list->start;
+    while (current != NULL) {
+        current->connected_countries = newDoubleLinkedList();
+        current = current->next;
+    }
+
+    // Now add connections based on the comments in fillList
+    // Mexico: Belize, Guatemala
+    struct Country* mexico = findCountryByName(list, "Mexico");
+    if (mexico) {
+        connectToConnected(mexico->connected_countries, findCountryByName(list, "Belice"));
+        connectToConnected(mexico->connected_countries, findCountryByName(list, "Guatemala"));
+    }
+
+    // Guatemala: Mexico, Belize, Honduras, El Salvador
+    struct Country* guatemala = findCountryByName(list, "Guatemala");
+    if (guatemala) {
+        connectToConnected(guatemala->connected_countries, findCountryByName(list, "Mexico"));
+        connectToConnected(guatemala->connected_countries, findCountryByName(list, "Belice"));
+        connectToConnected(guatemala->connected_countries, findCountryByName(list, "Honduras"));
+        connectToConnected(guatemala->connected_countries, findCountryByName(list, "ElSalvador"));
+    }
+
+    // Belize: Mexico, Guatemala
+    struct Country* belice = findCountryByName(list, "Belice");
+    if (belice) {
+        connectToConnected(belice->connected_countries, findCountryByName(list, "Mexico"));
+        connectToConnected(belice->connected_countries, findCountryByName(list, "Guatemala"));
+    }
+
+    // El Salvador: Guatemala, Honduras
+    struct Country* el_salvador = findCountryByName(list, "ElSalvador");
+    if (el_salvador) {
+        connectToConnected(el_salvador->connected_countries, findCountryByName(list, "Guatemala"));
+        connectToConnected(el_salvador->connected_countries, findCountryByName(list, "Honduras"));
+    }
+
+    // Honduras: Guatemala, El Salvador, Nicaragua
+    struct Country* honduras = findCountryByName(list, "Honduras");
+    if (honduras) {
+        connectToConnected(honduras->connected_countries, findCountryByName(list, "Guatemala"));
+        connectToConnected(honduras->connected_countries, findCountryByName(list, "El Salvador"));
+        connectToConnected(honduras->connected_countries, findCountryByName(list, "Nicaragua"));
+    }
+
+    // Nicaragua: Honduras, Costa Rica
+    struct Country* nicaragua = findCountryByName(list, "Nicaragua");
+    if (nicaragua) {
+        connectToConnected(nicaragua->connected_countries, findCountryByName(list, "Honduras"));
+        connectToConnected(nicaragua->connected_countries, findCountryByName(list, "CostaRica"));
+    }
+
+    // Costa Rica: Nicaragua, Panama
+    struct Country* costa_rica = findCountryByName(list, "CostaRica");
+    if (costa_rica) {
+        connectToConnected(costa_rica->connected_countries, findCountryByName(list, "Nicaragua"));
+        connectToConnected(costa_rica->connected_countries, findCountryByName(list, "Panama"));
+    }
+
+    // Panama: Costa Rica, Colombia
+    struct Country* panama = findCountryByName(list, "Panama");
+    if (panama) {
+        connectToConnected(panama->connected_countries, findCountryByName(list, "CostaRica"));
+        connectToConnected(panama->connected_countries, findCountryByName(list, "Colombia"));
+    }
+
+    // Colombia: Panama, Venezuela, Brasil, Ecuador, Peru
+    struct Country* colombia = findCountryByName(list, "Colombia");
+    if (colombia) {
+        connectToConnected(colombia->connected_countries, findCountryByName(list, "Panama"));
+        connectToConnected(colombia->connected_countries, findCountryByName(list, "Venezuela"));
+        connectToConnected(colombia->connected_countries, findCountryByName(list, "Brasil"));
+        connectToConnected(colombia->connected_countries, findCountryByName(list, "Ecuador"));
+        connectToConnected(colombia->connected_countries, findCountryByName(list, "Peru"));
+    }
+
+    // Venezuela: Colombia, Brasil, Guyana
+    struct Country* venezuela = findCountryByName(list, "Venezuela");
+    if (venezuela) {
+        connectToConnected(venezuela->connected_countries, findCountryByName(list, "Colombia"));
+        connectToConnected(venezuela->connected_countries, findCountryByName(list, "Brasil"));
+        connectToConnected(venezuela->connected_countries, findCountryByName(list, "Guyana"));
+    }
+
+    // Guyana: Venezuela, Brasil, Surinam
+    struct Country* guyana = findCountryByName(list, "Guyana");
+    if (guyana) {
+        connectToConnected(guyana->connected_countries, findCountryByName(list, "Venezuela"));
+        connectToConnected(guyana->connected_countries, findCountryByName(list, "Brasil"));
+        connectToConnected(guyana->connected_countries, findCountryByName(list, "Surinam"));
+    }
+
+    // Surinam: Guyana, Brasil, Guayana Francesa
+    struct Country* surinam = findCountryByName(list, "Surinam");
+    if (surinam) {
+        connectToConnected(surinam->connected_countries, findCountryByName(list, "Guyana"));
+        connectToConnected(surinam->connected_countries, findCountryByName(list, "Brasil"));
+        connectToConnected(surinam->connected_countries, findCountryByName(list, "GuayanaFrancesa"));
+    }
+
+    // Guayana Francesa: Surinam, Brasil
+    struct Country* guayana_francesa = findCountryByName(list, "GuayanaFrancesa");
+    if (guayana_francesa) {
+        connectToConnected(guayana_francesa->connected_countries, findCountryByName(list, "Surinam"));
+        connectToConnected(guayana_francesa->connected_countries, findCountryByName(list, "Brasil"));
+    }
+
+    // Brasil: Guayana Francesa, Surinam, Guyana, Venezuela, Colombia, Peru, Bolivia, Paraguay, Argentina, Uruguay
+    struct Country* brasil = findCountryByName(list, "Brasil");
+    if (brasil) {
+        connectToConnected(brasil->connected_countries, findCountryByName(list, "GuayanaFrancesa"));
+        connectToConnected(brasil->connected_countries, findCountryByName(list, "Surinam"));
+        connectToConnected(brasil->connected_countries, findCountryByName(list, "Guyana"));
+        connectToConnected(brasil->connected_countries, findCountryByName(list, "Venezuela"));
+        connectToConnected(brasil->connected_countries, findCountryByName(list, "Colombia"));
+        connectToConnected(brasil->connected_countries, findCountryByName(list, "Peru"));
+        connectToConnected(brasil->connected_countries, findCountryByName(list, "Bolivia"));
+        connectToConnected(brasil->connected_countries, findCountryByName(list, "Paraguay"));
+        connectToConnected(brasil->connected_countries, findCountryByName(list, "Argentina"));
+        connectToConnected(brasil->connected_countries, findCountryByName(list, "Uruguay"));
+    }
+
+    // Uruguay: Brasil, Argentina
+    struct Country* uruguay = findCountryByName(list, "Uruguay");
+    if (uruguay) {
+        connectToConnected(uruguay->connected_countries, findCountryByName(list, "Brasil"));
+        connectToConnected(uruguay->connected_countries, findCountryByName(list, "Argentina"));
+    }
+
+    // Argentina: Uruguay, Brasil, Paraguay, Bolivia, Chile
+    struct Country* argentina = findCountryByName(list, "Argentina");
+    if (argentina) {
+        connectToConnected(argentina->connected_countries, findCountryByName(list, "Uruguay"));
+        connectToConnected(argentina->connected_countries, findCountryByName(list, "Brasil"));
+        connectToConnected(argentina->connected_countries, findCountryByName(list, "Paraguay"));
+        connectToConnected(argentina->connected_countries, findCountryByName(list, "Bolivia"));
+        connectToConnected(argentina->connected_countries, findCountryByName(list, "Chile"));
+    }
+
+    // Paraguay: Argentina, Brasil, Bolivia
+    struct Country* paraguay = findCountryByName(list, "Paraguay");
+    if (paraguay) {
+        connectToConnected(paraguay->connected_countries, findCountryByName(list, "Argentina"));
+        connectToConnected(paraguay->connected_countries, findCountryByName(list, "Brasil"));
+        connectToConnected(paraguay->connected_countries, findCountryByName(list, "Bolivia"));
+    }
+
+    // Bolivia: Paraguay, Brasil, Peru, Chile, Argentina
+    struct Country* bolivia = findCountryByName(list, "Bolivia");
+    if (bolivia) {
+        connectToConnected(bolivia->connected_countries, findCountryByName(list, "Paraguay"));
+        connectToConnected(bolivia->connected_countries, findCountryByName(list, "Brasil"));
+        connectToConnected(bolivia->connected_countries, findCountryByName(list, "Peru"));
+        connectToConnected(bolivia->connected_countries, findCountryByName(list, "Chile"));
+        connectToConnected(bolivia->connected_countries, findCountryByName(list, "Argentina"));
+    }
+
+    // Chile: Bolivia, Peru, Argentina
+    struct Country* chile = findCountryByName(list, "Chile");
+    if (chile) {
+        connectToConnected(chile->connected_countries, findCountryByName(list, "Bolivia"));
+        connectToConnected(chile->connected_countries, findCountryByName(list, "Peru"));
+        connectToConnected(chile->connected_countries, findCountryByName(list, "Argentina"));
+    }
+
+    // Peru: Chile, Bolivia, Brasil, Colombia, Ecuador
+    struct Country* peru = findCountryByName(list, "Peru");
+    if (peru) {
+        connectToConnected(peru->connected_countries, findCountryByName(list, "Chile"));
+        connectToConnected(peru->connected_countries, findCountryByName(list, "Bolivia"));
+        connectToConnected(peru->connected_countries, findCountryByName(list, "Brasil"));
+        connectToConnected(peru->connected_countries, findCountryByName(list, "Colombia"));
+        connectToConnected(peru->connected_countries, findCountryByName(list, "Ecuador"));
+    }
+
+    // Ecuador: Peru, Colombia
+    struct Country* ecuador = findCountryByName(list, "Ecuador");
+    if (ecuador) {
+        connectToConnected(ecuador->connected_countries, findCountryByName(list, "Peru"));
+        connectToConnected(ecuador->connected_countries, findCountryByName(list, "Colombia"));
+    }
+}
+
+// Helper function to find country by name
+struct Country* findCountryByName(struct DoubleLinkedList* list, const char* name) {
+    struct Country* current = list->start;
+    while (current != NULL) {
+        if (strcmp(current->name, name) == 0) {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
+struct Country* getCountryByPosition(struct DoubleLinkedList* list, int position) {
+    if (list == NULL || list->start == NULL || position < 0) return NULL;
+    struct Country* current = list->start;
+    int i = 0;
+    while (current != NULL && i < position) {
+        current = current->next;
+        i++;
+    }
+    return current;
+}
 
 //###############################################################################

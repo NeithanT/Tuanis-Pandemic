@@ -5,8 +5,7 @@
 #include "Hash.h"
 
 
-
-int hash(char* key){
+int hash(char* key) {
 	long value = 0;
 	int c;
 	while ((c = *key++)) {
@@ -472,8 +471,9 @@ void populateHashTable(struct hastTable* table) {
         // --------------------------------------------------------
         // INSERCIÓN FINAL EN LA HASH TABLE
         // --------------------------------------------------------
-        // Enlaza la lista de soluciones (listSolutionsPais) con el país (KeyName)
+        // Conecta en el hast table
         insertHashSlots(table, pais, listSolutionsPais);
     }
 }
+
 //#####################################################################################

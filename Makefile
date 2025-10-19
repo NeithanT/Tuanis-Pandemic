@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = `pkg-config --cflags gtk+-3.0`
 LIBS = `pkg-config --libs gtk+-3.0`
 TARGET = pandemic
-SRC = src/main.c src/Interface/interface.c src/Structs/ListCreation.c src/Structs/Random/random.c src/Structs/Player/Player.c src/Play/Play.c
+SRC = src/main.c src/Interface/interface.c src/Structs/ListCreation.c src/Structs/Random/random.c src/Structs/Player/Player.c src/Play/Play.c src/Structs/Hash/Hash.c
 OBJ = $(SRC:.c=.o)
 
 all: $(TARGET)
