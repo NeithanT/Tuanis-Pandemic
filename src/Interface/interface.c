@@ -14,6 +14,14 @@
 #define BORDER_SIZE 5
 #define MAX_ACTION_MSG_LEN 200
 #define MAX_BUFFER_LEN 1000
+#define COUNTRY_DETAIL_WIDTH 300
+#define COUNTRY_DETAIL_HEIGHT 300
+
+// Emoji constants for attributes
+#define EMOJI_POVERTY "🏚️"
+#define EMOJI_CRIME "🔫"
+#define EMOJI_UNEMPLOYMENT "📉"
+#define EMOJI_STABILITY "🏛️"
 
 GtkWidget *win;
 GtkBox *box_right_panel;
@@ -427,8 +435,9 @@ static void draw_current_country(GtkWidget *widget, cairo_t *cr, gpointer data) 
         return;
     }
     
-    int width = gtk_widget_get_allocated_width(widget);
-    int height = gtk_widget_get_allocated_height(widget);
+    // Get actual widget dimensions
+    int widget_width = gtk_widget_get_allocated_width(widget);
+    int widget_height = gtk_widget_get_allocated_height(widget);
     
     // Update the surface with the current country
     update_current_country_surface();
@@ -438,23 +447,25 @@ static void draw_current_country(GtkWidget *widget, cairo_t *cr, gpointer data) 
     int surf_height = cairo_image_surface_get_height(surface_cur_country);
     
     // Prevent division by zero
-    if (surf_width <= 0 || surf_height <= 0 || width <= 0 || height <= 0) {
+    if (surf_width <= 0 || surf_height <= 0 || widget_width <= 0 || widget_height <= 0) {
         cairo_set_source_rgb(cr, 1, 0, 0);
         cairo_paint(cr);
         return;
     }
     
-    // Calculate scale to fit the widget
-    double scale_x = (double)width / surf_width;
-    double scale_y = (double)height / surf_height;
+    // Calculate scale to fit the available space, maintaining aspect ratio
+    // Use the smallest scale to ensure the entire image fits within the widget
+    double scale_x = (double)widget_width / surf_width;
+    double scale_y = (double)widget_height / surf_height;
     double detail_scale = (scale_x < scale_y) ? scale_x : scale_y;
     
-    // Center the image
+    // Center the image in the widget
     int scaled_width = surf_width * detail_scale;
     int scaled_height = surf_height * detail_scale;
-    int offset_x = (width - scaled_width) / 2;
-    int offset_y = (height - scaled_height) / 2;
+    int offset_x = (widget_width - scaled_width) / 2;
+    int offset_y = (widget_height - scaled_height) / 2;
     
+    // Apply transformation
     cairo_save(cr);
     cairo_translate(cr, offset_x, offset_y);
     cairo_scale(cr, detail_scale, detail_scale);
@@ -637,20 +648,20 @@ void update_country_stats_labels() {
     
     char buffer[200];
     
-    sprintf(buffer, "Pobreza: %d/3", current_country->poverty);
+    sprintf(buffer, "%s Pobreza: %d/3", EMOJI_POVERTY, current_country->poverty);
     gtk_label_set_text(lbl_poverty, buffer);
     
-    sprintf(buffer, "Crimen: %d/3", current_country->crime);
+    sprintf(buffer, "%s Crimen: %d/3", EMOJI_CRIME, current_country->crime);
     gtk_label_set_text(lbl_crime, buffer);
     
     sprintf(buffer, "Corrupcion: %.0f%%", current_country->corruption * 100);
     gtk_label_set_text(lbl_corruption, buffer);
     
-    sprintf(buffer, "Desempleo: %d/3", current_country->unemployment);
+    sprintf(buffer, "%s Desempleo: %d/3", EMOJI_UNEMPLOYMENT, current_country->unemployment);
     gtk_label_set_text(lbl_unemployment, buffer);
     
     if (lbl_political_stability) {
-        sprintf(buffer, "Estabilidad Política: %d/100", current_country->political_stability);
+        sprintf(buffer, "%s Estabilidad Política: %d/100", EMOJI_STABILITY, current_country->political_stability);
         gtk_label_set_text(lbl_political_stability, buffer);
     }
 }
@@ -751,6 +762,36 @@ void move_player_to_country(struct Country* destination) {
     
     player->current_country = destination;
     current_country = destination; // Update view to player's new location
+    
+    // Check if the new country is isolated (no neighbors)
+    if (!destination->connected_countries || destination->connected_countries->connected_count == 0) {
+        add_debug_message("No hay vecinos. La corrupción ha ganado.");
+        current_game_state = GAME_OVER;
+        
+        // Show game over dialog
+        char end_msg[MAX_ACTION_MSG_LEN];
+        strcpy(end_msg, "Ya no quedan países vecinos. La corrupción ha ganado.");
+        
+        GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(win), 
+                                                     GTK_DIALOG_MODAL, 
+                                                     GTK_MESSAGE_INFO, 
+                                                     GTK_BUTTONS_NONE, 
+                                                     "%s", end_msg);
+        
+        gtk_dialog_add_button(GTK_DIALOG(dialog), "Reiniciar", 1);
+        gtk_dialog_add_button(GTK_DIALOG(dialog), "Salir", 2);
+        
+        int response = gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+        
+        if (response == 1) {
+            restart_game();
+        } else {
+            gtk_main_quit();
+        }
+        return;
+    }
+    
     current_game_state = TURN_PLAYER_ACTION;
     player_actions_remaining = 4;
     
@@ -768,6 +809,36 @@ void stay_in_current_country() {
     add_message(msg);
     
     current_country = player->current_country;
+    
+    // Check if current country is isolated (no neighbors)
+    if (!current_country->connected_countries || current_country->connected_countries->connected_count == 0) {
+        add_debug_message("No hay vecinos. La corrupción ha ganado.");
+        current_game_state = GAME_OVER;
+        
+        // Show game over dialog
+        char end_msg[MAX_ACTION_MSG_LEN];
+        strcpy(end_msg, "Ya no quedan países vecinos. La corrupción ha ganado.");
+        
+        GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(win), 
+                                                     GTK_DIALOG_MODAL, 
+                                                     GTK_MESSAGE_INFO, 
+                                                     GTK_BUTTONS_NONE, 
+                                                     "%s", end_msg);
+        
+        gtk_dialog_add_button(GTK_DIALOG(dialog), "Reiniciar", 1);
+        gtk_dialog_add_button(GTK_DIALOG(dialog), "Salir", 2);
+        
+        int response = gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+        
+        if (response == 1) {
+            restart_game();
+        } else {
+            gtk_main_quit();
+        }
+        return;
+    }
+    
     current_game_state = TURN_PLAYER_ACTION;
     player_actions_remaining = 4;
     
@@ -893,11 +964,13 @@ void update_solutions_text() {
     // Show if you can act on this country
     if (current_game_state == TURN_PLAYER_ACTION) {
         if (current_country == player->current_country) {
-            strcat(buffer, "✓ Puedes actuar aquí\n\n");
+            strcat(buffer, "✓ Puedes actuar aquí\n");
         } else {
-            strcat(buffer, "✗ Debes moverte aquí para actuar\n\n");
+            strcat(buffer, "✗ Debes moverte aquí para actuar\n");
         }
     }
+    
+    strcat(buffer, "\n");
     
     // Show connected countries
     strcat(buffer, "Países conectados:\n");
@@ -914,22 +987,9 @@ void update_solutions_text() {
     
     strcat(buffer, "\n");
     
-    // Show solutions only if at player's current country or during selection
+    // Note: Solutions are now displayed on action buttons
     if (current_country == player->current_country || current_game_state == SELECT_STARTING_COUNTRY) {
-        struct listSolutions* solutions = search_by_key(hash_table, current_country->name);
-        if (solutions && solutions->start) {
-            strcat(buffer, "Soluciones disponibles:\n");
-            struct nodeList* current = solutions->start;
-            while (current) {
-                if (current->solutionString) {
-                    strcat(buffer, current->solutionString);
-                    strcat(buffer, "\n");
-                }
-                current = current->nextNode;
-            }
-        }
-    } else {
-        strcat(buffer, "Soluciones:\n(Muévete aquí para ver)");
+        strcat(buffer, "💡 Las soluciones están en los botones de acción");
     }
     
     gtk_label_set_text(lbl_solutions, buffer);
@@ -976,11 +1036,60 @@ gboolean on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer data) {
     return FALSE;
 }
 
+void update_action_button_labels() {
+    if (!btn_action_poverty || !btn_action_crime || 
+        !btn_action_unemployment || !btn_action_political_weakness || 
+        !current_country || !hash_table) return;
+    
+    // Get solutions for current country
+    struct listSolutions* solutions = search_by_key(hash_table, current_country->name);
+    
+    // Helper arrays to map solutions to buttons
+    const char* default_labels[] = {
+        "Reducir Pobreza",
+        "Reducir Crimen", 
+        "Reducir Desempleo",
+        "Aumentar Estabilidad"
+    };
+    
+    GtkWidget* buttons[] = {
+        btn_action_poverty,
+        btn_action_crime,
+        btn_action_unemployment,
+        btn_action_political_weakness
+    };
+    
+    // Reset to default labels first
+    for (int i = 0; i < 4; i++) {
+        gtk_button_set_label(GTK_BUTTON(buttons[i]), default_labels[i]);
+    }
+    
+    // If we have solutions and we're at the player's current country, show them
+    if (solutions && solutions->start && current_country == player->current_country) {
+        struct nodeList* current_solution = solutions->start;
+        int button_index = 0;
+        
+        while (current_solution && button_index < 4) {
+            if (current_solution->solutionString) {
+                // Truncate if too long
+                char label[100];
+                strncpy(label, current_solution->solutionString, 99);
+                label[99] = '\0';
+                
+                gtk_button_set_label(GTK_BUTTON(buttons[button_index]), label);
+                button_index++;
+            }
+            current_solution = current_solution->nextNode;
+        }
+    }
+}
+
 void update_button_states() {
     if (!btn_action_poverty || !btn_action_crime || 
         !btn_action_unemployment || !btn_action_political_weakness) return;
     
     // Action buttons only enabled during action phase, with actions remaining, AND viewing player's current country
+    // DISABLED during country selection phase
     gboolean enable_actions = (current_game_state == TURN_PLAYER_ACTION && 
                                player_actions_remaining > 0 &&
                                current_country == player->current_country);
@@ -989,6 +1098,9 @@ void update_button_states() {
     gtk_widget_set_sensitive(btn_action_crime, enable_actions);
     gtk_widget_set_sensitive(btn_action_unemployment, enable_actions);
     gtk_widget_set_sensitive(btn_action_political_weakness, enable_actions);
+    
+    // Update button labels with solutions
+    update_action_button_labels();
 }
 
 void end_player_turn() {
@@ -1032,6 +1144,37 @@ void end_player_turn() {
     
     // Back to player turn
     add_message("Tu turno - MOVIMIENTO");
+    
+    // Check if player's current country is isolated (no neighbors left)
+    if (!player->current_country->connected_countries || 
+        player->current_country->connected_countries->connected_count == 0) {
+        add_debug_message("Tu país está aislado. La corrupción ha ganado.");
+        current_game_state = GAME_OVER;
+        
+        // Show game over dialog
+        char end_msg[MAX_ACTION_MSG_LEN];
+        strcpy(end_msg, "Ya no quedan países vecinos. La corrupción ha ganado.");
+        
+        GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(win), 
+                                                     GTK_DIALOG_MODAL, 
+                                                     GTK_MESSAGE_INFO, 
+                                                     GTK_BUTTONS_NONE, 
+                                                     "%s", end_msg);
+        
+        gtk_dialog_add_button(GTK_DIALOG(dialog), "Reiniciar", 1);
+        gtk_dialog_add_button(GTK_DIALOG(dialog), "Salir", 2);
+        
+        int response = gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+        
+        if (response == 1) {
+            restart_game();
+        } else {
+            gtk_main_quit();
+        }
+        return;
+    }
+    
     current_game_state = TURN_PLAYER_MOVE;
     player_actions_remaining = 4;
     
