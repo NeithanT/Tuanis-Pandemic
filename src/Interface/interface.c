@@ -9,8 +9,8 @@
 
 #define NUM_COUNTRIES 21
 #define PATH "src/Images/"
-#define WIDTH 700
-#define HEIGHT 500
+#define WIDTH 1000
+#define HEIGHT 800
 #define DIVISION 200
 #define BORDER_SIZE 5
 
@@ -23,7 +23,6 @@ GtkLabel *lbl_poverty;
 GtkLabel *lbl_crime;
 GtkLabel *lbl_corruption;
 GtkLabel *lbl_unemployment;
-//GtkTextView *textview_solutions;
 GtkLabel *lbl_solutions;
 cairo_surface_t *surface;
 double scale;
@@ -42,10 +41,6 @@ typedef struct {
 struct hastTable* hash_table;
 struct Player* player;
 struct Player* ally;
-
-struct Country* find_country_by_name(const char* name);
-void check_winner();
-void update_solutions_text();
 
 int is_connected(struct Country* country1, struct Country* country2) {
     if (!country1 || !country2 || !country1->connected_countries) return 0;
@@ -189,7 +184,6 @@ void get_country_position(const char* name, int* x, int* y) {
 
 static void draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     
-    printf("Drawing\n");
     int width = gtk_widget_get_allocated_width(widget);
     int height = gtk_widget_get_allocated_height(widget);
 
@@ -323,9 +317,6 @@ void update_solutions_text() {
             }
             current = current->nextNode;
         }
-        gtk_label_set_text(lbl_solutions, buffer);
-    } else {
-        gtk_label_set_text(lbl_solutions, "Soluciones: No hay soluciones disponibles");
     }
 }
 
@@ -354,30 +345,6 @@ void btn_action_political_weakness_clicked(GtkWidget *widget, gpointer data) {
     if (current_country) {
         current_country->political_stability = 100; // Assuming higher is better
         gtk_widget_queue_draw(drawing_area);
-    }
-}
-
-void btn_player_turn_clicked(GtkWidget *widget, gpointer data) {
-    if (player) {
-        turnPlayer(list, player);
-        gtk_widget_queue_draw(drawing_area);
-        check_winner();
-    }
-}
-
-void btn_ally_turn_clicked(GtkWidget *widget, gpointer data) {
-    if (ally) {
-        turnAlly(ally);
-        gtk_widget_queue_draw(drawing_area);
-        check_winner();
-    }
-}
-
-void btn_corruption_turn_clicked(GtkWidget *widget, gpointer data) {
-    if (list) {
-        turnCorruption(list);
-        gtk_widget_queue_draw(drawing_area);
-        check_winner();
     }
 }
 
@@ -450,19 +417,11 @@ void start_window(int argc, char *argv[]) {
     printf("Glade loaded\n");
 
     // Initialize game elements
-    printf("Initializing game elements\n");
     hash_table = createNewHashTable();
     //populateHashTable(hash_table);
-    printf("About to initialize list\n");
     list = initializeDoubleLinkedList();
-    printf("List initialized\n");
-    printf("About to allocate player\n");
     player = allocateInitialPlayerOnMap(list);
-    printf("Player allocated\n");
-    printf("About to allocate ally\n");
     ally = allocateInitialPlayerOnMap(list);
-    printf("Ally allocated\n");
-    printf("Game elements initialized\n");
 
     // Set some test corruption
     struct Country* test_country = list->start;
@@ -515,29 +474,6 @@ void start_window(int argc, char *argv[]) {
         g_printerr("Error: layout_game not found\n");
         return;
     }
-    printf("Layout retrieved\n");
-
-    // Create turn buttons programmatically
-    GtkWidget *btn_player_turn = gtk_button_new_with_label("Turno Jugador");
-    GtkWidget *btn_ally_turn = gtk_button_new_with_label("Turno Aliado");
-    GtkWidget *btn_corruption_turn = gtk_button_new_with_label("Turno Corrupcion");
-    printf("Buttons created\n");
-
-    // Create solutions label
-    lbl_solutions = GTK_LABEL(gtk_label_new("Soluciones:"));
-    gtk_label_set_line_wrap(lbl_solutions, TRUE);
-    gtk_widget_set_size_request(GTK_WIDGET(lbl_solutions), 180, 100);
-
-    // Add to layout
-    gtk_layout_put(layout_game, btn_player_turn, 20, 380);
-    gtk_layout_put(layout_game, btn_ally_turn, 260, 380);
-    gtk_layout_put(layout_game, btn_corruption_turn, 140, 420);
-    gtk_layout_put(layout_game, GTK_WIDGET(lbl_solutions), 10, 450);
-
-    // Connect signals
-    g_signal_connect(btn_player_turn, "clicked", G_CALLBACK(btn_player_turn_clicked), NULL);
-    g_signal_connect(btn_ally_turn, "clicked", G_CALLBACK(btn_ally_turn_clicked), NULL);
-    g_signal_connect(btn_corruption_turn, "clicked", G_CALLBACK(btn_corruption_turn_clicked), NULL);    //check if any widget is null
 
     current_country = list->start;
 
@@ -552,12 +488,7 @@ void start_window(int argc, char *argv[]) {
     g_signal_connect(btn_action_crime, "clicked", G_CALLBACK(btn_action_crime_clicked), NULL);
     g_signal_connect(btn_action_inequality, "clicked", G_CALLBACK(btn_action_inequality_clicked), NULL);
     g_signal_connect(btn_action_political_weakness, "clicked", G_CALLBACK(btn_action_political_weakness_clicked), NULL);
-    //g_signal_connect(btn_player_turn, "clicked", G_CALLBACK(btn_player_turn_clicked), NULL);
-    //g_signal_connect(btn_ally_turn, "clicked", G_CALLBACK(btn_ally_turn_clicked), NULL);
-    //g_signal_connect(btn_corruption_turn, "clicked", G_CALLBACK(btn_corruption_turn_clicked), NULL);
-    printf("Signals connected\n");
-    gtk_window_set_position(GTK_WINDOW(win), GTK_WIN_POS_CENTER);
-    gtk_window_set_default_size(GTK_WINDOW(win), 800, 600);
+    
     gtk_widget_show_all(win);
     gtk_window_present(GTK_WINDOW(win));
     printf("Window shown\n");

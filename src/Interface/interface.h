@@ -3,6 +3,16 @@
 
 #include <gtk/gtk.h>
 
+
+/** */
+struct Country* find_country_by_name(const char* name);
+
+/** */
+void check_winner();
+
+/** */
+void update_solutions_text();
+
 /** */
 void start_window(int argc, char *argv[]);
 
