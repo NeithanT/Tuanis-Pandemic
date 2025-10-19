@@ -1,6 +1,7 @@
 #include "random.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "../../Interface/interface.h"
 
 //###############################################################################
 
@@ -84,18 +85,29 @@ int initial_corruption(struct DoubleLinkedList* list) {
 int modify_aspects_country(struct DoubleLinkedList* list, int position, int modifiedCount, int higher) {
     struct Country *actual = list->start; //Se apunta al inicio
     int current = 0; //La posicion actual
-    while (current != position) { //Buscar el pais a modificar
+    while (current != position && actual != NULL) { //Buscar el pais a modificar
         actual = actual->next;
         current++;
     }
-    //Revisar si el actual ya se modifico y si es asi mover a la derecha
-    while (actual -> next != NULL && actual -> poverty != 0) {
-        actual = actual -> next;
+    
+    if (actual == NULL) return -1; // Safety check
+    
+    //Revisar si el actual ya se modifico y si es asi buscar otro en la lista
+    struct Country *temp = actual;
+    while (temp -> next != NULL && temp -> poverty != 0) {
+        temp = temp -> next;
     }
-
-    //Revisar si el actual ya se modifico y si es asi mover a la izquierda por si ya se llenaron a la derecha
-    while (actual -> prev != NULL && actual -> poverty != 0) {
-        actual = actual -> prev;
+    if (temp->poverty == 0) {
+        actual = temp;
+    } else {
+        // Si no encontramos a la derecha, buscar a la izquierda
+        temp = actual;
+        while (temp -> prev != NULL && temp -> poverty != 0) {
+            temp = temp -> prev;
+        }
+        if (temp->poverty == 0) {
+            actual = temp;
+        }
     }
 
     // Modificar si fueron los primeros 3 numeros un 3 o un 2 si se eligio un 1 o 0
@@ -136,27 +148,19 @@ void modify_aspects_after_turn(struct DoubleLinkedList *list, int position, int 
 
     switch (change) {
         case 0:
-            if (actual -> poverty == 3) { //Revisar si el pais ya tiene el aspecto al maximo entonces agregar a ambos lados
-                printf("Se intento sumar 1 al pais %s pero su aspecto pobreza esta al maximo\n", actual -> name);
-                //Buscar el pais a la izquierda sin la pobreza al maximo y agregarle 1
-                while (actual -> prev != NULL && actual -> prev -> poverty == 3) {
-
-                    actual = actual -> prev;
-                }
-
-            	if (actual -> prev != NULL && actual -> prev -> poverty != 3) {
-            		actual -> prev -> poverty += 1;
-            		printf("Se agrego 1 al aspecto pobreza y ahora su nivel es %d en el pais %s \n" , actual -> prev -> poverty, actual -> prev -> name);
-            	}
-
-                //Buscar el pais a la derecha sin la pobreza al maximo y agregarle 1
-                while (actual -> next != NULL && actual -> next -> poverty == 3) {
-                    actual = actual -> next;
-                }
-
-                if (actual -> next != NULL && actual -> next -> poverty != 3) {
-                    actual -> next -> poverty += 1;
-                    printf("Se agrego 1 al aspecto pobreza y ahora su nivel es %d en el pais %s \n" , actual -> next -> poverty, actual -> next -> name);
+            if (actual -> poverty == 3) { //Si el pais ya tiene el aspecto al maximo, propagar a países conectados
+                add_debug_message("  ⚠ %s: Pobreza al máximo (3/3)", actual->name);
+                
+                // Propagar a países conectados que no tengan pobreza al máximo
+                if (actual->connected_countries && actual->connected_countries->connected_count > 0) {
+                    for (int i = 0; i < actual->connected_countries->connected_count; i++) {
+                        struct Country* connected = actual->connected_countries->connected_list[i];
+                        if (connected && connected->poverty < 3) {
+                            connected->poverty += 1;
+                            add_debug_message("  ↳ Propagado a %s: Pobreza %d/3", connected->name, connected->poverty);
+                            break; // Solo propagar a uno
+                        }
+                    }
                 }
 				break;
             }
@@ -164,41 +168,33 @@ void modify_aspects_after_turn(struct DoubleLinkedList *list, int position, int 
             // Si el pais no tiene al maximo la pobreza se le suma uno nada mas
             else {
 	            actual -> poverty += 1;
-            	printf("Se agrego 1 al aspecto pobreza y ahora su nivel es %d en el pais %s \n" , actual -> poverty, actual -> name);
+            	add_debug_message("  ✓ %s: Pobreza aumentó a %d/3", actual->name, actual->poverty);
             	break;
             }
 
         case 1:
-            // Revisamos si los narcos estan al maximo y si es asi sumamos a los lados
+            // Revisamos si los narcos estan al maximo y si es asi propagamos a conectados
             if (actual -> crime == 3) {
-                printf("Se intento sumar 1 al pais %s pero su aspecto narcos esta al maximo\n", actual -> name);
+                add_debug_message("  ⚠ %s: Crimen al máximo (3/3)", actual->name);
 
-                // Buscar el pais a la izquierda que no tenga los narcos al maximo y sumarle 1
-                while (actual -> prev != NULL && actual -> prev -> crime == 3) {
-                    actual = actual -> prev;
+                // Propagar a países conectados que no tengan crimen al máximo
+                if (actual->connected_countries && actual->connected_countries->connected_count > 0) {
+                    for (int i = 0; i < actual->connected_countries->connected_count; i++) {
+                        struct Country* connected = actual->connected_countries->connected_list[i];
+                        if (connected && connected->crime < 3) {
+                            connected->crime += 1;
+                            add_debug_message("  ↳ Propagado a %s: Crimen %d/3", connected->name, connected->crime);
+                            break; // Solo propagar a uno
+                        }
+                    }
                 }
-
-                if (actual -> prev != NULL && actual -> prev -> crime != 3) {
-                    actual -> prev -> crime += 1;
-                    printf("Se agrego 1 al aspecto narcos y ahora tiene un nivel de %d, del pais %s \n" , actual -> prev -> crime, actual -> prev -> name);
-                }
-
-                // Buscar el pais a la derecha que no tenga los narcos al maximo y sumarle 1
-            	while (actual -> next != NULL && actual -> next -> crime == 3) {
-            		actual = actual -> next;
-            	}
-
-                if (actual -> next != NULL && actual -> next -> crime != 3) {
-                    actual -> next -> crime += 1;
-                    printf("Se agrego 1 al aspecto narcos y ahora tiene un nivel de %d, del pais %s \n" , actual -> next -> crime, actual -> next -> name);
-                }
-
+				break;
             }
 
             //En caso de que no este al maximo los narcos sumarle 1
             else {
 	            actual -> crime += 1;
-            	printf("Se agrego 1 al aspecto narcos y ahora tiene un nivel de %d, del pais %s \n" , actual -> crime, actual -> name);
+            	add_debug_message("  ✓ %s: Crimen aumentó a %d/3", actual->name, actual->crime);
             	break;
             }
     }
@@ -221,12 +217,26 @@ void random_corrupt_after_turn(struct DoubleLinkedList* list) {
     int list_length = length_double_linked_list(list);
     if (list_length == 0) return;
     
+    add_debug_message("=== TURNO DE CORRUPCIÓN ===");
     for (int i = 0; i < 3; i++) {
         // Get a random position within the actual list length
         int positionCountryToModify = rand() % list_length;
         int valueOfProblematic = rand() % 2;
+        
+        // Get country name for debugging
+        struct Country* target = list->start;
+        for (int j = 0; j < positionCountryToModify && target != NULL; j++) {
+            target = target->next;
+        }
+        
+        if (target) {
+            add_debug_message("[Corrupción %d/3] Objetivo: %s (%s)", 
+                   i + 1, target->name, valueOfProblematic == 0 ? "Pobreza" : "Crimen");
+        }
+        
         modify_aspects_after_turn(list, positionCountryToModify, valueOfProblematic);
     }
+    add_debug_message("=== FIN TURNO CORRUPCIÓN ===");
 }
 
 //###############################################################################

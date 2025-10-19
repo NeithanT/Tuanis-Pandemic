@@ -4,13 +4,6 @@
 #include <gtk/gtk.h>
 
 /**
- * Busca un país por su nombre en la lista global
- * name Nombre del país a buscar
- * Puntero al país encontrado, o NULL si no existe
- */
-struct Country* find_country_by_name(const char* name);
-
-/**
  * Verifica si hay un ganador en el juego y actualiza la interfaz
  */
 void check_winner();
@@ -19,6 +12,13 @@ void check_winner();
  * Actualiza el texto de soluciones en la interfaz
  */
 void update_solutions_text();
+
+/**
+ * Agrega un mensaje de debug formateado al log de mensajes
+ * format Formato de string estilo printf
+ * ... Argumentos variables para el formato
+ */
+void add_debug_message(const char* format, ...);
 
 /**
  * Inicia la ventana principal de la interfaz GTK

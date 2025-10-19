@@ -7,6 +7,7 @@
 #include "structs.h"
 #include "Player/Player.h"
 #include "Random/random.h"
+#include "../Interface/interface.h"
 
 //###############################################################################
 
@@ -69,6 +70,37 @@ void connect_to_connected(struct DoubleLinkedList* list, struct Country* country
     if (list == NULL || country == NULL || list->connected_count >= 21) return;
     list->connected_list[list->connected_count++] = country;
 }
+
+// Function to remove a country from a connected_countries list
+void remove_from_connected(struct DoubleLinkedList* list, struct Country* country) {
+    if (list == NULL || country == NULL) return;
+    
+    // Find the country in the connected list
+    for (int i = 0; i < list->connected_count; i++) {
+        if (list->connected_list[i] == country) {
+            // Shift all remaining countries down
+            for (int j = i; j < list->connected_count - 1; j++) {
+                list->connected_list[j] = list->connected_list[j + 1];
+            }
+            list->connected_count--;
+            list->connected_list[list->connected_count] = NULL;
+            break;
+        }
+    }
+}
+
+// Function to remove a country from all other countries' connected lists
+void remove_country_from_all_connections(struct DoubleLinkedList* main_list, struct Country* country_to_remove) {
+    if (main_list == NULL || country_to_remove == NULL) return;
+    
+    struct Country* current = main_list->start;
+    while (current != NULL) {
+        if (current != country_to_remove && current->connected_countries != NULL) {
+            remove_from_connected(current->connected_countries, country_to_remove);
+        }
+        current = current->next;
+    }
+}
 int connect_double_linked_list(struct DoubleLinkedList* doubleList, struct Country* country) {
     //Revisar si la lista doble y el pais se crearon
     if (doubleList == NULL || country == NULL) {
@@ -119,11 +151,16 @@ int erase_dead_countries (struct DoubleLinkedList* doubleLinkedList) {
 
     //Esta condición verifica si el primer país se corrompio, y cambia el primer país al segundo país en la lista
     if (current->crime == 3 && current->poverty == 3) {
+        add_debug_message("☠ %s ha caído ante la corrupción (Crimen: 3/3, Pobreza: 3/3)", current->name);
+        
         struct Country* nextCountry = current->next;
         if (nextCountry) {
             nextCountry->prev = NULL;
         }
         doubleLinkedList -> start = nextCountry;
+        
+        // CRITICAL: Remove this country from all other countries' connected lists
+        remove_country_from_all_connections(doubleLinkedList, current);
         
         // Free connected_countries list before freeing the country
         if (current->connected_countries) {
@@ -137,10 +174,15 @@ int erase_dead_countries (struct DoubleLinkedList* doubleLinkedList) {
     while (current != NULL) {
         //Esta verificación es únicamente para el último país en la lista de paises (No revisa el país siguiente)
         if (current->next == NULL && current->crime == 3 && current->poverty == 3) {
+            add_debug_message("☠ %s ha caído ante la corrupción (Crimen: 3/3, Pobreza: 3/3)", current->name);
+            
             struct Country* previousCountry = current->prev;
             if (previousCountry != NULL) {
                 previousCountry->next = NULL;
             }
+            
+            // CRITICAL: Remove this country from all other countries' connected lists
+            remove_country_from_all_connections(doubleLinkedList, current);
             
             // Free connected_countries list before freeing the country
             if (current->connected_countries) {
@@ -152,6 +194,8 @@ int erase_dead_countries (struct DoubleLinkedList* doubleLinkedList) {
         }
         //Esta verificación elimina el país muerto, y reacomoda los punteros para que todo quede bien en la lista
         else if (current->crime == 3 && current->poverty == 3) {
+            add_debug_message("☠ %s ha caído ante la corrupción (Crimen: 3/3, Pobreza: 3/3)", current->name);
+            
             struct Country* nextCountry = current->next;
             struct Country* previousCountry = current->prev;
             if (previousCountry) {
@@ -160,6 +204,9 @@ int erase_dead_countries (struct DoubleLinkedList* doubleLinkedList) {
             if (nextCountry) {
                 nextCountry->prev = previousCountry;
             }
+            
+            // CRITICAL: Remove this country from all other countries' connected lists
+            remove_country_from_all_connections(doubleLinkedList, current);
             
             // Free connected_countries list before freeing the country
             if (current->connected_countries) {

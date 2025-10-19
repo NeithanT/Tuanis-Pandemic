@@ -73,12 +73,34 @@ void turn_corruption (struct DoubleLinkedList* doubleLinkedList) {
 
 //###############################################################################
 /**
+ * Verifica si todos los países están aislados (sin vecinos)
+ * @param doubleLinkedList la lista de países
+ * @return 1 si todos están aislados, 0 si hay al menos un país con vecinos
+ */
+int all_countries_isolated(struct DoubleLinkedList* doubleLinkedList) {
+    if (doubleLinkedList == NULL || doubleLinkedList->start == NULL) {
+        return 1; // Si no hay países, consideramos que están aislados
+    }
+    
+    struct Country* actual = doubleLinkedList->start;
+    while (actual != NULL) {
+        // Si encontramos un país con vecinos, no todos están aislados
+        if (actual->connected_countries && actual->connected_countries->connected_count > 0) {
+            return 0;
+        }
+        actual = actual->next;
+    }
+    
+    return 1; // Todos los países están sin vecinos
+}
+
+/**
  * Primero verifica si ha ganado la corrupción, viendo si el length de la lista es <= 3
  * Luego verifica si ha ganado el jugador, revisando todos los paises en la lista, y continuando
  * únicamente si ese país tiene alguna problemática en 0, en cuyo caso, gana el jugador
  * De lo contrario, simplemente deja de
  * @param doubleLinkedList la lista de países
- * @return (0 si el ganador es el jugador, 1 si es la corrupción, un 2 si nadie ha ganado)
+ * @return (0 si el ganador es el jugador, 1 si es la corrupción, 2 si nadie ha ganado, 3 si países aislados)
  */
 int verify_winner(struct DoubleLinkedList* doubleLinkedList) {
 
@@ -87,6 +109,12 @@ int verify_winner(struct DoubleLinkedList* doubleLinkedList) {
         return -1;
     }
     int winner = 2;
+    
+    // Verificar si todos los países están aislados (sin vecinos)
+    if (all_countries_isolated(doubleLinkedList)) {
+        return 3; // Código especial: países aislados, corrupción gana
+    }
+    
     //Esta condición verifica si quedan 3 o menos paises vivos (Osea que ha ganado la corrupción)
     if (length_double_linked_list(doubleLinkedList) <= 3) {
         winner = 1;
