@@ -19,12 +19,8 @@ struct DoubleLinkedList* initializeDoubleLinkedList() {
 
     struct DoubleLinkedList* doubleLinkedList = newDoubleLinkedList();
     fillList(doubleLinkedList);
-    printf("About to populate connections\n");
     populateConnections(doubleLinkedList);
-    printf("Connections populated\n");
-    printf("About to initial corruption\n");
     initialCorruption(doubleLinkedList);
-    printf("Initial corruption done\n");
 
     return doubleLinkedList;
 }
@@ -61,6 +57,7 @@ struct DoubleLinkedList* newDoubleLinkedList () {
     if (newDoubleLinkedList == NULL) { //Revisar si se creo la lista
         return NULL;
     }
+    newDoubleLinkedList->connected_count = 0;
     return newDoubleLinkedList;
 
 }
@@ -69,18 +66,8 @@ struct DoubleLinkedList* newDoubleLinkedList () {
 
 //Funcion para conectar a lista conectada (single linked)
 void connectToConnected(struct DoubleLinkedList* list, struct Country* country) {
-    if (list == NULL || country == NULL) return;
-    if (list->start == NULL) {
-        list->start = country;
-        country->next_connected = NULL;
-    } else {
-        struct Country* current = list->start;
-        while (current->next_connected != NULL) {
-            current = current->next_connected;
-        }
-        current->next_connected = country;
-        country->next_connected = NULL;
-    }
+    if (list == NULL || country == NULL || list->connected_count >= 21) return;
+    list->connected_list[list->connected_count++] = country;
 }
 
 int connectDoubleLinkedList(struct DoubleLinkedList* doubleList, struct Country* country) {
@@ -131,18 +118,35 @@ int eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList) {
 
     struct Country* current = doubleLinkedList -> start;
 
-
     //Esta condición verifica si el primer país se corrompio, y cambia el primer país al segundo país en la lista
     if (current->crime == 3 && current->poverty == 3) {
         struct Country* nextCountry = current->next;
+        if (nextCountry) {
+            nextCountry->prev = NULL;
+        }
         doubleLinkedList -> start = nextCountry;
+        
+        // Free connected_countries list before freeing the country
+        if (current->connected_countries) {
+            free(current->connected_countries);
+        }
         free(current);
         current = NULL;
         return allCountriesErased;
     }
+    
     while (current != NULL) {
         //Esta verificación es únicamente para el último país en la lista de paises (No revisa el país siguiente)
         if (current->next == NULL && current->crime == 3 && current->poverty == 3) {
+            struct Country* previousCountry = current->prev;
+            if (previousCountry != NULL) {
+                previousCountry->next = NULL;
+            }
+            
+            // Free connected_countries list before freeing the country
+            if (current->connected_countries) {
+                free(current->connected_countries);
+            }
             free(current);
             current = NULL;
             return allCountriesErased;
@@ -151,12 +155,23 @@ int eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList) {
         else if (current->crime == 3 && current->poverty == 3) {
             struct Country* nextCountry = current->next;
             struct Country* previousCountry = current->prev;
-            previousCountry->next = nextCountry;
-            nextCountry->prev = previousCountry;
+            if (previousCountry) {
+                previousCountry->next = nextCountry;
+            }
+            if (nextCountry) {
+                nextCountry->prev = previousCountry;
+            }
+            
+            // Free connected_countries list before freeing the country
+            if (current->connected_countries) {
+                free(current->connected_countries);
+            }
             free(current);
             current = NULL;
             return allCountriesErased;
         }
+        // CRITICAL FIX: Advance to next country to avoid infinite loop
+        current = current->next;
     }
     return 1;
 }
@@ -164,97 +179,22 @@ int eraseDeadCountries (struct DoubleLinkedList* doubleLinkedList) {
 
 int fillList(struct DoubleLinkedList* list) {
 
+    if (!list) { return NULL; }
     connectDoubleLinkedList(list, newCountry("Mexico",0.0));
-    /*
-        ("Mexico", "Belice")
-        ("Mexico", "Guatemala")
-    */
     connectDoubleLinkedList(list, newCountry("Guatemala",0.0));
-    /*
-        ("Guatemala", "Mexico")
-        ("Guatemala", "Belice")
-        ("Guatemala", "Honduras")
-        ("Guatemala", "El Salvador")
-    */
     connectDoubleLinkedList(list, newCountry("Belice",0.0));
-    /*
-        ("Belice", "Mexico")
-        ("Belice", "Guatemala")
-    */
     connectDoubleLinkedList(list, newCountry("ElSalvador",0.0));
-    /*
-        ("El Salvador", "Guatemala")
-        ("El Salvador", "Honduras")
-    */
     connectDoubleLinkedList(list, newCountry("Honduras",0.0));
-    /*
-        ("Honduras", "Guatemala")
-        ("Honduras", "El Salvador")
-        ("Honduras", "Nicaragua")
-    */
     connectDoubleLinkedList(list, newCountry("Nicaragua",0.0));
-    /*
-        ("Nicaragua", "Honduras")
-        ("Nicaragua", "Costa Rica")
-    */
     connectDoubleLinkedList(list, newCountry("CostaRica",0.0));
-    /*
-        ("Costa Rica", "Nicaragua")
-        ("Costa Rica",  "Panama")
-    */
     connectDoubleLinkedList(list, newCountry("Panama",0.0));
-    /*
-        ("Panama", "Costa Rica")
-        ("Panama", "Colombia")
-    */
     connectDoubleLinkedList(list, newCountry("Colombia",0.0));
-    /*
-        ("Colombia", "Panama")
-        ("Colombia", "Venezuela")
-        ("Colombia", "Brasil")
-        ("Colombia", "Ecuador")
-        ("Colombia", "Peru")
-    */
     connectDoubleLinkedList(list, newCountry("Venezuela",0.0));
-    /*
-        ("Venezuela", "Colombia")
-        ("Venezuela", "Brasil")
-        ("Venezuela", "Guyana")
-    */
     connectDoubleLinkedList(list, newCountry("Guyana",0.0));
-    /*
-        ("Guyana", "Venezuela")
-        ("Guyana", "Brasil")
-        ("Guyana", "Surinnam")
-    */
     connectDoubleLinkedList(list, newCountry("Surinam",0.0));
-    /*
-        ("Surinam", "Guyana")
-        ("Surinam", "Brasil")
-        ("Surinam", "Guayana Francesa")
-    */
     connectDoubleLinkedList(list, newCountry("GuayanaFrancesa",0.0));
-    /*
-        ("Guayana Francesa", "Surinam")
-        ("Guayana Francesa", "Brasil")
-    */
     connectDoubleLinkedList(list, newCountry("Brasil",0.0));
-    /*
-        ("Brasil", "Guayana Francesa")
-        ("Brasil", "Surinam")
-        ("Brasil", "Guyana")
-        ("Brasil", "Venezuela")
-        ("Brasil", "Colombia")
-        ("Brasil", "Peru")
-        ("Brasil", "Bolivia")
-        ("Brasil", "Paraguay")
-        ("Brasil", "Argentina")
-        ("Brasil", "Uruguay")
-    */
     connectDoubleLinkedList(list, newCountry("Uruguay",0.0));
-    /*
-        ("Uruguay", "")
-    */
     connectDoubleLinkedList(list, newCountry("Argentina",0.0));
     connectDoubleLinkedList(list, newCountry("Paraguay",0.0));
     connectDoubleLinkedList(list, newCountry("Bolivia",0.0));
@@ -272,7 +212,7 @@ int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList) {
 
     if (doubleLinkedList == NULL || doubleLinkedList->start == NULL) {
         printf("ERROR700: CANNOT CALCULATE SIZE OF DOUBLELINKEDLIST");
-        return -1;
+        return 0;
     }
     int size = 0;
     struct Country* current_country = doubleLinkedList->start;
@@ -284,26 +224,6 @@ int lengthDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList) {
 }
 
 
-//###############################################################################
-
-
-/**
- * Funcion para imprimir los paises y conocer sus fronteras
- * @param doubleLinkedList
- */
-void printDoubleLinkedList (struct DoubleLinkedList* doubleLinkedList) {
-    if (doubleLinkedList == NULL || doubleLinkedList->start == NULL) { // Revisar que la lista no este vacia o no exista
-        printf("ERROR700: CANNOT PRINT DOUBLELINKEDLIST");
-    }
-    struct Country* current_country = doubleLinkedList->start; // Apuntar al inicio
-    printf("%s, ==>", current_country -> name ); // Imprimir el primer pais con su unica frontera
-    current_country = current_country -> next;
-    while (current_country -> next != NULL) { //Imprimir todos los paises con ambas fronteras
-        printf("<== %s ==>", current_country -> name);
-        current_country = current_country -> next;
-    }
-    printf("<== %s \n", current_country -> name ); //Imprimir el ultimo pais con su unica frontera
-}
 
 
 //###############################################################################

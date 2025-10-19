@@ -14,4 +14,6 @@ void modifyAspectsAfterTurn(struct DoubleLinkedList* list, int position, int cha
 
 void randomCorruptAfterTurn(struct DoubleLinkedList* list);
 
+void reduceRandomProblem(struct Country* country);
+
 #endif //SRC_RANDOM_H

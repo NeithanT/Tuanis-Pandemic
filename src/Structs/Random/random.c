@@ -213,10 +213,19 @@ void modifyAspectsAfterTurn(struct DoubleLinkedList *list, int position, int cha
  * @return
  */
 void randomCorruptAfterTurn(struct DoubleLinkedList* list) {
+    if (!list || !list->start) {
+        printf("ERROR: Cannot corrupt - list is empty\n");
+        return;
+    }
+    
+    int list_length = lengthDoubleLinkedList(list);
+    if (list_length == 0) return;
+    
     for (int i = 0; i < 3; i++) {
-        int positionCountryToModify = rand() % 21;
+        // Get a random position within the actual list length
+        int positionCountryToModify = rand() % list_length;
         int valueOfProblematic = rand() % 2;
-        modifyAspectsAfterTurn(list,positionCountryToModify,valueOfProblematic);
+        modifyAspectsAfterTurn(list, positionCountryToModify, valueOfProblematic);
     }
 }
 
@@ -229,7 +238,48 @@ void reduceRandomProblem(struct Country* country) {
         return;
     }
 
-
-
-
+    // Choose a random problem to reduce (0=poverty, 1=crime, 2=unemployment, 3=political_stability)
+    int problem_to_reduce = rand() % 4;
+    int attempts = 0;
+    
+    // Try to find a problem that can be reduced
+    while (attempts < 4) {
+        switch (problem_to_reduce) {
+            case 0:
+                if (country->poverty > 0) {
+                    country->poverty--;
+                    printf("Aliado redujo pobreza en %s a %d\n", country->name, country->poverty);
+                    return;
+                }
+                break;
+            case 1:
+                if (country->crime > 0) {
+                    country->crime--;
+                    printf("Aliado redujo crimen en %s a %d\n", country->name, country->crime);
+                    return;
+                }
+                break;
+            case 2:
+                if (country->unemployment > 0) {
+                    country->unemployment--;
+                    printf("Aliado redujo desempleo en %s a %d\n", country->name, country->unemployment);
+                    return;
+                }
+                break;
+            case 3:
+                if (country->political_stability < 100) {
+                    country->political_stability += 25;
+                    if (country->political_stability > 100) country->political_stability = 100;
+                    printf("Aliado mejoró estabilidad política en %s a %d\n", country->name, country->political_stability);
+                    return;
+                }
+                break;
+        }
+        
+        // Try next problem
+        problem_to_reduce = (problem_to_reduce + 1) % 4;
+        attempts++;
+    }
+    
+    printf("Aliado no pudo reducir ningún problema en %s (todos en 0)\n", country->name);
 }

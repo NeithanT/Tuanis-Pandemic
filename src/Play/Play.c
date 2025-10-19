@@ -79,7 +79,27 @@ void turnPlayer(struct DoubleLinkedList* doubleLinkedList, struct Player* player
 //###############################################################################
 
 void turnAlly(struct Player* ally) {
+    if (!ally || !ally->current_country) {
+        printf("ERROR: Ally state invalid\n");
+        return;
+    }
+    
+    printf("Ally turn starting at %s\n", ally->current_country->name);
+    
+    // Ally moves to adjacent country (or stays)
     moveAllyRandomCountry(ally);
+    printf("Ally moved to %s\n", ally->current_country->name);
+    
+    // Ally does 4 actions
+    for (int i = 0; i < 4; i++) {
+        // Reduce a random problem in current country
+        reduceRandomProblem(ally->current_country);
+        
+        // Recalculate corruption after each action
+        calculateCorruption(ally->current_country);
+    }
+    
+    printf("Ally turn complete\n");
 }
 
 

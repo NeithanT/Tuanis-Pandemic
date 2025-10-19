@@ -25,7 +25,6 @@ int min_distance_to_edge(int x, int y, int width, int height);
 /** */
 int has_transparent_neighbor(guchar *pixels, int x, int y, int width, int height, 
                                           int rowstride, int search_radius);
-
 /** */
 void draw_img_border(GdkPixbuf *pixbuf);
 
@@ -47,10 +46,13 @@ void end_player_turn();
 /** Handle end turn button click */
 void btn_end_turn_clicked(GtkWidget *widget, gpointer data);
 
-/** Get country at mouse position */
-struct Country* get_country_at_position(int x, int y);
+/** Handle move to country button click */
+void btn_country_clicked(GtkWidget *widget, gpointer data);
 
-/** Handle mouse clicks on the drawing area */
-gboolean on_drawing_area_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data);
+/** Handle stay in country button click */
+void btn_stay_clicked(GtkWidget *widget, gpointer data);
+
+/** Update button states based on game phase */
+void update_button_states();
 
 #endif // INTERFACE_H

@@ -31,7 +31,6 @@ struct slotHashTable {
 };
 
 struct hastTable {
-
     struct slotHashTable** slots;
 };
 

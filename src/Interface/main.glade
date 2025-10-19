@@ -26,14 +26,16 @@
     <property name="default-width">1200</property>
     <property name="default-height">800</property>
     <child>
-      <object class="GtkBox" id="box">
-        <property name="name">box</property>
+      <object class="GtkPaned" id="paned_main">
+        <property name="name">paned_main</property>
         <property name="width-request">900</property>
         <property name="height-request">500</property>
         <property name="visible">True</property>
-        <property name="can-focus">False</property>
+        <property name="can-focus">True</property>
         <property name="hexpand">True</property>
         <property name="vexpand">True</property>
+        <property name="position">700</property>
+        <property name="position-set">True</property>
         <child>
           <object class="GtkViewport" id="viewport_game">
             <property name="name">viewport_game</property>
@@ -56,9 +58,8 @@
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
+            <property name="resize">True</property>
+            <property name="shrink">False</property>
           </packing>
         </child>
         <child>
@@ -264,11 +265,11 @@ Politica</property>
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="lbl_political_weakness">
-                <property name="name">lbl_political_weakness</property>
+              <object class="GtkLabel" id="lbl_political_stability">
+                <property name="name">lbl_political_stability</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Debilidad Politica: 0</property>
+                <property name="label" translatable="yes">Estabilidad Politica: 0%</property>
               </object>
               <packing>
                 <property name="x">20</property>
@@ -276,22 +277,76 @@ Politica</property>
               </packing>
             </child>
             <child>
+              <object class="GtkLabel" id="lbl_game_status">
+                <property name="name">lbl_game_status</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Tu turno: MOVIMIENTO</property>
+                <property name="wrap">True</property>
+                <property name="width-chars">40</property>
+                <property name="max-width-chars">40</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">250</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_end_turn">
+                <property name="label" translatable="yes">Terminar Turno</property>
+                <property name="name">btn_end_turn</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">Termina tu turno y comienza la fase de corrupcion</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">520</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkLabel" id="lbl_turn_action">
                 <property name="name">lbl_turn_action</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Ultimo turno:</property>
+                <property name="label" translatable="yes">Acciones en pais actual/conectado</property>
+                <property name="wrap">True</property>
+                <property name="width-chars">30</property>
               </object>
               <packing>
-                <property name="x">200</property>
-                <property name="y">550</property>
+                <property name="x">20</property>
+                <property name="y">290</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="scrolled_messages">
+                <property name="name">scrolled_messages</property>
+                <property name="width-request">360</property>
+                <property name="height-request">120</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="shadow-type">in</property>
+                <child>
+                  <object class="GtkTextView" id="textview_messages">
+                    <property name="name">textview_messages</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="editable">False</property>
+                    <property name="wrap-mode">word</property>
+                    <property name="cursor-visible">False</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">570</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="resize">False</property>
+            <property name="shrink">False</property>
           </packing>
         </child>
       </object>

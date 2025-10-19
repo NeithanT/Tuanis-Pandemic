@@ -64,6 +64,7 @@ void insertHashSlots(struct hastTable* table,char* nameKey, struct listSolutions
 	struct slotHashTable* entrada = table->slots[slotPosition];
 	if (entrada == NULL) {
 		table->slots[slotPosition] = pairKeyNameAndValue(nameKey, list_solutions);
+		return;
 	}
 	struct slotHashTable* prev;
 
@@ -173,19 +174,16 @@ void printListSolutions(struct listSolutions* listSolutions) {
 //#####################################################################################
 
 
-void copySolutionsToNewList(struct listSolutions* oldListSolutions, struct listSolutions* newListSolutions) {
+void copySolutionsToNewList(struct listSolutions* destination, struct listSolutions* source) {
 
-	if (oldListSolutions == NULL) {
+	if (source == NULL || source->start == NULL) {
 		return;
 	}
 
-	struct nodeList* currentSolution = oldListSolutions->start;
-	struct nodeList* solutionNewList = newListSolutions->start;
-	while (currentSolution != NULL) {
-		solutionNewList->solutionString = malloc(strlen(currentSolution->solutionString)+1);
-		strcpy(solutionNewList->solutionString, currentSolution->solutionString);
-		solutionNewList = solutionNewList->nextNode;
-		currentSolution = currentSolution->nextNode;
+	struct nodeList* current = source->start;
+	while (current != NULL) {
+		insertNode(destination, current->solutionString);
+		current = current->nextNode;
 	}
 }
 //#####################################################################################
@@ -263,7 +261,6 @@ void freeListSolutions(struct listSolutions* listSolutions) {
 // NOTA: Se asume que 'table' ya fue creado con createNewHashTable();
 // Se utiliza la función freeListSolutions(listSolutionsPais) antes de salir del main,
 // aunque la lista ya esté enlazada a la tabla.
-
 void populateHashTable(struct hastTable* table) {
 
     // Array de países para iterar fácilmente
@@ -284,188 +281,188 @@ void populateHashTable(struct hastTable* table) {
         // SOLUCIONES PARA: poorness
         // --------------------------------------------------------
         if (strcmp(pais, "Mexico") == 0) {
-            insertNode(listSolutionsPais, "Implementar programas de microcréditos rurales y desarrollo de infraestructura.");
+            insertNode(listSolutionsPais, "Fortalecer la inversión en infraestructura social y productiva en el sur para generar empleo formal y reducir la brecha regional [1], [4].");
         } else if (strcmp(pais, "Belice") == 0) {
-            insertNode(listSolutionsPais, "Diversificar la economía turística con incentivos a la agricultura sostenible y pesca.");
+            insertNode(listSolutionsPais, "Diversificar la economía para reducir la dependencia del turismo, invirtiendo en educación y tecnología para mejorar el capital humano [2], [4].");
         } else if (strcmp(pais, "Guatemala") == 0) {
-            insertNode(listSolutionsPais, "Inversión masiva en educación bilingüe y acceso a servicios básicos en áreas rurales.");
+            insertNode(listSolutionsPais, "Concentrar la inversión en servicios básicos y productividad agrícola en áreas rurales con población indígena, reduciendo la exclusión [4], [1].");
         } else if (strcmp(pais, "El Salvador") == 0) {
-            insertNode(listSolutionsPais, "Aumentar inversión en capacitación técnica y tecnológica para jóvenes.");
+            insertNode(listSolutionsPais, "Promover la formalización del empleo y diversificar las fuentes de crecimiento para reducir la dependencia de las remesas [1].");
         } else if (strcmp(pais, "Honduras") == 0) {
-            insertNode(listSolutionsPais, "Fortalecer la seguridad de la propiedad de la tierra para agricultores pequeños.");
+            insertNode(listSolutionsPais, "Concentrar la inversión pública en programas de transferencias condicionadas ligadas a indicadores de salud y educación [4].");
         } else if (strcmp(pais, "Nicaragua") == 0) {
-            insertNode(listSolutionsPais, "Promover cooperativas agrícolas y acceso a mercados internacionales.");
+            insertNode(listSolutionsPais, "Fomentar un entorno de inversión seguro y predecible que estimule el crecimiento económico y la generación de empleo formal [1].");
         } else if (strcmp(pais, "Costa Rica") == 0) {
-            insertNode(listSolutionsPais, "Reestructurar los subsidios para enfocarlos en la población más vulnerable y capacitación laboral.");
+            insertNode(listSolutionsPais, "Realizar una reforma del gasto social para mejorar su eficiencia y focalización en las nuevas bolsas de pobreza [3]..");
         } else if (strcmp(pais, "Panama") == 0) {
-            insertNode(listSolutionsPais, "Crear zonas de desarrollo especial fuera de la capital con incentivos fiscales.");
+            insertNode(listSolutionsPais, "Invertir en la integración de las comarcas indígenas y áreas rurales al desarrollo económico y servicios básicos [4].");
         } else if (strcmp(pais, "Colombia") == 0) {
-            insertNode(listSolutionsPais, "Formalizar empleos en el sector informal y expandir la cobertura de pensiones.");
+            insertNode(listSolutionsPais, "Enfocarse en la titulación de tierras y el desarrollo rural para garantizar la presencia estatal y la productividad en zonas de conflicto [1], [2].");
         } else if (strcmp(pais, "Venezuela") == 0) {
-            insertNode(listSolutionsPais, "Estabilizar la moneda y reabrir el acceso a la inversión y ayuda humanitaria internacional.");
+            insertNode(listSolutionsPais, "Implementar un plan de ayuda humanitaria masivo para revertir la pobreza extrema y desmantelar los controles que limitan la producción [2], [4].");
         } else if (strcmp(pais, "Guyana") == 0) {
-            insertNode(listSolutionsPais, "Utilizar los ingresos petroleros para financiar educación y salud universales.");
+            insertNode(listSolutionsPais, "Utilizar los ingresos petroleros para crear un Fondo Soberano transparente para la inversión social a largo plazo [8]..");
         } else if (strcmp(pais, "Surinam") == 0) {
-            insertNode(listSolutionsPais, "Desarrollar cadenas de valor en silvicultura y minería responsable.");
+            insertNode(listSolutionsPais, "Implementar una reforma de la administración pública para mejorar la eficiencia y diversificar la economía [2], [8].");
         } else if (strcmp(pais, "GuayanaFrancesa") == 0) {
-            insertNode(listSolutionsPais, "Aumentar la inversión francesa en infraestructura y oportunidades de empleo local.");
+            insertNode(listSolutionsPais, "Implementar programas sociales de inclusión y oportunidades educativas para las poblaciones marginales e inmigrantes [4].");
         } else if (strcmp(pais, "Brasil") == 0) {
-            insertNode(listSolutionsPais, "Expandir programas de transferencia de renta condicionada con foco en educación.");
+            insertNode(listSolutionsPais, "Mantener y fortalecer programas de transferencias de ingresos (como Bolsa Familia) bien focalizados, ligándolos a la educación [3], [1].");
         } else if (strcmp(pais, "Uruguay") == 0) {
-            insertNode(listSolutionsPais, "Incentivar la innovación tecnológica en PyMEs para generar empleos de alto valor.");
+            insertNode(listSolutionsPais, "Optimizar el sistema de protección social (avanzado) [1] e invertir en capacitación de mano de obra para sostener la economía de servicios.");
         } else if (strcmp(pais, "Argentina") == 0) {
-            insertNode(listSolutionsPais, "Reducir la inflación y fomentar la estabilidad macroeconómica para la inversión productiva.");
+            insertNode(listSolutionsPais, "Lograr un pacto político de estabilidad macroeconómica [7] y rediseñar los programas sociales para incentivar el paso al empleo formal [1].");
         } else if (strcmp(pais, "Paraguay") == 0) {
-            insertNode(listSolutionsPais, "Mejorar la logística de transporte y acceso a crédito para pequeños agricultores.");
+            insertNode(listSolutionsPais, "Enfocarse en la inversión en servicios básicos y el apoyo a la productividad de pequeños agricultores [1].");
         } else if (strcmp(pais, "Bolivia") == 0) {
-            insertNode(listSolutionsPais, "Desarrollar infraestructura de riego y conectividad en el altiplano.");
+            insertNode(listSolutionsPais, "Fortalecer los controles fronterizos y la inteligencia para combatir el narcotráfico y el contrabando [12].");
         } else if (strcmp(pais, "Chile") == 0) {
-            insertNode(listSolutionsPais, "Fortalecer la red de protección social y seguro de desempleo.");
+            insertNode(listSolutionsPais, "Reformar el sistema de pensiones y salud para reducir la dependencia de los servicios privados y proteger a los sectores vulnerables.");
         } else if (strcmp(pais, "Peru") == 0) {
-            insertNode(listSolutionsPais, "Formalizar el sector minero artesanal y dirigir la recaudación a desarrollo local.");
+            insertNode(listSolutionsPais, "Invertir en la descentralización de oportunidades y mejorar el acceso a servicios públicos en las regiones andinas y amazónicas [1], [2].");
         } else if (strcmp(pais, "Ecuador") == 0) {
-            insertNode(listSolutionsPais, "Fomentar el emprendimiento en zonas rurales y fronterizas con microfinanciamiento.");
+            insertNode(listSolutionsPais, "Priorizar la inversión en capital humano (educación y nutrición) en zonas urbanas y fronterizas vulnerables [4].");
         }
 
         // --------------------------------------------------------
         // SOLUCIONES PARA: gangs (pandillas/crimen organizado)
         // --------------------------------------------------------
         if (strcmp(pais, "Mexico") == 0) {
-            insertNode(listSolutionsPais, "Depuración policial, inteligencia financiera contra carteles y programas de prevención social.");
+            insertNode(listSolutionsPais, "Implementar una reforma judicial profunda con inteligencia financiera para desmantelar estructuras criminales y combatir la impunidad sistémica [5], [8].");
         } else if (strcmp(pais, "Belice") == 0) {
-            insertNode(listSolutionsPais, "Aumentar la presencia policial en zonas urbanas conflictivas e invertir en centros juveniles.");
+            insertNode(listSolutionsPais, "Desarrollar programas de prevención juvenil focalizados con capacitación técnica y oportunidades laborales en áreas urbanas de riesgo [9], [5].");
         } else if (strcmp(pais, "Guatemala") == 0) {
-            insertNode(listSolutionsPais, "Desmantelar redes de extorsión y ofrecer oportunidades de reinserción laboral a ex-pandilleros.");
+            insertNode(listSolutionsPais, "Aplicar un modelo de prevención social comunitaria (no represivo) [11] y fortalecer la Policía Nacional Civil para combatir extorsión [5].");
         } else if (strcmp(pais, "El Salvador") == 0) {
-            insertNode(listSolutionsPais, "Reforzar el control penitenciario y enfocarse en la prevención de la violencia en comunidades.");
+            insertNode(listSolutionsPais, "Invertir las ganancias de seguridad [6] en capital humano, educación y empleo productivo para sostener la paz social a largo plazo [10], [1].");
         } else if (strcmp(pais, "Honduras") == 0) {
-            insertNode(listSolutionsPais, "Fortalecer la unidad de investigación criminal y la cooperación regional contra el narcotráfico.");
+            insertNode(listSolutionsPais, "Implementar una reforma profunda de seguridad y penitenciaria para combatir el narcotráfico y cortar vínculos con el crimen [12].");
         } else if (strcmp(pais, "Nicaragua") == 0) {
-            insertNode(listSolutionsPais, "Mantener el control comunitario con programas de prevención juvenil y desarme.");
+            insertNode(listSolutionsPais, "Fortalecer los programas de prevención social y oportunidades para jóvenes en riesgo en áreas urbanas [13], [9].");
         } else if (strcmp(pais, "Costa Rica") == 0) {
-            insertNode(listSolutionsPais, "Reforzar los puertos contra el narcotráfico y la vigilancia costera con tecnología.");
+            insertNode(listSolutionsPais, "Fortalecer el control portuario y fronterizo contra el narcotráfico [5] y aplicar programas de resocialización en zonas urbanas de alto riesgo [9].");
         } else if (strcmp(pais, "Panama") == 0) {
-            insertNode(listSolutionsPais, "Mejorar la seguridad en la zona fronteriza con Colombia y controlar el flujo de armas.");
+            insertNode(listSolutionsPais, "Fortalecer la lucha contra el lavado de dinero y el tráfico ilegal en la zona del Canal, reforzando la inteligencia financiera [5].");
         } else if (strcmp(pais, "Colombia") == 0) {
-            insertNode(listSolutionsPais, "Implementar la paz total, desmovilización y sustitución de cultivos ilícitos.");
+            insertNode(listSolutionsPais, "Implementar una estrategia de 'Paz Total' que combine la seguridad con la inversión en economías lícitas alternativas a la coca [12], [5].");
         } else if (strcmp(pais, "Venezuela") == 0) {
-            insertNode(listSolutionsPais, "Reestructurar las fuerzas de seguridad y eliminar grupos armados irregulares en zonas fronterizas.");
+            insertNode(listSolutionsPais, "Restablecer el monopolio estatal de la fuerza y desmantelar las redes de crimen organizado y grupos armados ilegales [5].");
         } else if (strcmp(pais, "Guyana") == 0) {
-            insertNode(listSolutionsPais, "Establecer una fuerza de seguridad fronteriza fuerte y combatir la minería ilegal.");
+            insertNode(listSolutionsPais, "Fortalecer la vigilancia fronteriza y la cooperación internacional para controlar el flujo de oro y tráfico ilegal [5].");
         } else if (strcmp(pais, "Surinam") == 0) {
-            insertNode(listSolutionsPais, "Aumentar la inversión en seguridad y control de fronteras fluviales y terrestres.");
+            insertNode(listSolutionsPais, "Reforzar la cooperación regional para controlar el contrabando y el tráfico ilegal que afecta la zona fronteriza [5].");
         } else if (strcmp(pais, "GuayanaFrancesa") == 0) {
-            insertNode(listSolutionsPais, "Reforzar el patrullaje de la Gendarmería y el control de la inmigración ilegal.");
+            insertNode(listSolutionsPais, "Fortalecer la cooperación transfronteriza con Brasil y Surinam para controlar el flujo de oro ilegal y tráfico de personas [5].");
         } else if (strcmp(pais, "Brasil") == 0) {
-            insertNode(listSolutionsPais, "Coordinación federal de seguridad, reforma penitenciaria y combate al crimen organizado en favelas.");
+            insertNode(listSolutionsPais, "Coordinar un esfuerzo nacional de seguridad pública entre estados para combatir facciones criminales, con intervención social en las periferias [5].");
         } else if (strcmp(pais, "Uruguay") == 0) {
-            insertNode(listSolutionsPais, "Aumentar la videovigilancia en zonas urbanas y fortalecer el sistema de justicia juvenil.");
+            insertNode(listSolutionsPais, "Fortalecer la policía de proximidad y las políticas de prevención del delito enfocadas en el microtráfico y zonas urbanas vulnerables [9].");
         } else if (strcmp(pais, "Argentina") == 0) {
-            insertNode(listSolutionsPais, "Reforzar la seguridad en zonas de alto riesgo (ej. Rosario) y control de fronteras fluviales.");
+            insertNode(listSolutionsPais, "Aplicar una estrategia de seguridad federal y multisectorial para desmantelar las redes de narcotráfico en la región de Rosario [5].");
         } else if (strcmp(pais, "Paraguay") == 0) {
-            insertNode(listSolutionsPais, "Fortalecer el control aduanero y fronterizo para combatir el contrabando y el crimen organizado.");
+            insertNode(listSolutionsPais, "Luchar contra el contrabando y el lavado de dinero en la zona de la Triple Frontera [12], fortaleciendo el control aduanero.");
         } else if (strcmp(pais, "Bolivia") == 0) {
-            insertNode(listSolutionsPais, "Intensificar la interdicción aérea y terrestre contra el narcotráfico.");
+            insertNode(listSolutionsPais, "Fortalecer los controles fronterizos y la inteligencia para combatir el narcotráfico y el contrabando [12].");
         } else if (strcmp(pais, "Chile") == 0) {
-            insertNode(listSolutionsPais, "Modernizar las policías, mejorar el control de armas y reforzar la seguridad portuaria.");
+            insertNode(listSolutionsPais, "Modernizar las policías y fortalecer el control del crimen organizado en zonas fronterizas y puertos [5].");
         } else if (strcmp(pais, "Peru") == 0) {
-            insertNode(listSolutionsPais, "Desarticular redes de minería ilegal y tala en la selva, y control de drogas.");
+            insertNode(listSolutionsPais, "Fortalecer la lucha contra la minería ilegal y el narcotráfico [12] y la corrupción en la inversión pública regional [8].");
         } else if (strcmp(pais, "Ecuador") == 0) {
-            insertNode(listSolutionsPais, "Depurar fuerzas de seguridad, invertir en inteligencia y control de cárceles y puertos.");
+            insertNode(listSolutionsPais, "Implementar una estrategia de seguridad integral para retomar el control penitenciario [5] e invertir en oportunidades educativas y laborales para jóvenes [9].");
         }
 
         // --------------------------------------------------------
         // SOLUCIONES PARA: inequality (desigualdad)
         // --------------------------------------------------------
         if (strcmp(pais, "Mexico") == 0) {
-            insertNode(listSolutionsPais, "Aumentar el gasto social focalizado, mejorar la calidad de la educación pública en todos los niveles.");
+            insertNode(listSolutionsPais, "Enfocarse en la equidad regional, mejorando el acceso a servicios básicos y educativos en zonas rurales y marginadas [1], [4].");
         } else if (strcmp(pais, "Belice") == 0) {
-            insertNode(listSolutionsPais, "Promover la inclusión de minorías étnicas en puestos de liderazgo económico y político.");
+            insertNode(listSolutionsPais, "Mejorar la calidad y acceso a la educación para toda la población, reduciendo la vulnerabilidad ante shocks externos [4].");
         } else if (strcmp(pais, "Guatemala") == 0) {
-            insertNode(listSolutionsPais, "Reforma fiscal para aumentar la progresividad y mejorar la inversión en salud indígena.");
+            insertNode(listSolutionsPais, "Fortalecer los mecanismos de rendición de cuentas para combatir la corrupción que desvía recursos sociales [8].");
         } else if (strcmp(pais, "El Salvador") == 0) {
-            insertNode(listSolutionsPais, "Garantizar el acceso universal a la tecnología digital y la educación superior técnica.");
+            insertNode(listSolutionsPais, "Enfocar la inversión social en los territorios más vulnerables y desatendidos para cerrar brechas históricas [1].");
         } else if (strcmp(pais, "Honduras") == 0) {
-            insertNode(listSolutionsPais, "Incentivar la inversión en infraestructura básica en las zonas más pobres y rurales.");
+            insertNode(listSolutionsPais, "Mejorar la calidad de los servicios públicos (educación y salud) para aumentar el capital humano de los más pobres [1].");
         } else if (strcmp(pais, "Nicaragua") == 0) {
-            insertNode(listSolutionsPais, "Reducir la brecha entre zonas urbanas y rurales mediante inversión pública equitativa.");
+            insertNode(listSolutionsPais, "Impulsar la productividad agrícola y la inclusión financiera de pequeños productores y áreas rurales [2].");
         } else if (strcmp(pais, "Costa Rica") == 0) {
-            insertNode(listSolutionsPais, "Revisar el sistema de pensiones de lujo y fortalecer la progresividad del sistema tributario.");
+            insertNode(listSolutionsPais, "Promover la educación técnica y el bilingüismo para garantizar el acceso de los jóvenes a los sectores de alta tecnología [1].");
         } else if (strcmp(pais, "Panama") == 0) {
-            insertNode(listSolutionsPais, "Expandir el acceso a servicios de salud de calidad fuera de la capital y la zona del Canal.");
+            insertNode(listSolutionsPais, "Mejorar el acceso y la calidad de los servicios de educación y salud en áreas remotas para reducir la vulnerabilidad [4].");
         } else if (strcmp(pais, "Colombia") == 0) {
-            insertNode(listSolutionsPais, "Implementar la reforma agraria y asegurar la restitución de tierras a víctimas del conflicto.");
+            insertNode(listSolutionsPais, "Realizar una reforma rural integral y fortalecer los programas de transferencias condicionadas bien focalizados [1].");
         } else if (strcmp(pais, "Venezuela") == 0) {
-            insertNode(listSolutionsPais, "Reconstruir la infraestructura de servicios públicos (agua, luz, salud) y garantizar acceso igualitario.");
+            insertNode(listSolutionsPais, "Priorizar la inversión en servicios básicos (salud y educación) para recuperar el capital humano que ha colapsado [4].");
         } else if (strcmp(pais, "Guyana") == 0) {
-            insertNode(listSolutionsPais, "Crear un fondo soberano de riqueza petrolera para la distribución equitativa de ingresos.");
+            insertNode(listSolutionsPais, "Invertir prioritariamente en educación universal de alta calidad para garantizar que la nueva riqueza beneficie a toda la población [1].");
         } else if (strcmp(pais, "Surinam") == 0) {
-            insertNode(listSolutionsPais, "Fomentar la participación económica de las comunidades del interior y proteger sus derechos territoriales.");
+            insertNode(listSolutionsPais, "Enfocarse en la inversión en servicios básicos y la descentralización de oportunidades económicas [2].");
         } else if (strcmp(pais, "GuayanaFrancesa") == 0) {
-            insertNode(listSolutionsPais, "Inversión masiva en viviendas sociales y servicios públicos en las afueras de Cayenne.");
+            insertNode(listSolutionsPais, "Reducir la desigualdad de oportunidades entre los residentes de larga data y las nuevas poblaciones inmigrantes [4].");
         } else if (strcmp(pais, "Brasil") == 0) {
-            insertNode(listSolutionsPais, "Reforma fiscal que grave grandes fortunas y herencias, e inversión en la Amazonía.");
+            insertNode(listSolutionsPais, "Implementar una reforma tributaria progresiva que grave menos a los pobres y más a la riqueza para reducir la profunda brecha social [1].");
         } else if (strcmp(pais, "Uruguay") == 0) {
-            insertNode(listSolutionsPais, "Fortalecer la educación técnica y terciaria para la movilidad social de las clases bajas.");
+            insertNode(listSolutionsPais, "Mantener la progresividad fiscal y la calidad del gasto social para evitar el aumento de la desigualdad [1].");
         } else if (strcmp(pais, "Argentina") == 0) {
-            insertNode(listSolutionsPais, "Reducir la brecha educativa entre provincias y fortalecer el sistema de seguridad social.");
+            insertNode(listSolutionsPais, "Implementar políticas macroeconómicas que controlen la inflación (principal impuesto a los pobres) para proteger el ingreso real [1].");
         } else if (strcmp(pais, "Paraguay") == 0) {
-            insertNode(listSolutionsPais, "Lucha contra la evasión fiscal de grandes empresas y mejorar la distribución de la tierra.");
+            insertNode(listSolutionsPais, "Mejorar la equidad en el acceso a la tierra para reducir la desigualdad extrema entre la población rural y urbana [1].");
         } else if (strcmp(pais, "Bolivia") == 0) {
-            insertNode(listSolutionsPais, "Descentralizar el poder económico y político a favor de regiones históricamente marginadas.");
+            insertNode(listSolutionsPais, "Continuar con la inversión pública en sectores estratégicos y programas sociales con enfoque indígena para mantener un crecimiento inclusivo [1].");
         } else if (strcmp(pais, "Chile") == 0) {
-            insertNode(listSolutionsPais, "Aumentar la progresividad tributaria y mejorar el acceso equitativo a la salud privada y pública.");
+            insertNode(listSolutionsPais, "Realizar una reforma fiscal progresiva y mejorar la calidad de la educación pública para reducir la brecha social [1].");
         } else if (strcmp(pais, "Peru") == 0) {
-            insertNode(listSolutionsPais, "Descentralización administrativa y económica efectiva hacia las regiones andinas y amazónicas.");
+            insertNode(listSolutionsPais, "Fortalecer la recaudación tributaria y el gasto social en salud y educación, especialmente en zonas rurales [1].");
         } else if (strcmp(pais, "Ecuador") == 0) {
-            insertNode(listSolutionsPais, "Mejorar la calidad de la educación pública en la Sierra y la Amazonía.");
+            insertNode(listSolutionsPais, "Focalizar los programas sociales en los territorios más afectados por el conflicto y la pobreza [4].");
         }
 
         // --------------------------------------------------------
         // SOLUCIONES PARA: politicalWeakness (debilidad política/institucional)
         // --------------------------------------------------------
         if (strcmp(pais, "Mexico") == 0) {
-            insertNode(listSolutionsPais, "Fortalecer la autonomía de instituciones electorales y judiciales contra la interferencia política.");
+            insertNode(listSolutionsPais, "Fortalecer los mecanismos de transparencia y la rendición de cuentas en todos los niveles de gobierno para reducir la corrupción [8].");
         } else if (strcmp(pais, "Belice") == 0) {
-            insertNode(listSolutionsPais, "Mejorar la transparencia gubernamental y la rendición de cuentas en la gestión de fondos públicos.");
+            insertNode(listSolutionsPais, "Implementar reformas de administración pública para mejorar la eficiencia y la transparencia en el gasto gubernamental [8].");
         } else if (strcmp(pais, "Guatemala") == 0) {
-            insertNode(listSolutionsPais, "Reforma del servicio civil para la profesionalización de la administración pública.");
+            insertNode(listSolutionsPais, "Fortalecer la independencia del sistema judicial y los órganos de control (ej. FECI) para combatir la impunidad [8].");
         } else if (strcmp(pais, "El Salvador") == 0) {
-            insertNode(listSolutionsPais, "Garantizar la independencia judicial y el equilibrio de poderes del Estado.");
+            insertNode(listSolutionsPais, "Garantizar la estabilidad institucional y el respeto a los derechos humanos en las políticas de seguridad [6].");
         } else if (strcmp(pais, "Honduras") == 0) {
-            insertNode(listSolutionsPais, "Crear una comisión internacional anticorrupción con apoyo del gobierno y la OEA.");
+            insertNode(listSolutionsPais, "Reforzar la institucionalidad democrática y la independencia de poderes para evitar la polarización y la crisis de Estado [7].");
         } else if (strcmp(pais, "Nicaragua") == 0) {
-            insertNode(listSolutionsPais, "Restaurar la autonomía de los poderes del Estado y celebrar elecciones libres y transparentes.");
+            insertNode(listSolutionsPais, "Restaurar la separación de poderes y la pluralidad política [7] para garantizar la gobernabilidad democrática.");
         } else if (strcmp(pais, "Costa Rica") == 0) {
-            insertNode(listSolutionsPais, "Reformar la ley electoral para reducir el clientelismo y aumentar la participación cívica.");
+            insertNode(listSolutionsPais, "Optimizar la coordinación interinstitucional para implementar eficazmente las políticas públicas y reformas necesarias [7].");
         } else if (strcmp(pais, "Panama") == 0) {
-            insertNode(listSolutionsPais, "Mejorar la eficiencia de la justicia y digitalizar los procesos administrativos para reducir la corrupción.");
+            insertNode(listSolutionsPais, "Fortalecer las instituciones de control y eliminar las opacidades en el manejo de fondos públicos y grandes proyectos [8].");
         } else if (strcmp(pais, "Colombia") == 0) {
-            insertNode(listSolutionsPais, "Fortalecer el rol de los órganos de control (Procuraduría, Contraloría) y la veeduría ciudadana.");
+            insertNode(listSolutionsPais, "Reforzar el rol de los partidos políticos y del Congreso como contrapesos efectivos para evitar la polarización y garantizar la gobernabilidad [7].");
         } else if (strcmp(pais, "Venezuela") == 0) {
-            insertNode(listSolutionsPais, "Transición política negociada, retorno al estado de derecho y supervisión internacional de elecciones.");
+            insertNode(listSolutionsPais, "Establecer un mecanismo de transición que permita la reconstrucción institucional y la restauración de la separación de poderes [7].");
         } else if (strcmp(pais, "Guyana") == 0) {
-            insertNode(listSolutionsPais, "Reforma constitucional para asegurar la distribución equitativa del poder entre etnias y partidos.");
+            insertNode(listSolutionsPais, "Fortalecer los mecanismos de transparencia y rendición de cuentas para mitigar el riesgo de la 'maldición de los recursos' [8].");
         } else if (strcmp(pais, "Surinam") == 0) {
-            insertNode(listSolutionsPais, "Combatir la corrupción en la adjudicación de contratos de recursos naturales con auditorías externas.");
+            insertNode(listSolutionsPais, "Priorizar la lucha contra la corrupción y el fortalecimiento de las instituciones de control interno [8].");
         } else if (strcmp(pais, "GuayanaFrancesa") == 0) {
-            insertNode(listSolutionsPais, "Mayor autonomía administrativa y financiera local para la toma de decisiones regionales.");
+            insertNode(listSolutionsPais, "Mejorar la gestión de los recursos públicos y la coordinación con las autoridades francesas para el desarrollo local.");
         } else if (strcmp(pais, "Brasil") == 0) {
-            insertNode(listSolutionsPais, "Reformar el sistema político para reducir la fragmentación partidista y la dependencia del clientelismo.");
+            insertNode(listSolutionsPais, "Reforzar el rol de contrapeso del Congreso y el sistema judicial para limitar la polarización política [7].");
         } else if (strcmp(pais, "Uruguay") == 0) {
-            insertNode(listSolutionsPais, "Promover la participación ciudadana en la fiscalización de proyectos de infraestructura pública.");
+            insertNode(listSolutionsPais, "Promover el consenso político y la estabilidad institucional (tradicionalmente alta) [7].");
         } else if (strcmp(pais, "Argentina") == 0) {
-            insertNode(listSolutionsPais, "Reducir el déficit fiscal y la dependencia del financiamiento por emisión monetaria.");
+            insertNode(listSolutionsPais, "Implementar un pacto político de largo plazo que garantice la estabilidad fiscal y macroeconómica [7].");
         } else if (strcmp(pais, "Paraguay") == 0) {
-            insertNode(listSolutionsPais, "Fortalecer la independencia del Ministerio Público y el poder judicial en casos de alto impacto.");
+            insertNode(listSolutionsPais, "Fortalecer las instituciones anticorrupción y transparentar el uso de los fondos de las hidroeléctricas [8].");
         } else if (strcmp(pais, "Bolivia") == 0) {
-            insertNode(listSolutionsPais, "Restaurar la legitimidad del Tribunal Supremo Electoral y el respeto a la Constitución.");
+            insertNode(listSolutionsPais, "Reforzar los mecanismos de diálogo y consenso entre grupos políticos y sociales para garantizar la estabilidad democrática [7].");
         } else if (strcmp(pais, "Chile") == 0) {
-            insertNode(listSolutionsPais, "Reforma del sistema de partidos políticos para mejorar su representatividad y cohesión interna.");
+            insertNode(listSolutionsPais, "Fortalecer el sistema de partidos y la capacidad del gobierno para generar consensos en el Congreso [7].");
         } else if (strcmp(pais, "Peru") == 0) {
-            insertNode(listSolutionsPais, "Fortalecer el sistema anticorrupción y establecer filtros de idoneidad para cargos públicos.");
+            insertNode(listSolutionsPais, "Implementar una reforma política que fortalezca a los partidos y estabilice el sistema presidencialista/parlamentario [7].");
         } else if (strcmp(pais, "Ecuador") == 0) {
-            insertNode(listSolutionsPais, "Garantizar la estabilidad y autonomía del Tribunal Constitucional y la Fiscalía General.");
+            insertNode(listSolutionsPais, "Fortalecer las instituciones de control y transparencia para combatir la penetración del crimen organizado en el Estado [8], [7].");
         }
 
         // --------------------------------------------------------
