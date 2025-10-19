@@ -1,14 +1,12 @@
 #include "Play.h"
 
 
-//###############################################################################
-/**
- * Funcion para consultar los aspectos de cada pais
- * @param list
- * @return
- */
+#include "Play.h"
 
-int consultAspects(struct DoubleLinkedList* list) {
+
+//###############################################################################
+
+int consult_aspects(struct DoubleLinkedList* list) {
     if (list == NULL) { //Revisar estado de la lista
         return 0;
     }
@@ -30,85 +28,95 @@ int consultAspects(struct DoubleLinkedList* list) {
  * hasta que la validación verifiyWinner sea != 2 (Indicando así un ganador)
  * Llama a la función throwWinner para mostrar el cartelito de ganador
  */
-void StartGame() {
+void start_game() {
 
-    struct DoubleLinkedList* countryList = initializeDoubleLinkedList();
-    struct Player* Player = allocateInitialPlayerOnMap(countryList);
-    struct Player* Ally = allocateInitialPlayerOnMap(countryList);
+    struct DoubleLinkedList* countryList = initialize_double_linked_list();
+    struct Player* Player = allocate_initial_player_on_map(countryList);
 
     bool isGameOver = false;
-    bool isTurnPlayer = true;
     while (!isGameOver) {
-        //Turno player
-        if (isTurnPlayer == true) {
-            turnPlayer(countryList,Player);
-            turnCorruption(countryList);
-            isTurnPlayer = false;
-        }
-        //Turno aliado
-        else {
-            turnAlly(Ally);
-            turnCorruption(countryList);
-            isTurnPlayer = true;
-        }
+        turn_player(countryList,Player);
+        turn_corruption(countryList);
 
         //Revisa si hay países para eliminar y si ya se gano el juego
-        while (!eraseDeadCountries(countryList)); //Limpia los paises muertos
-        if (verifyWinner(countryList) != 2) {
+        while (!erase_dead_countries(countryList)); //Limpia los paises muertos
+        if (verify_winner(countryList) != 2) {
             isGameOver = true;
         }
     } //while
-    int winner = verifyWinner(countryList);
-    throwWinner(winner);
+    int winner = verify_winner(countryList);
+    throw_winner(winner);
 }
 
 
 //###############################################################################
 
 //TODO: Implementar función del turno de player con la interfaz gráfica
-void turnPlayer(struct DoubleLinkedList* doubleLinkedList, struct Player* player) {
+void turn_player(struct DoubleLinkedList* doubleLinkedList, struct Player* player) {
 
     if (doubleLinkedList == NULL || doubleLinkedList->start ==NULL || player == NULL) {
         printf("ERROR2500: No se ha podido aplicar el turno del jugador");
         return;
     }
-    move_player(doubleLinkedList, player, 0);
+    move_player(doubleLinkedList, player);
 }
 
 
 //###############################################################################
 
-void turnAlly(struct Player* ally) {
-    moveAllyRandomCountry(ally);
-}
-
-
-
 //###############################################################################
-void turnCorruption (struct DoubleLinkedList* doubleLinkedList) {
-    randomCorruptAfterTurn(doubleLinkedList);
-    calculateCorruptionCountryList(doubleLinkedList);
+void turn_corruption (struct DoubleLinkedList* doubleLinkedList) {
+    random_corrupt_after_turn(doubleLinkedList);
+    calculate_corruption_country_list(doubleLinkedList);
 }
 
 
 //###############################################################################
+/**
+ * Verifica si todos los países están aislados (sin vecinos)
+ * @param doubleLinkedList la lista de países
+ * @return 1 si todos están aislados, 0 si hay al menos un país con vecinos
+ */
+int all_countries_isolated(struct DoubleLinkedList* doubleLinkedList) {
+    if (doubleLinkedList == NULL || doubleLinkedList->start == NULL) {
+        return 1; // Si no hay países, consideramos que están aislados
+    }
+    
+    struct Country* actual = doubleLinkedList->start;
+    while (actual != NULL) {
+        // Si encontramos un país con vecinos, no todos están aislados
+        if (actual->connected_countries && actual->connected_countries->connected_count > 0) {
+            return 0;
+        }
+        actual = actual->next;
+    }
+    
+    return 1; // Todos los países están sin vecinos
+}
+
 /**
  * Primero verifica si ha ganado la corrupción, viendo si el length de la lista es <= 3
  * Luego verifica si ha ganado el jugador, revisando todos los paises en la lista, y continuando
  * únicamente si ese país tiene alguna problemática en 0, en cuyo caso, gana el jugador
  * De lo contrario, simplemente deja de
  * @param doubleLinkedList la lista de países
- * @return (0 si el ganador es el jugador, 1 si es la corrupción, un 2 si nadie ha ganado)
+ * @return (0 si el ganador es el jugador, 1 si es la corrupción, 2 si nadie ha ganado, 3 si países aislados)
  */
-int verifyWinner(struct DoubleLinkedList* doubleLinkedList) {
+int verify_winner(struct DoubleLinkedList* doubleLinkedList) {
 
     if (doubleLinkedList == NULL || doubleLinkedList->start == NULL) {
         printf("ERROR1500: No se ha podido verificar el ganador");
         return -1;
     }
     int winner = 2;
+    
+    // Verificar si todos los países están aislados (sin vecinos)
+    if (all_countries_isolated(doubleLinkedList)) {
+        return 3; // Código especial: países aislados, corrupción gana
+    }
+    
     //Esta condición verifica si quedan 3 o menos paises vivos (Osea que ha ganado la corrupción)
-    if (lengthDoubleLinkedList(doubleLinkedList) <= 3) {
+    if (length_double_linked_list(doubleLinkedList) <= 3) {
         winner = 1;
         return winner; //Indica que ha ganado la corrupción
     }
@@ -117,20 +125,21 @@ int verifyWinner(struct DoubleLinkedList* doubleLinkedList) {
     //Esta condición verifica si todos los paises vivos tienen un 0 en alguna propiedad.
     struct Country* actual = doubleLinkedList -> start;
     while (actual != NULL) {
-        if (actual->crime != 0 && actual->corruption != 0) { //Verifica que el país tenga alguna problemática != 0
-            return winner; //Valor invalido, indica que nadie ha ganado
+        // Check if this country has ANY problem that is NOT zero
+        if (actual->crime != 0 || actual->poverty != 0 || actual->unemployment != 0) {
+            return winner; //At least one country still has problems, game continues
         }
         actual = actual -> next;
 
     }
-    winner = 0;   //Si ha llegado hasta aquí, es porque todos los paises tienen al menos una problematica en 0
+    winner = 0;   //Si ha llegado hasta aquí, es porque todos los paises tienen todas las problematicas en 0
     return winner;
 
 }
 
 //###############################################################################
 
-void throwWinner(int winner) {
+void throw_winner(int winner) {
 
     if (!winner) {
         printf("The player has win");

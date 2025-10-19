@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.40.0 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkImage" id="img_right_arrow">
+    <property name="name">img_right_arrow</property>
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="pixbuf">../Images/Right.png</property>
+  </object>
+  <object class="GtkImage" id="left_arrow_img">
+    <property name="name">left_arrow_img</property>
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="pixbuf">../Images/Left.png</property>
+  </object>
+  <object class="GtkWindow" id="window">
+    <property name="name">window</property>
+    <property name="width-request">1300</property>
+    <property name="height-request">800</property>
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="hexpand">True</property>
+    <property name="vexpand">True</property>
+    <property name="title" translatable="yes">Tuanis Pandemic</property>
+    <property name="default-width">1300</property>
+    <property name="default-height">800</property>
+    <child>
+      <object class="GtkPaned" id="paned_main">
+        <property name="name">paned_main</property>
+        <property name="width-request">900</property>
+        <property name="height-request">500</property>
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <property name="position">700</property>
+        <property name="position-set">True</property>
+        <child>
+          <object class="GtkViewport" id="viewport_game">
+            <property name="name">viewport_game</property>
+            <property name="width-request">500</property>
+            <property name="height-request">500</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <child>
+              <object class="GtkDrawingArea" id="drawing_area">
+                <property name="name">drawing_area</property>
+                <property name="width-request">500</property>
+                <property name="height-request">500</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="resize">True</property>
+            <property name="shrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLayout" id="layout_game">
+            <property name="name">layout_game</property>
+            <property name="width-request">200</property>
+            <property name="height-request">500</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <property name="hscroll-policy">natural</property>
+            <property name="vscroll-policy">natural</property>
+            <child>
+              <object class="GtkImage" id="image_game_background">
+                <property name="name">image_game_background</property>
+                <property name="width-request">400</property>
+                <property name="height-request">700</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="pixbuf">../Images/brown_image.png</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_left_shift">
+                <property name="name">btn_left_shift</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="image">left_arrow_img</property>
+                <property name="always-show-image">True</property>
+                <signal name="clicked" handler="on_btn_one_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">200</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_current_country">
+                <property name="name">lbl_current_country</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Mexico</property>
+              </object>
+              <packing>
+                <property name="x">250</property>
+                <property name="y">205</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkDrawingArea" id="drawing_current_country">
+                <property name="name">drawing_current_country</property>
+                <property name="width-request">250</property>
+                <property name="height-request">250</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+              </object>
+              <packing>
+                <property name="x">50</property>
+                <property name="y">50</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_right_shift">
+                <property name="name">btn_right_shift</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="image">img_right_arrow</property>
+              </object>
+              <packing>
+                <property name="x">450</property>
+                <property name="y">200</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_guide">
+                <property name="name">lbl_guide</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Pais Actual</property>
+              </object>
+              <packing>
+                <property name="x">235</property>
+                <property name="y">30</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_poverty">
+                <property name="name">lbl_poverty</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Pobreza: 0</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">120</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_crime">
+                <property name="name">lbl_crime</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Crimen: 0</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">140</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_corruption">
+                <property name="name">lbl_corruption</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Corrupcion: 0.0</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">80</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_unemployment">
+                <property name="name">lbl_unemployment</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Desempleo: 0</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">160</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_country">
+                <property name="label" translatable="yes">Cambiar Pais</property>
+                <property name="name">btn_country</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+              </object>
+              <packing>
+                <property name="x">230</property>
+                <property name="y">270</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_action_unemployment">
+                <property name="label" translatable="yes">Solucionar Desigualdad</property>
+                <property name="name">btn_action_unemployment</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">330</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_action_political_weakness">
+                <property name="label" translatable="yes">Solucionar Debilidad
+Politica</property>
+                <property name="name">btn_action_political_weakness</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="x">310</property>
+                <property name="y">330</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_action_poverty">
+                <property name="label" translatable="yes">Solucionar Pobreza</property>
+                <property name="name">btn_action_poverty</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">450</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_action_crime">
+                <property name="label" translatable="yes">Solucionar Crimen</property>
+                <property name="name">btn_action_crime</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="x">310</property>
+                <property name="y">450</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_political_stability">
+                <property name="name">lbl_political_stability</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Estabilidad Politica: 0%</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">100</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_game_status">
+                <property name="name">lbl_game_status</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Tu turno: MOVIMIENTO</property>
+                <property name="wrap">True</property>
+                <property name="width-chars">40</property>
+                <property name="max-width-chars">40</property>
+              </object>
+              <packing>
+                <property name="x">70</property>
+                <property name="y">250</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="scrolled_messages">
+                <property name="name">scrolled_messages</property>
+                <property name="width-request">460</property>
+                <property name="height-request">120</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="shadow-type">in</property>
+                <child>
+                  <object class="GtkTextView" id="textview_messages">
+                    <property name="name">textview_messages</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="editable">False</property>
+                    <property name="wrap-mode">word</property>
+                    <property name="cursor-visible">False</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">550</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="resize">False</property>
+            <property name="shrink">False</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

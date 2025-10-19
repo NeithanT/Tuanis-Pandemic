@@ -3,6 +3,7 @@
         "interface.h": "c",
         "string.h": "c",
         "stdlib.h": "c",
-        "gdk.h": "c"
+        "gdk.h": "c",
+        "play.h": "c"
     }
 }

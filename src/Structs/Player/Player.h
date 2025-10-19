@@ -10,13 +10,25 @@ struct Player {
     struct Country* current_country;
 };
 
-void move_player(struct DoubleLinkedList* doubleLinkedList,struct Player* player, int isAlly);
+/**
+ * Mueve al jugador a un país seleccionado, actualizando su posición en la lista
+ * doubleLinkedList Puntero a la lista de países
+ * player Puntero al jugador a mover
+ */
+void move_player(struct DoubleLinkedList* doubleLinkedList,struct Player* player);
 
-void moveAllyRandomCountry(struct Player* player);
-
+/**
+ * Permite al jugador seleccionar un país para moverse
+ * Puntero al país seleccionado
+ */
 struct Country* pick_country();
 
-struct Player* allocateInitialPlayerOnMap(struct DoubleLinkedList* doubleLinkedList);
+/**
+ * Asigna al jugador inicial en un país aleatorio o predeterminado del mapa
+ * doubleLinkedList Puntero a la lista de países
+ * Puntero al jugador inicializado
+ */
+struct Player* allocate_initial_player_on_map(struct DoubleLinkedList* doubleLinkedList);
 
 /**
  * TODO: FUNCIONES A AGREGAR:

@@ -11,18 +11,42 @@
 #include "../Structs/Random/random.h"
 #include "../Structs/Player/Player.h"
 
-void StartGame();
+/**
+ * Inicia el juego, configurando el estado inicial
+ */
+void start_game();
 
-void turnPlayer(struct DoubleLinkedList* doubleLinkedList, struct Player* player);
+/**
+ * Maneja el turno del jugador, permitiendo movimientos y acciones
+ * doubleLinkedList Puntero a la lista de países
+ * player Puntero al jugador
+ */
+void turn_player(struct DoubleLinkedList* doubleLinkedList, struct Player* player);
 
-void turnAlly(struct Player* ally);
+/**
+ * Maneja el turno de corrupción, aplicando cambios aleatorios
+ * doubleLinkedList Puntero a la lista de países
+ */
+void turn_corruption (struct DoubleLinkedList* doubleLinkedList);
 
-void turnCorruption (struct DoubleLinkedList* doubleLinkedList);
+/**
+ * Consulta los aspectos de los países en la lista
+ * list Puntero a la lista de países
+ * Código o valor de consulta
+ */
+int consult_aspects(struct DoubleLinkedList* list);
 
-int consultAspects(struct DoubleLinkedList* list);
+/**
+ * Verifica si hay un ganador en el juego
+ * doubleLinkedList Puntero a la lista de países
+ * ID del ganador, o 0 si no hay
+ */
+int verify_winner(struct DoubleLinkedList* doubleLinkedList);
 
-int verifyWinner(struct DoubleLinkedList* doubleLinkedList);
-
-void throwWinner(int winner);
+/**
+ * Anuncia o maneja el ganador del juego
+ * winner ID del ganador
+ */
+void throw_winner(int winner);
 
 #endif //TEC_PLAY_H

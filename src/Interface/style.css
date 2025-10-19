@@ -1,0 +1,211 @@
+/* Tuanis Pandemic - Game Styling */
+
+/* Main Window */
+#window {
+    background-color: #a77330;
+}
+
+/* Game Status Label */
+#lbl_game_status {
+    font-size: 16px;
+    font-weight: bold;
+    color: #e74c3c;
+    padding: 10px;
+    background-color: rgba(52, 73, 94, 0.8);
+    border-radius: 5px;
+}
+
+/* Current Country Label */
+#lbl_current_country {
+    font-size: 20px;
+    font-weight: bold;
+    color: #3498db;
+    padding: 8px;
+}
+
+/* Stats Labels */
+#lbl_poverty, #lbl_crime, #lbl_corruption, #lbl_unemployment, #lbl_political_stability {
+    font-size: 16px;
+    font-weight: 500;
+    padding: 8px;
+    margin: 4px;
+    background-color: rgba(236, 240, 241, 0.9);
+    border-radius: 5px;
+    color: #2c3e50;
+}
+
+#lbl_poverty {
+    border-left: 4px solid #27ae60;
+}
+
+#lbl_crime {
+    border-left: 4px solid #e74c3c;
+}
+
+#lbl_corruption {
+    border-left: 4px solid #8e44ad;
+}
+
+#lbl_unemployment {
+    border-left: 4px solid #f39c12;
+}
+
+#lbl_political_stability {
+    border-left: 4px solid #3498db;
+}
+
+/* Action Buttons - General Styling */
+#btn_action_poverty, #btn_action_crime, #btn_action_unemployment, #btn_action_political_weakness {
+    padding: 12px 20px;
+    margin: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    min-width: 200px;
+}
+
+/* Poverty Button - Green Theme */
+#btn_action_poverty {
+    background-image: linear-gradient(to bottom, #27ae60, #229954);
+    color: white;
+    border-color: #1e8449;
+}
+
+#btn_action_poverty:hover {
+    background-image: linear-gradient(to bottom, #2ecc71, #27ae60);
+    border-color: #27ae60;
+    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.4);
+}
+
+#btn_action_poverty:active {
+    background-image: linear-gradient(to bottom, #229954, #1e8449);
+}
+
+/* Crime Button - Red Theme */
+#btn_action_crime {
+    background-image: linear-gradient(to bottom, #e74c3c, #c0392b);
+    color: white;
+    border-color: #a93226;
+}
+
+#btn_action_crime:hover {
+    background-image: linear-gradient(to bottom, #ec7063, #e74c3c);
+    border-color: #c0392b;
+    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.4);
+}
+
+#btn_action_crime:active {
+    background-image: linear-gradient(to bottom, #c0392b, #a93226);
+}
+
+/* Unemployment Button - Orange Theme */
+#btn_action_unemployment {
+    background-image: linear-gradient(to bottom, #f39c12, #d68910);
+    color: white;
+    border-color: #b9770e;
+}
+
+#btn_action_unemployment:hover {
+    background-image: linear-gradient(to bottom, #f5b041, #f39c12);
+    border-color: #d68910;
+    box-shadow: 0 4px 8px rgba(243, 156, 18, 0.4);
+}
+
+#btn_action_unemployment:active {
+    background-image: linear-gradient(to bottom, #d68910, #b9770e);
+}
+
+/* Political Weakness Button - Blue Theme */
+#btn_action_political_weakness {
+    background-image: linear-gradient(to bottom, #3498db, #2980b9);
+    color: white;
+    border-color: #1f6391;
+}
+
+#btn_action_political_weakness:hover {
+    background-image: linear-gradient(to bottom, #5dade2, #3498db);
+    border-color: #2980b9;
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
+}
+
+#btn_action_political_weakness:active {
+    background-image: linear-gradient(to bottom, #2980b9, #1f6391);
+}
+
+/* Movement/Country Button - Purple Theme */
+#btn_country {
+    padding: 15px 25px;
+    margin: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 10px;
+    background-image: linear-gradient(to bottom, #9b59b6, #8e44ad);
+    color: white;
+    border: 2px solid #7d3c98;
+    min-width: 220px;
+}
+
+#btn_country:hover {
+    background-image: linear-gradient(to bottom, #af7ac5, #9b59b6);
+    border-color: #8e44ad;
+    box-shadow: 0 5px 10px rgba(155, 89, 182, 0.5);
+}
+
+#btn_country:active {
+    background-image: linear-gradient(to bottom, #8e44ad, #7d3c98);
+}
+
+/* Arrow Navigation Buttons */
+#btn_left_shift, #btn_right_shift {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 50%;
+    background-image: linear-gradient(to bottom, #95a5a6, #7f8c8d);
+    border: 2px solid #626567;
+}
+
+#btn_left_shift:hover, #btn_right_shift:hover {
+    background-image: linear-gradient(to bottom, #bdc3c7, #95a5a6);
+    border-color: #7f8c8d;
+    box-shadow: 0 3px 6px rgba(149, 165, 166, 0.4);
+}
+
+#btn_left_shift:active, #btn_right_shift:active {
+    background-image: linear-gradient(to bottom, #7f8c8d, #626567);
+}
+
+/* Message Text View */
+#textview_messages {
+    font-family: monospace;
+    font-size: 12px;
+    padding: 10px;
+    background-color: #1a1a1a;
+    color: #00ff00;
+}
+
+/* Drawing Areas */
+#drawing_area {
+    background-color: #34495e;
+    border: 3px solid #2c3e50;
+    border-radius: 8px;
+}
+
+#drawing_current_country {
+    background-color: #2c3e50;
+    border: 4px solid #3498db;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Layout Background */
+#layout_game {
+    background-color: #2c3e50;
+}
+
+/* Disable effect for buttons when not in correct game state */
+button:disabled {
+    opacity: 0.5;
+    background-image: linear-gradient(to bottom, #95a5a6, #7f8c8d);
+}
