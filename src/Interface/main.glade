@@ -68,6 +68,20 @@
             <property name="height-request">500</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <property name="hscroll-policy">natural</property>
+            <property name="vscroll-policy">natural</property>
+            <child>
+              <object class="GtkImage" id="image_game_background">
+                <property name="name">image_game_background</property>
+                <property name="width-request">400</property>
+                <property name="height-request">700</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="pixbuf">../Images/brown_image.png</property>
+              </object>
+            </child>
             <child>
               <object class="GtkButton" id="btn_left_shift">
                 <property name="name">btn_left_shift</property>
@@ -91,7 +105,7 @@
                 <property name="label" translatable="yes">Mexico</property>
               </object>
               <packing>
-                <property name="x">130</property>
+                <property name="x">210</property>
                 <property name="y">135</property>
               </packing>
             </child>
@@ -117,7 +131,7 @@
                 <property name="image">img_right_arrow</property>
               </object>
               <packing>
-                <property name="x">240</property>
+                <property name="x">400</property>
                 <property name="y">130</property>
               </packing>
             </child>
@@ -131,8 +145,76 @@
                 <property name="label" translatable="yes">Pais Actual</property>
               </object>
               <packing>
-                <property name="x">100</property>
+                <property name="x">185</property>
                 <property name="y">10</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_country">
+                <property name="label" translatable="yes">Cambiar Pais</property>
+                <property name="name">btn_country</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+              </object>
+              <packing>
+                <property name="x">180</property>
+                <property name="y">180</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_action_inequality">
+                <property name="label" translatable="yes">Solucionar Desigualdad</property>
+                <property name="name">btn_action_inequality</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">260</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_action_political_weakness">
+                <property name="label" translatable="yes">Solucionar Debilidad
+Politica</property>
+                <property name="name">btn_action_political_weakness</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="x">260</property>
+                <property name="y">260</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_action_poverty">
+                <property name="label" translatable="yes">Solucionar Pobreza</property>
+                <property name="name">btn_action_poverty</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="x">20</property>
+                <property name="y">320</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_action_crime">
+                <property name="label" translatable="yes">Solucionar Crimen</property>
+                <property name="name">btn_action_crime</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="x">260</property>
+                <property name="y">320</property>
               </packing>
             </child>
           </object>

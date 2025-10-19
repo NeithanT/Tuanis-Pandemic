@@ -17,7 +17,7 @@ int consultAspects(struct DoubleLinkedList* list) {
 
     struct Country *actual = list->start; // Puntero al inicio para imprimir cada pais con todos sus aspectos y su nivel de corrupcion
     while (actual != NULL) {
-        printf("Pais: %s. Pobreza: %d, Narcos: %d, Corrupcion \n", actual -> name, actual -> poorness, actual -> gangs, actual -> corruption);
+        printf("Pais: %s. Pobreza: %d, Narcos: %d, Corrupcion \n", actual -> name, actual -> poverty, actual -> crime, actual -> corruption);
         actual = actual -> next;
     }
     return 0;
@@ -119,7 +119,7 @@ int verifyWinner(struct DoubleLinkedList* doubleLinkedList) {
     //Esta condición verifica si todos los paises vivos tienen un 0 en alguna propiedad.
     struct Country* actual = doubleLinkedList -> start;
     while (actual != NULL) {
-        if (actual->gangs != 0 && actual->corruption != 0) { //Verifica que el país tenga alguna problemática != 0
+        if (actual->crime != 0 && actual->corruption != 0) { //Verifica que el país tenga alguna problemática != 0
             return winner; //Valor invalido, indica que nadie ha ganado
         }
         actual = actual -> next;

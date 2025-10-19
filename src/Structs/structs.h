@@ -7,8 +7,10 @@ struct Country{
     //Parametros y punteros de los paises
     char* name;
     float corruption;
-	int poorness;
-	int gangs;
+	int poverty;
+	int crime;
+	int unemployment;
+	int political_stability;
 	struct Country* prev;
 	struct Country* next;
 	struct DoubleLinkedList* connected_countries;

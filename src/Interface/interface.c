@@ -9,6 +9,7 @@
 #define WIDTH 700
 #define HEIGHT 500
 #define DIVISION 200
+#define BORDER_SIZE 5
 
 GtkWidget *win;
 GtkWidget *drawing_area;
@@ -24,7 +25,8 @@ typedef struct {
     const char *name;
     int x, y;
     int width, height;
-    GdkPixbuf *pixbuf;
+    GdkPixbuf *original_pixbuf;
+    GdkPixbuf *modified_pixbuf;
 } CountryImage;
 
 CountryImage countries[] = {
@@ -50,6 +52,59 @@ CountryImage countries[] = {
     {"Uruguay", 506, 577, 0, 0, NULL},
     {"Venezuela", 343, 218, 0, 0, NULL}
 };
+
+int min_distance_to_edge(int x, int y, int width, int height) {
+    int dist = x;
+    if (y < dist) dist = y;
+    if (width - x < dist) dist = width - x;
+    if (height - y < dist) dist = height - y;
+    return dist;
+}
+
+int has_transparent_neighbor(guchar *pixels, int x, int y, int width, int height, 
+                            int rowstride, int search_radius) {
+    // search in a box "radius"
+    for (int dy = -search_radius; dy <= search_radius; dy++) {
+        for (int dx = -search_radius; dx <= search_radius; dx++) {
+            if (dx == 0 && dy == 0) continue;
+            
+            int nx = x + dx;
+            int ny = y + dy;
+            
+            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                guchar *neighbor = pixels + ny * rowstride + nx * 4;
+                if (neighbor[3] == 0) return 1; // Found transparent pixel
+            }
+        }
+    }
+    return 0;
+}
+
+void draw_img_border(GdkPixbuf *pixbuf) {
+    int width = gdk_pixbuf_get_width(pixbuf);
+    int height = gdk_pixbuf_get_height(pixbuf);
+
+    guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
+    int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            guchar *pixel = pixels + y * rowstride + x * 4;
+
+            if (pixel[3] == 0) continue; // Skip transparent pixels
+
+            // Check if pixel is near edge or has transparent neighbors
+            if (min_distance_to_edge(x, y, width, height) < BORDER_SIZE ||
+                has_transparent_neighbor(pixels, x, y, width, height, rowstride, BORDER_SIZE)) {
+                pixel[0] = 0; // R
+                pixel[1] = 0; // G
+                pixel[2] = 0; // B
+            }
+        }
+    }
+}
+
+
 
 void update_img_corruption(GdkPixbuf *pixbuf, float corruptPercentage) {
 
@@ -102,7 +157,7 @@ static void draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     int max_x = 0, max_y = 0, cord_x = 0, cord_y = 0;
     for (int i = 0; i < NUM_COUNTRIES; i++) {
 
-        if (countries[i].pixbuf) {
+        if (countries[i].original_pixbuf) {
 
             cord_x = countries[i].x + countries[i].width;
             cord_y = countries[i].y + countries[i].height;
@@ -128,18 +183,8 @@ static void draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
     }
 
     // now we have the scale of how much bigger the new image is
-    // center the content in the drawing area
-    double dw = max_x * scale;
-    double dh = max_y * scale;
-    // printf every value to check
-
-    printf("width: %d height: %d max_x: %d max_y: %d dw: %f dh: %f\n", width, height, max_x, max_y, dw, dh);
-
-    double tx = (width - dw) / 2.0;
-    double ty = (height - dh) / 2.0;
 
     cairo_save(cr);
-    cairo_translate(cr, tx, ty);
     cairo_scale(cr, scale, scale);
 
     // draw map
@@ -149,8 +194,8 @@ static void draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
     // draw flags
     for (int i = 0; i < NUM_COUNTRIES; i++) {
-        if (countries[i].pixbuf) {
-            gdk_cairo_set_source_pixbuf(cr, countries[i].pixbuf, countries[i].x, countries[i].y);
+        if (countries[i].original_pixbuf) {
+            gdk_cairo_set_source_pixbuf(cr, countries[i].original_pixbuf, countries[i].x, countries[i].y);
             cairo_paint(cr);
         }
     }
@@ -183,19 +228,20 @@ void start_window() {
     scale = 1.0;
     
     // create a surface for the drawing area
-    surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, WIDTH - DIVISION, HEIGHT);
-    
+    //surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, WIDTH - DIVISION, HEIGHT);
+    surface = cairo_image_surface_create_from_png(PATH "blue_image.png");
     // load country images
     for (int i = 0; i < NUM_COUNTRIES; i++) {
 
         char path[200] = PATH;
         strcat(path, countries[i].name);
         strcat(path, ".png");
-        countries[i].pixbuf = gdk_pixbuf_new_from_file(path, NULL);
-        update_img_corruption(countries[i].pixbuf, 0.5);
-        if (countries[i].pixbuf) {
-            countries[i].width = gdk_pixbuf_get_width(countries[i].pixbuf);
-            countries[i].height = gdk_pixbuf_get_height(countries[i].pixbuf);
+        countries[i].original_pixbuf = gdk_pixbuf_new_from_file(path, NULL);
+        update_img_corruption(countries[i].original_pixbuf, 0.5);
+        draw_img_border(countries[i].original_pixbuf);
+        if (countries[i].original_pixbuf) {
+            countries[i].width = gdk_pixbuf_get_width(countries[i].original_pixbuf);
+            countries[i].height = gdk_pixbuf_get_height(countries[i].original_pixbuf);
         }
     }
 
@@ -220,7 +266,6 @@ void start_window() {
     list = initializeDoubleLinkedList();
     current_country = list->start;
 
-    gtk_widget_set_size_request(drawing_area, 500, 500);
     // Connect signals
     g_signal_connect(win, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(drawing_area, "draw", G_CALLBACK(draw), NULL);
@@ -229,6 +274,8 @@ void start_window() {
     g_signal_connect(btn_right_shift, "clicked", G_CALLBACK(btn_right_shift_clicked), NULL);
     g_signal_connect(btn_left_shift, "clicked", G_CALLBACK(btn_left_shift_clicked), NULL);
     gtk_widget_show_all(win);
+
+    
     // free memory things...
     
     g_object_unref(builder);
@@ -236,8 +283,8 @@ void start_window() {
 
     cairo_surface_destroy(surface);
     for (int i = 0; i < NUM_COUNTRIES; i++) {
-        if (countries[i].pixbuf) {
-            g_object_unref(countries[i].pixbuf);
+        if (countries[i].original_pixbuf) {
+            g_object_unref(countries[i].original_pixbuf);
         }
     }
 }
