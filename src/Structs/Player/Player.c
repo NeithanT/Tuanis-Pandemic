@@ -37,15 +37,12 @@ struct Player* allocate_initial_player_on_map(struct DoubleLinkedList* doubleLin
 
 //###############################################################################
 
-void move_player(struct DoubleLinkedList* doubleLinkedList,struct Player* player, int isAlly) {
+void move_player(struct DoubleLinkedList* doubleLinkedList,struct Player* player) {
 
     if ( doubleLinkedList == NULL || doubleLinkedList->start == NULL || player == NULL) {
         printf("Cant move the player because the parameters are invalid");
+        return;
     }
-    if (isAlly) {
-        move_ally_random_country(player);
-    }
-    else {
     struct Country* selected_country = pick_country();
 
     while (selected_country == NULL) {
@@ -55,45 +52,5 @@ void move_player(struct DoubleLinkedList* doubleLinkedList,struct Player* player
     player->current_country = selected_country; //TODO Esta parte es la que debe conectarse con la interfaz
     printf("%s%s", "The player has moved to: ", player->current_country->name);
 }
-}
 
 //###############################################################################
-
-void move_ally_random_country(struct Player* player) {
-
-    if (!player || !player->current_country) {
-        printf("ERROR2500: No se ha podido obtener un Country Random");
-        return;
-    }
-
-    // Use connected_countries list for realistic movement
-    if (player->current_country->connected_countries && 
-        player->current_country->connected_countries->connected_count > 0) {
-        
-        // Count available connected countries
-        int count = player->current_country->connected_countries->connected_count;
-        
-        if (count > 0) {
-            // Pick a random connected country
-            int random_choice = rand() % count;
-            player->current_country = player->current_country->connected_countries->connected_list[random_choice];
-            return;
-        }
-    }
-    
-    // Fallback to old behavior if no connections found
-    int randomMove = rand() % 2;
-    if (randomMove == 0) {
-        if (player->current_country->prev != NULL) {
-            player->current_country = player->current_country->prev;
-        } else if (player->current_country->next != NULL) {
-            player->current_country = player->current_country->next;
-        }
-    } else {
-        if (player->current_country->next != NULL) {
-            player->current_country = player->current_country->next;
-        } else if (player->current_country->prev != NULL) {
-            player->current_country = player->current_country->prev;
-        }
-    }
-}

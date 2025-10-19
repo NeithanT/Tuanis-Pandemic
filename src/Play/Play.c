@@ -32,23 +32,11 @@ void start_game() {
 
     struct DoubleLinkedList* countryList = initialize_double_linked_list();
     struct Player* Player = allocate_initial_player_on_map(countryList);
-    struct Player* Ally = allocate_initial_player_on_map(countryList);
 
     bool isGameOver = false;
-    bool isTurnPlayer = true;
     while (!isGameOver) {
-        //Turno player
-        if (isTurnPlayer == true) {
-            turn_player(countryList,Player);
-            turn_corruption(countryList);
-            isTurnPlayer = false;
-        }
-        //Turno aliado
-        else {
-            turn_ally(Ally);
-            turn_corruption(countryList);
-            isTurnPlayer = true;
-        }
+        turn_player(countryList,Player);
+        turn_corruption(countryList);
 
         //Revisa si hay países para eliminar y si ya se gano el juego
         while (!erase_dead_countries(countryList)); //Limpia los paises muertos
@@ -70,37 +58,11 @@ void turn_player(struct DoubleLinkedList* doubleLinkedList, struct Player* playe
         printf("ERROR2500: No se ha podido aplicar el turno del jugador");
         return;
     }
-    move_player(doubleLinkedList, player, 0);
+    move_player(doubleLinkedList, player);
 }
 
 
 //###############################################################################
-
-void turn_ally(struct Player* ally) {
-    if (!ally || !ally->current_country) {
-        printf("ERROR: Ally state invalid\n");
-        return;
-    }
-    
-    printf("Ally turn starting at %s\n", ally->current_country->name);
-    
-    // Ally moves to adjacent country (or stays)
-    move_ally_random_country(ally);
-    printf("Ally moved to %s\n", ally->current_country->name);
-    
-    // Ally does 4 actions
-    for (int i = 0; i < 4; i++) {
-        // Reduce a random problem in current country
-        reduce_random_problem(ally->current_country);
-        
-        // Recalculate corruption after each action
-        calculate_corruption(ally->current_country);
-    }
-    
-    printf("Ally turn complete\n");
-}
-
-
 
 //###############################################################################
 void turn_corruption (struct DoubleLinkedList* doubleLinkedList) {

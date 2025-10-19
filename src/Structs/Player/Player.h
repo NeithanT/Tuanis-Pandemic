@@ -10,9 +10,7 @@ struct Player {
     struct Country* current_country;
 };
 
-void move_player(struct DoubleLinkedList* doubleLinkedList,struct Player* player, int isAlly);
-
-void move_ally_random_country(struct Player* player);
+void move_player(struct DoubleLinkedList* doubleLinkedList,struct Player* player);
 
 struct Country* pick_country();
 

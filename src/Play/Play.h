@@ -15,8 +15,6 @@ void start_game();
 
 void turn_player(struct DoubleLinkedList* doubleLinkedList, struct Player* player);
 
-void turn_ally(struct Player* ally);
-
 void turn_corruption (struct DoubleLinkedList* doubleLinkedList);
 
 int consult_aspects(struct DoubleLinkedList* list);
