@@ -44,10 +44,10 @@ void calculate_corruption(struct Country* country) {
     float total = 0.0;
     
     // Normalize each attribute to 0-1 scale
-    total += (float)country->poverty / 3.0 * 0.25;      // 25% weight
-    total += (float)country->crime / 3.0 * 0.25;        // 25% weight
-    total += (float)country->unemployment / 3.0 * 0.25; // 25% weight
-    total += (1.0 - ((float)country->political_stability / 100.0)) * 0.25; // 25% weight
+    total += (float)country->poverty / 3.0 * 0.25;      // 25%
+    total += (float)country->crime / 3.0 * 0.25;        // 25% 
+    total += (float)country->unemployment / 3.0 * 0.25;
+    total += (1.0 - ((float)country->political_stability / 100.0)) * 0.25;
     
     country->corruption = total;
 }

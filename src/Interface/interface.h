@@ -113,13 +113,6 @@ void end_player_turn();
 void btn_country_clicked(GtkWidget *widget, gpointer data);
 
 /**
- * Maneja el clic en el botón para quedarse en el país actual
- * widget Widget del botón
- * data Datos adicionales
- */
-void btn_stay_clicked(GtkWidget *widget, gpointer data);
-
-/**
  * Actualiza los estados de los botones basados en la fase del juego
  */
 void update_button_states();

@@ -150,8 +150,8 @@ int erase_dead_countries (struct DoubleLinkedList* doubleLinkedList) {
     struct Country* current = doubleLinkedList -> start;
 
     //Esta condición verifica si el primer país se corrompio, y cambia el primer país al segundo país en la lista
-    if (current->crime == 3 && current->poverty == 3) {
-        add_debug_message("☠ %s ha caído ante la corrupción (Crimen: 3/3, Pobreza: 3/3)", current->name);
+    if (current->crime == 3 && current->poverty == 3 && current->unemployment == 3 && current->political_stability < 100) {
+        add_debug_message("%s ha caído ante la corrupción", current->name);
         
         struct Country* nextCountry = current->next;
         if (nextCountry) {
