@@ -12,40 +12,67 @@
 #include "../Structs/Player/Player.h"
 
 /**
- * Inicia el juego, configurando el estado inicial
+ * @brief Inicia el flujo principal del juego.
+ *
+ * Configura el estado inicial del tablero, los jugadores y las variables
+ * necesarias antes de que comiencen los turnos.
  */
 void start_game();
 
 /**
- * Maneja el turno del jugador, permitiendo movimientos y acciones
- * doubleLinkedList Puntero a la lista de países
- * player Puntero al jugador
+ * @brief Maneja todas las acciones disponibles para un jugador en su turno.
+ *
+ * Permite al jugador realizar movimientos, interacciones o cualquier otra
+ * acción definida en las reglas del juego.
+ *
+ * @param doubleLinkedList Puntero a la lista doblemente enlazada de
+ * países que conforman el mapa.
+ * @param player Puntero a la estructura del jugador cuyo turno se está manejando.
  */
 void turn_player(struct DoubleLinkedList* doubleLinkedList, struct Player* player);
 
 /**
- * Maneja el turno de corrupción, aplicando cambios aleatorios
- * doubleLinkedList Puntero a la lista de países
+ * @brief Aplica los efectos de la corrupción en el mapa.
+ *
+ * Este turno ejecuta cambios aleatorios o predefinidos en las propiedades
+ * de los países, simulando un evento de corrupción global o localizado.
+ *
+ * @param doubleLinkedList Puntero a la lista doblemente enlazada de
  */
 void turn_corruption (struct DoubleLinkedList* doubleLinkedList);
 
 /**
- * Consulta los aspectos de los países en la lista
- * list Puntero a la lista de países
- * Código o valor de consulta
+ * @brief Consulta y posiblemente muestra aspectos específicos de los países.
+ *
+ * Permite obtener información o estadísticas de los países
+ * según un código de consulta.
+ *
+ * @param list Puntero a la lista de países que se va a consultar.
+ * @return El valor o resultado de la consulta.
  */
+
 int consult_aspects(struct DoubleLinkedList* list);
 
 /**
- * Verifica si hay un ganador en el juego
- * doubleLinkedList Puntero a la lista de países
- * ID del ganador, o 0 si no hay
+ * @brief Verifica las condiciones de victoria para determinar si un jugador ha ganado.
+ *
+ * Itera sobre el estado actual del juego (países y jugadores) para
+ * chequear si se cumple alguna condición de finalización del juego.
+ *
+ * @param doubleLinkedList Puntero a la lista de países.
+ * @return El ID del jugador que ha ganado.
+ * @return **0** si aún no hay un ganador.
  */
+
 int verify_winner(struct DoubleLinkedList* doubleLinkedList);
 
 /**
- * Anuncia o maneja el ganador del juego
- * winner ID del ganador
+ * @brief Anuncia o ejecuta la lógica de fin de juego al detectar un ganador.
+ *
+ * Muestra un mensaje o realiza las acciones finales asociadas a la victoria
+ * de un jugador.
+ *
+ * @param winner El ID del jugador que ha ganado la partida.
  */
 void throw_winner(int winner);
 

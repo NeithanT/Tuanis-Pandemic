@@ -29,12 +29,5 @@ struct Country* pick_country();
  * Puntero al jugador inicializado
  */
 struct Player* allocate_initial_player_on_map(struct DoubleLinkedList* doubleLinkedList);
-
-/**
- * TODO: FUNCIONES A AGREGAR:
- * Mover un jugador según el país seleccionado en la interfaz
- *
- *
- */
 #endif //TUANIS_PANDEMIC_PLAYER_H
 
