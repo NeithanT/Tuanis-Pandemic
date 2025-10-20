@@ -17,12 +17,6 @@
 #define COUNTRY_DETAIL_WIDTH 300
 #define COUNTRY_DETAIL_HEIGHT 300
 
-// Emoji constants for attributes
-#define EMOJI_POVERTY "🏚️"
-#define EMOJI_CRIME "🔫"
-#define EMOJI_UNEMPLOYMENT "📉"
-#define EMOJI_STABILITY "🏛️"
-
 GtkWidget *win;
 GtkBox *box_right_panel;
 GtkWidget *drawing_area;
@@ -39,7 +33,6 @@ GtkLabel *lbl_poverty;
 GtkLabel *lbl_crime;
 GtkLabel *lbl_corruption;
 GtkLabel *lbl_unemployment;
-GtkLabel *lbl_solutions;
 GtkLabel *lbl_game_status;
 GtkLabel *lbl_political_stability;
 GtkTextView *textview_messages;
@@ -103,7 +96,6 @@ void add_message(const char* message) {
     if (!message) return;
     
     if (!textbuffer_messages) {
-        printf("%s\n", message);
         return;
     }
     
@@ -128,7 +120,6 @@ void add_debug_message(const char* format, ...) {
     va_end(args);
     
     add_message(buffer);
-    printf("%s\n", buffer); // Also print to console for debugging
 }
 
 int is_connected(struct Country* country1, struct Country* country2) {
@@ -159,14 +150,14 @@ void ensure_player_valid() {
     if (!found) {
         player->current_country = list->start;
         char msg[MAX_ACTION_MSG_LEN];
-        sprintf(msg, "Jugador reubicado a %s (país anterior eliminado)", player->current_country->name);
+        sprintf(msg, "Jugador reubicado a %s (pais anterior eliminado)", player->current_country->name);
         add_message(msg);
     }
     
     // Also check if current_country (the viewed country) is still valid
     if (current_country && !is_country_valid(current_country)) {
         current_country = player->current_country;
-        add_message("Vista reubicada al país del jugador (país anterior eliminado)");
+        add_message("Vista reubicada al pais del jugador (pais anterior eliminado)");
     }
 }
 
@@ -186,7 +177,7 @@ int is_country_valid(struct Country* country) {
 void perform_action(const char* action_name, int* action_value, int max_value, int is_increment) {
     if (current_game_state != TURN_PLAYER_ACTION) {
         char msg[MAX_ACTION_MSG_LEN];
-        sprintf(msg, "No es tu turno de acción.");
+        sprintf(msg, "No es tu turno de accion.");
         add_message(msg);
         return;
     }
@@ -201,7 +192,7 @@ void perform_action(const char* action_name, int* action_value, int max_value, i
     // CHANGED: Can only act on the player's current country, not connected ones
     if (current_country != player->current_country) {
         char msg[MAX_ACTION_MSG_LEN];
-        sprintf(msg, "No puedes actuar en %s - debes estar en ese país. Muévete primero.", current_country->name);
+        sprintf(msg, "No puedes actuar en %s - debes estar en ese pais. Muevete primero.", current_country->name);
         add_message(msg);
         return;
     }
@@ -211,7 +202,7 @@ void perform_action(const char* action_name, int* action_value, int max_value, i
         // For increasing actions like political stability
         if (*action_value >= max_value) {
             char msg[MAX_ACTION_MSG_LEN];
-            sprintf(msg, "%s ya está al máximo en %s.", action_name, current_country->name);
+            sprintf(msg, "%s ya esta al maximo en %s.", action_name, current_country->name);
             add_message(msg);
             return;
         }
@@ -220,7 +211,7 @@ void perform_action(const char* action_name, int* action_value, int max_value, i
         // For decreasing actions like poverty, crime, etc.
         if (*action_value <= 0) {
             char msg[MAX_ACTION_MSG_LEN];
-            sprintf(msg, "%s ya está en 0 en %s.", action_name, current_country->name);
+            sprintf(msg, "%s ya esta en 0 en %s.", action_name, current_country->name);
             add_message(msg);
             return;
         }
@@ -229,7 +220,7 @@ void perform_action(const char* action_name, int* action_value, int max_value, i
     
     player_actions_remaining--;
     char msg[MAX_ACTION_MSG_LEN];
-    sprintf(msg, "Acción aplicada en %s. Acciones restantes: %d", 
+    sprintf(msg, "Accion aplicada en %s. Acciones restantes: %d", 
            current_country->name, player_actions_remaining);
     add_message(msg);
     
@@ -240,7 +231,7 @@ void perform_action(const char* action_name, int* action_value, int max_value, i
     gtk_widget_queue_draw(drawing_area);
     
     if (player_actions_remaining <= 0) {
-        add_message("Acciones agotadas. El turno terminará automáticamente.");
+        add_message("Fin de acciones. Siguiente Turno");
         end_player_turn();
     }
 }
@@ -627,14 +618,14 @@ void update_current_country_surface() {
 const char* get_game_state_text(char* buffer) {
     switch (current_game_state) {
         case SELECT_STARTING_COUNTRY:
-            return "Selecciona tu país de inicio - Usa las flechas y presiona 'Escoger País' (Presiona R para reiniciar)";
+            return "Selecciona tu pais de inicio - Usa las flechas y presiona 'Escoger Pais' (Presiona R para reiniciar)";
         case TURN_PLAYER_MOVE:
-            return "Tu turno: MOVIMIENTO - Haz clic en un país conectado o quédate aquí (Presiona R para reiniciar)";
+            return "Tu turno: MOVIMIENTO - Haz clic en un pais conectado o quedate aqui (Presiona R para reiniciar)";
         case TURN_PLAYER_ACTION:
             sprintf(buffer, "Tu turno: ACCIONES (%d restantes) - Presiona R para reiniciar", player_actions_remaining);
             return buffer;
         case TURN_CORRUPTION:
-            return "Turno: CORRUPCIÓN se expande...";
+            return "Turno: CORRUPCION se expande...";
         case GAME_OVER:
             return "JUEGO TERMINADO";
         default:
@@ -648,20 +639,20 @@ void update_country_stats_labels() {
     
     char buffer[200];
     
-    sprintf(buffer, "%s Pobreza: %d/3", EMOJI_POVERTY, current_country->poverty);
+    sprintf(buffer, "Pobreza: %d/3", current_country->poverty);
     gtk_label_set_text(lbl_poverty, buffer);
     
-    sprintf(buffer, "%s Crimen: %d/3", EMOJI_CRIME, current_country->crime);
+    sprintf(buffer, "Crimen: %d/3", current_country->crime);
     gtk_label_set_text(lbl_crime, buffer);
     
     sprintf(buffer, "Corrupcion: %.0f%%", current_country->corruption * 100);
     gtk_label_set_text(lbl_corruption, buffer);
     
-    sprintf(buffer, "%s Desempleo: %d/3", EMOJI_UNEMPLOYMENT, current_country->unemployment);
+    sprintf(buffer, "Desempleo: %d/3", current_country->unemployment);
     gtk_label_set_text(lbl_unemployment, buffer);
     
     if (lbl_political_stability) {
-        sprintf(buffer, "%s Estabilidad Política: %d/100", EMOJI_STABILITY, current_country->political_stability);
+        sprintf(buffer, "Estabilidad Politica: %d/100", current_country->political_stability);
         gtk_label_set_text(lbl_political_stability, buffer);
     }
 }
@@ -671,12 +662,12 @@ void update_move_button() {
     if (!btn_country || !current_country) return;
     
     if (current_game_state == SELECT_STARTING_COUNTRY) {
-        gtk_button_set_label(GTK_BUTTON(btn_country), "Escoger País");
+        gtk_button_set_label(GTK_BUTTON(btn_country), "Escoger Pais");
         gtk_widget_set_visible(btn_country, TRUE);
     } 
     else if (current_game_state == TURN_PLAYER_MOVE) {
         if (current_country == player->current_country) {
-            gtk_button_set_label(GTK_BUTTON(btn_country), "Quedarse Aquí");
+            gtk_button_set_label(GTK_BUTTON(btn_country), "Quedarse Aqui");
             gtk_widget_set_visible(btn_country, TRUE);
         } 
         else if (is_connected(player->current_country, current_country)) {
@@ -694,7 +685,7 @@ void update_move_button() {
         if (current_country != player->current_country && 
             is_connected(player->current_country, current_country)) {
             char button_text[100];
-            sprintf(button_text, "Cambiar a %s (1 acción)", current_country->name);
+            sprintf(button_text, "Cambiar a %s (1 accion)", current_country->name);
             gtk_button_set_label(GTK_BUTTON(btn_country), button_text);
             gtk_widget_set_visible(btn_country, TRUE);
         } 
@@ -722,9 +713,6 @@ void label_current_country_update(char *text) {
     
     // Update country statistics
     update_country_stats_labels();
-    
-    // Update solutions text
-    update_solutions_text();
     
     // Update move button state
     update_move_button();
@@ -757,7 +745,7 @@ void move_player_to_country(struct Country* destination) {
     if (!destination || !player || !player->current_country) return;
     
     char msg[MAX_ACTION_MSG_LEN];
-    sprintf(msg, "Moviéndose de %s a %s", player->current_country->name, destination->name);
+    sprintf(msg, "Moviendo de %s a %s", player->current_country->name, destination->name);
     add_message(msg);
     
     player->current_country = destination;
@@ -765,12 +753,12 @@ void move_player_to_country(struct Country* destination) {
     
     // Check if the new country is isolated (no neighbors)
     if (!destination->connected_countries || destination->connected_countries->connected_count == 0) {
-        add_debug_message("No hay vecinos. La corrupción ha ganado.");
+        add_debug_message("No hay vecinos. La corrupcion ha ganado.");
         current_game_state = GAME_OVER;
         
         // Show game over dialog
         char end_msg[MAX_ACTION_MSG_LEN];
-        strcpy(end_msg, "Ya no quedan países vecinos. La corrupción ha ganado.");
+        strcpy(end_msg, "Ya no quedan paises vecinos. La corrupcion ha ganado.");
         
         GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(win), 
                                                      GTK_DIALOG_MODAL, 
@@ -812,12 +800,12 @@ void stay_in_current_country() {
     
     // Check if current country is isolated (no neighbors)
     if (!current_country->connected_countries || current_country->connected_countries->connected_count == 0) {
-        add_debug_message("No hay vecinos. La corrupción ha ganado.");
+        add_debug_message("No hay vecinos. La corrupcion ha ganado.");
         current_game_state = GAME_OVER;
         
         // Show game over dialog
         char end_msg[MAX_ACTION_MSG_LEN];
-        strcpy(end_msg, "Ya no quedan países vecinos. La corrupción ha ganado.");
+        strcpy(end_msg, "Ya no quedan paises vecinos. La corrupcion ha ganado.");
         
         GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(win), 
                                                      GTK_DIALOG_MODAL, 
@@ -852,12 +840,12 @@ void change_country_during_action(struct Country* destination) {
     if (!destination || !player || !player->current_country) return;
     
     if (player_actions_remaining <= 0) {
-        add_message("No te quedan acciones para cambiar de país.");
+        add_message("No te quedan acciones para cambiar de pais.");
         return;
     }
     
     char msg[MAX_ACTION_MSG_LEN];
-    sprintf(msg, "Cambiando de %s a %s (1 acción usada)", 
+    sprintf(msg, "Cambiando de %s a %s (1 accion usada)", 
            player->current_country->name, destination->name);
     add_message(msg);
     
@@ -873,7 +861,7 @@ void change_country_during_action(struct Country* destination) {
     gtk_widget_queue_draw(drawing_area);
     
     if (player_actions_remaining <= 0) {
-        add_message("Acciones agotadas. El turno terminará automáticamente.");
+        add_message("Acciones agotadas. El turno terminara automaticamente.");
         end_player_turn();
     }
 }
@@ -892,20 +880,20 @@ void btn_country_clicked(GtkWidget *widget, gpointer data) {
     // Handle country change during action phase
     if (current_game_state == TURN_PLAYER_ACTION) {
         if (!current_country || !player || !player->current_country) {
-            add_message("Error: Estado del juego inválido.");
+            add_message("Error: Estado del juego invalido.");
             return;
         }
         
         // Can't change to same country
         if (current_country == player->current_country) {
-            add_message("Ya estás en este país.");
+            add_message("Ya estas en este pais.");
             return;
         }
         
         // Check if destination is connected
         if (!is_connected(player->current_country, current_country)) {
             char msg[MAX_ACTION_MSG_LEN];
-            sprintf(msg, "No puedes cambiar a %s - no está conectado a %s.", 
+            sprintf(msg, "No puedes cambiar a %s - no esta conectado a %s.", 
                    current_country->name, player->current_country->name);
             add_message(msg);
             return;
@@ -923,7 +911,7 @@ void btn_country_clicked(GtkWidget *widget, gpointer data) {
     }
     
     if (!current_country || !player || !player->current_country) {
-        add_message("Error: Estado del juego inválido.");
+        add_message("Error: Estado del juego invalido.");
         return;
     }
     
@@ -936,7 +924,7 @@ void btn_country_clicked(GtkWidget *widget, gpointer data) {
     // Check if destination is connected
     if (!is_connected(player->current_country, current_country)) {
         char msg[MAX_ACTION_MSG_LEN];
-        sprintf(msg, "No puedes moverte a %s - no está conectado a %s.", 
+        sprintf(msg, "No puedes moverte a %s - no esta conectado a %s.", 
                current_country->name, player->current_country->name);
         add_message(msg);
         return;
@@ -944,55 +932,6 @@ void btn_country_clicked(GtkWidget *widget, gpointer data) {
     
     // Move to new country
     move_player_to_country(current_country);
-}
-
-void btn_stay_clicked(GtkWidget *widget, gpointer data) {
-    if (current_game_state != TURN_PLAYER_MOVE) {
-        add_message("No es tu turno de movimiento.");
-        return;
-    }
-    
-    stay_in_current_country();
-    update_button_states();
-}
-
-void update_solutions_text() {
-    if (!lbl_solutions || !hash_table || !current_country || !current_country->name) return;
-    
-    char buffer[1000] = "";
-    
-    // Show if you can act on this country
-    if (current_game_state == TURN_PLAYER_ACTION) {
-        if (current_country == player->current_country) {
-            strcat(buffer, "✓ Puedes actuar aquí\n");
-        } else {
-            strcat(buffer, "✗ Debes moverte aquí para actuar\n");
-        }
-    }
-    
-    strcat(buffer, "\n");
-    
-    // Show connected countries
-    strcat(buffer, "Países conectados:\n");
-    if (current_country->connected_countries && current_country->connected_countries->connected_count > 0) {
-        for (int i = 0; i < current_country->connected_countries->connected_count && i < 10; i++) {
-            struct Country* conn = current_country->connected_countries->connected_list[i];
-            strcat(buffer, "• ");
-            strcat(buffer, conn->name);
-            strcat(buffer, "\n");
-        }
-    } else {
-        strcat(buffer, "  Ninguno\n");
-    }
-    
-    strcat(buffer, "\n");
-    
-    // Note: Solutions are now displayed on action buttons
-    if (current_country == player->current_country || current_game_state == SELECT_STARTING_COUNTRY) {
-        strcat(buffer, "💡 Las soluciones están en los botones de acción");
-    }
-    
-    gtk_label_set_text(lbl_solutions, buffer);
 }
 
 void btn_action_poverty_clicked(GtkWidget *widget, gpointer data) {
@@ -1008,7 +947,7 @@ void btn_action_inequality_clicked(GtkWidget *widget, gpointer data) {
 }
 
 void btn_action_political_weakness_clicked(GtkWidget *widget, gpointer data) {
-    perform_action("Estabilidad Política", &current_country->political_stability, 100, 1);
+    perform_action("Estabilidad Politica", &current_country->political_stability, 100, 1);
 }
 
 // Handler for restart button/key
@@ -1017,7 +956,7 @@ void btn_restart_clicked(GtkWidget *widget, gpointer data) {
                                                  GTK_DIALOG_MODAL, 
                                                  GTK_MESSAGE_QUESTION, 
                                                  GTK_BUTTONS_YES_NO, 
-                                                 "¿Estás seguro de que quieres reiniciar el juego?");
+                                                 "¿Estas seguro de que quieres reiniciar el juego?");
     int response = gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
     
@@ -1105,12 +1044,12 @@ void update_button_states() {
 
 void end_player_turn() {
     if (!list || !player) {
-        add_message("Error crítico: Estado del juego inválido.");
+        add_message("Error critico: Estado del juego invalido.");
         return;
     }
     
     add_message("Turno del jugador terminado");
-    add_message("La corrupción se expande...");
+    add_message("La corrupcion se expande...");
     current_game_state = TURN_CORRUPTION;
     
     // Corruption spreads - first round
@@ -1128,7 +1067,7 @@ void end_player_turn() {
     }
     
     // Corruption spreads again - second round
-    add_message("La corrupción se expande de nuevo...");
+    add_message("La corrupcion se expande de nuevo...");
     turn_corruption(list);
     calculate_corruption_country_list(list);
     while (!erase_dead_countries(list));
@@ -1148,12 +1087,12 @@ void end_player_turn() {
     // Check if player's current country is isolated (no neighbors left)
     if (!player->current_country->connected_countries || 
         player->current_country->connected_countries->connected_count == 0) {
-        add_debug_message("Tu país está aislado. La corrupción ha ganado.");
+        add_debug_message("Tu pais esta aislado. La corrupcion ha ganado.");
         current_game_state = GAME_OVER;
         
         // Show game over dialog
         char end_msg[MAX_ACTION_MSG_LEN];
-        strcpy(end_msg, "Ya no quedan países vecinos. La corrupción ha ganado.");
+        strcpy(end_msg, "Ya no quedan paises vecinos. La corrupcion ha ganado.");
         
         GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(win), 
                                                      GTK_DIALOG_MODAL, 
@@ -1225,6 +1164,7 @@ void restart_game() {
     }
     
     // Reinitialize game elements
+    free(list);
     list = initialize_double_linked_list();
     
     // Reassign images to countries
@@ -1252,7 +1192,7 @@ void restart_game() {
     // Add welcome messages
     add_message("=== NUEVO JUEGO ===");
     add_message("Bienvenido a Tuanis Pandemic");
-    add_message("Selecciona tu país de inicio...");
+    add_message("Selecciona tu pais de inicio...");
     
     // Update UI
     label_current_country_update(current_country->name);
@@ -1272,11 +1212,11 @@ void check_winner() {
         GtkButtonsType buttons = GTK_BUTTONS_NONE;
         
         if (winner == 0) {
-            strcpy(msg, "¡Felicidades! Has ganado. Todos los países tienen al menos un problema resuelto.");
+            strcpy(msg, "¡Felicidades! Has ganado. Todos los paises tienen al menos un problema resuelto.");
         } else if (winner == 3) {
-            strcpy(msg, "Ya no quedan países vecinos. La corrupción ha ganado.");
+            strcpy(msg, "Ya no quedan paises vecinos. La corrupcion ha ganado.");
         } else {
-            sprintf(msg, "La corrupción ha ganado. Solo quedan %d países.", length_double_linked_list(list));
+            sprintf(msg, "La corrupcion ha ganado. Solo quedan %d paises.", length_double_linked_list(list));
         }
         
         GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(win), 
@@ -1316,12 +1256,8 @@ void start_window(int argc, char *argv[]) {
             GTK_STYLE_PROVIDER(css_provider),
             GTK_STYLE_PROVIDER_PRIORITY_USER
         );
-    } else {
-        printf("No se encontro el CSS.\n");
-        return;
     }
     g_object_unref(css_provider);
-    // free css provider, it already loaded
 
     // create a surface for the drawing area, a image background in this case
     surface = cairo_image_surface_create_from_png(PATH "blue_image.png");
@@ -1329,7 +1265,7 @@ void start_window(int argc, char *argv[]) {
     surface_cur_country = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 800, 600);
 
     if (!surface) {
-        printf("No se encontro el background\n");
+        g_printerr("No se encontro el background\n");
         return;
     }
 
@@ -1345,7 +1281,6 @@ void start_window(int argc, char *argv[]) {
             countries[i].height = gdk_pixbuf_get_height(countries[i].original_pixbuf);
         }
     }
-    printf("Pixbufs loaded\n");
 
     // Load the Glade file
     GtkBuilder *builder = gtk_builder_new();
@@ -1399,7 +1334,6 @@ void start_window(int argc, char *argv[]) {
     lbl_unemployment = GTK_LABEL(gtk_builder_get_object(builder, "lbl_unemployment"));
     lbl_game_status = GTK_LABEL(gtk_builder_get_object(builder, "lbl_game_status"));
     lbl_political_stability = GTK_LABEL(gtk_builder_get_object(builder, "lbl_political_stability"));
-    lbl_solutions = GTK_LABEL(gtk_builder_get_object(builder, "lbl_solutions"));
     textview_messages = GTK_TEXT_VIEW(gtk_builder_get_object(builder, "textview_messages"));
     // Get action buttons
     btn_action_poverty = GTK_WIDGET(gtk_builder_get_object(builder, "btn_action_poverty"));
@@ -1411,7 +1345,8 @@ void start_window(int argc, char *argv[]) {
     
     // Check if widgets are null (optional ones can be NULL)
     if (!win || !drawing_area || !drawing_current_country || !btn_right_shift || !btn_left_shift || !lbl_current_country ||
-        !lbl_poverty || !lbl_crime || !lbl_corruption || !lbl_unemployment || !lbl_game_status || !lbl_political_stability || !textview_messages) {
+        !lbl_poverty || !lbl_crime || !lbl_corruption || !lbl_unemployment || !lbl_game_status || !lbl_political_stability || !textview_messages ||
+        !box_right_panel || !btn_action_poverty || !btn_action_crime || !btn_action_unemployment || !btn_action_political_weakness) {
         g_printerr("Hay widgets faltantes en el glade\n");
         return;
     }
@@ -1420,17 +1355,8 @@ void start_window(int argc, char *argv[]) {
     if (textview_messages) {
         textbuffer_messages = gtk_text_view_get_buffer(textview_messages);
         add_message("Bienvenido a Tuanis Pandemic");
-        add_message("Selecciona tu país de inicio...");
+        add_message("Selecciona tu pais de inicio...");
     }
-
-    // Check if widgets are null
-    if (!win || !drawing_area || !drawing_current_country || !btn_right_shift || !btn_left_shift || !lbl_current_country ||
-        !lbl_poverty || !lbl_crime || !lbl_corruption || !lbl_unemployment || !box_right_panel ||
-        !btn_action_poverty || !btn_action_crime || !btn_action_unemployment || !btn_action_political_weakness) {
-        g_printerr("No se encontraron algunos widgets\n");
-        return;
-    }
-
 
     // Show main window first
     gtk_widget_show_all(win);
@@ -1440,6 +1366,7 @@ void start_window(int argc, char *argv[]) {
     current_country = list->start;
     current_game_state = SELECT_STARTING_COUNTRY;
     label_current_country_update(current_country->name);
+    update_button_states();
 
     // Connect signals
     g_signal_connect(win, "destroy", G_CALLBACK(gtk_main_quit), NULL);

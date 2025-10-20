@@ -22,7 +22,7 @@
     <property name="can-focus">False</property>
     <property name="title" translatable="yes">Tuanis Pandemic</property>
     <property name="default-width">1300</property>
-    <property name="default-height">800</property>
+    <property name="default-height">900</property>
     <child>
       <object class="GtkPaned" id="paned_main">
         <property name="visible">True</property>
@@ -377,20 +377,6 @@
                     <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">13</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="lbl_solutions">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Soluciones</property>
-                    <property name="wrap">True</property>
-                    <property name="xalign">0</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">14</property>
                   </packing>
                 </child>
               </object>

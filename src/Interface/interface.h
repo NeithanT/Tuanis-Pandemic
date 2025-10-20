@@ -160,21 +160,7 @@ void end_player_turn();
 void btn_country_clicked(GtkWidget *widget, gpointer data);
 
 /**
- * @brief Maneja el clic en el botón que indica que el jugador se queda en el país.
- *
- * Se activa cuando el jugador decide terminar su fase de movimiento sin cambiar
- * de ubicación.
- *
- * @param widget Widget del botón que disparó el evento.
- * @param data Datos adicionales de usuario.
- */
-void btn_stay_clicked(GtkWidget *widget, gpointer data);
-
-/**
- * @brief Sincroniza si los botones están activos o no con la fase actual del juego.
- *
- * Habilita o deshabilita botones dependiendo de si el jugador puede moverse,
- * actuar, o si el juego ya terminó.
+ * Actualiza los estados de los botones basados en la fase del juego
  */
 void update_button_states();
 
